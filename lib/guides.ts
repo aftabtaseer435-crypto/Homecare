@@ -109,6 +109,7 @@ export const guides: Guide[] = [
         tip: 'Admin verify karte hi status green ho jata hai aur receipt number milta hai.',
       },
       { title: 'Cash dena hai?', body: 'Society office ya collector ko dein. Woh app mein entry karega aur aap ko WhatsApp par receipt aa jayegi.' },
+      { title: 'Paisa kahan laga?', body: '"Fund ka hisaab" mein har kharcha raseed ke sath. Gali mein koi masla ho to "Masla report karein" — seedha aap ki gali ke welfare agent ko.', link: ['Masla report guide', '/guides/masla-report'] },
     ],
     faq: [
       ['Mera ghar kisi aur ke naam par dikh raha hai?', 'Society admin se rabta karein — woh "Owners" tab se theek kar sakta hai.'],
@@ -145,6 +146,46 @@ export const guides: Guide[] = [
     faq: [
       ['Kya ek sath 500 log ko message ja sakta hai?', 'Is mode mein ek ek kar ke bhejna hota hai (har message 2–3 second). Kaam galiyon ke hisaab se collectors mein baant lein. Fully automatic sending baad mein Meta WhatsApp API se on ho sakti hai.'],
       ['Mera number block to nahi hoga?', 'Sirf apni society ke logon ko, unke apne fund ke baare mein message bhejein aur ek din mein ek dafa. Spam na karein.'],
+    ],
+  },
+  {
+    slug: 'masla-report',
+    title: 'Masla report karna (welfare)',
+    who: 'Makan malik',
+    summary: 'Gali ki light, pani, gutter, sarak, safai, security ya legal masla — ek click mein apni gali ke welfare agent tak, aur har qadam ka status.',
+    time: '1 minute',
+    steps: [
+      { title: 'Welfare kholein', body: 'Menu → Society → "Masla report karein". Wahan aap ki gali ke welfare agent ka naam aur number bhi likha hota hai.', link: ['Welfare', '/welfare'] },
+      { title: 'Masle ki qisam choose karein', body: '"Light ka masla" ya "Legal masla" ka button dabayein, ya "Koi aur masla" mein se choose karein. Paigham pehle se likha hota hai — zaroorat ho to badal lein.' },
+      { title: 'Tasveer lagayein (optional)', body: 'Phone se seedha tasveer khinch kar lagayein — agent ko masla jaldi samajh aata hai.' },
+      { title: 'Report karein', body: '"Report karein aur WhatsApp par bhejein" dabayein. Masle ka number (jaise M-1024) banta hai aur WhatsApp khul jata hai — agent ko paigham bhejne ke liye Send dabayein.', tip: 'Agar aap ki gali mein yehi masla pehle se report ho chuka ho to app batati hai — naya report karne ke bajaye "+1" karein, agent ko pata chalta hai kitne ghar mutasir hain.' },
+      { title: 'Status dekhein', body: 'Laal = agent ka intezar, peela = agent ne dekh liya / kaam jari, hara = hal ho gaya. Har tabdeeli ki tareekh "Poori tareekh" mein likhi hoti hai, aur har masle ka ek waqt muqarrar hai (light 48 ghante, pani 24 ghante).' },
+      { title: 'Confirm karein', body: 'Agent "hal ho gaya" kar de to aap ko WhatsApp aata hai. App mein masla kholein, rating dein aur "Haan, hal ho gaya" dabayein — dono taraf status hara. Agar theek nahi hua to "Dobara kholein".' },
+      { title: 'Fund ka hisaab dekhein', body: '"Fund ka hisaab" mein har kharche ki tafseel, raseed aur har welfare agent ki karkardagi (kitne masle hal, kitni dair mein, rating) nazar aati hai.', link: ['Fund ka hisaab', '/hisaab'] },
+    ],
+    faq: [
+      ['Mera masla kaun dekh sakta hai?', 'Sirf aap, aap ki gali ka welfare agent aur society admin. Legal aur "koi aur" masle private hain. Gali ke masle (light, pani) par padosi sirf +1 kar sakte hain — aap ka naam nahi dekhte.'],
+      ['Agent ne jawab nahi diya to?', 'Waqt guzarte hi masla "late" ho jata hai aur society admin ki list mein laal nazar aata hai. Agent ki karkardagi sab residents ko dikhti hai.'],
+    ],
+  },
+  {
+    slug: 'welfare-agent',
+    title: 'Welfare agent guide',
+    who: 'Block ya gali ke welfare agent',
+    summary: 'Apni gali ke masle hal karna, har ghar ko check karna, aur kharche ka hisaab dena.',
+    time: '10 minute',
+    steps: [
+      { title: 'Muqarrar hona', body: 'Pehle apne number se app par login karein. Society admin "Welfare" tab se aap ko block ya gali ki zimmedari deta hai. Phir Dashboard aur Welfare page par "Agent panel" ka button aa jata hai.' },
+      { title: 'Naye masle', body: 'Resident report karta hai to aap ko WhatsApp par paigham aata hai jis mein link hota hai. Agent panel → "Masle" mein sab khule masle hain — sab se urgent (late) sab se upar.' },
+      { title: '"Dekh liya" dabayein', body: 'Masla kholte hi "Dekh liya" dabayein — resident ka status laal se peela ho jata hai aur usay pata chal jata hai ke kisi ne sun liya. Kaam shuru ho to "Kaam shuru".' },
+      { title: 'Hal karein aur submit karein', body: 'Kaam ho jaye to "Kya kiya" likhein, kaam ke baad ki tasveer lagayein, aur agar fund se paisa laga to amount likhein. "Hal ho gaya — submit" dabayein.', tip: 'Amount likhne se kharcha khud "Kharcha" mein chala jata hai — admin approve karta hai, phir sab residents ko hisaab mein nazar aata hai.' },
+      { title: 'Resident ko batayein', body: 'Submit ke baad "Resident ko batayein" button se WhatsApp karein. Resident confirm karta hai aur rating deta hai — dono taraf hara. 7 din tak confirm na ho to masla khud band ho jata hai.' },
+      { title: 'Ghar check karein', body: 'Agent panel → "Ghar (checking)": aap ki galiyon ke sab ghar, owner ka naam aur number. Chakkar lagayein, haal poochein aur "Check ✓" karein (sab theek / masla mila / ghar par koi nahi). Masla mile to wahin "Masla darj" karein.' },
+      { title: 'Kharcha darj karein', body: 'Agent panel → "Kharcha": jo bhi paisa fund se laga, raseed ki tasveer ke sath darj karein. Bina raseed ke admin reject kar sakta hai.' },
+    ],
+    faq: [
+      ['Meri karkardagi kaun dekhta hai?', 'Har resident "Fund ka hisaab" page par dekh sakta hai: kitne masle hal kiye, kitne late hain, average waqt aur rating.'],
+      ['Legal masle?', 'Woh private hote hain. Resident se rabta kar ke rehnumai karein; zaroorat ho to society admin ko shamil karein.'],
     ],
   },
   {

@@ -52,7 +52,7 @@
   .muted { @apply text-sm text-ink-mute; }
 
   /* House number plate — the app's signature element */
-  .plate { @apply inline-flex min-w-[2.25rem] items-center justify-center rounded-md bg-plate px-1.5 font-display text-xs font-extrabold text-plate-ink shadow-plate; }
+  .plate { @apply inline-flex shrink-0 whitespace-nowrap min-w-[2.25rem] items-center justify-center rounded-md bg-plate px-1.5 font-display text-xs font-extrabold text-plate-ink shadow-plate; }
   .plate-paid { @apply bg-paid text-white shadow-none; }
   .plate-due { @apply bg-due text-white shadow-none; }
   .plate-partial { @apply bg-part text-white shadow-none; }

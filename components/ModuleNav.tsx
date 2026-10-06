@@ -12,7 +12,7 @@ import { moduleFor, moduleTheme } from '@/lib/nav';
 export default function ModuleNav() {
   const path = usePathname();
   const m = moduleFor(path);
-  if (!m || m.id === 'help' || path.startsWith('/s/')) return null;
+  if (!m || m.id === 'help' || path.startsWith('/s/') || path.startsWith('/w/')) return null;
   const t = moduleTheme[m.id];
   return (
     <div className={`${t.bg} text-white`}>

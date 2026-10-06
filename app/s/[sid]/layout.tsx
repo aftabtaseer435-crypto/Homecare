@@ -17,6 +17,8 @@ export default async function SocietyAdminLayout({ children, params }: { childre
     { href: `${base}/owners`, label: 'Owners' },
     ...(role === 'admin'
       ? [
+          { href: `${base}/welfare`, label: 'Welfare (masle)' },
+          { href: `${base}/kharcha`, label: 'Kharcha / hisaab' },
           { href: `${base}/houses`, label: 'Ghar' },
           { href: `${base}/funds`, label: 'Fund plans' },
           { href: `${base}/notices`, label: 'Notices' },

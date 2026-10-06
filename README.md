@@ -121,6 +121,20 @@ supabase/migrations/        schema, RLS security, triggers, functions, seed
 
 ---
 
+## Welfare aur fund ka hisaab (accountability)
+
+Maqsad: jo fund deta hai usay pata ho paisa kahan aur kitna laga, aur gali ka har masla kisi ki zimmedari ho.
+
+- **Welfare agent:** admin har block ya gali ka zimmedar muqarrar karta hai (`/s/<id>/welfare`). Gali-specific agent block-wide agent se pehle aata hai.
+- **Masla report** (`/welfare`): resident category choose karta hai (light, pani, gutter, sarak, safai, security, legal, doosra), paigham pehle se likha hota hai, tasveer optional. Submit par masle ka number (M-1001) banta hai aur WhatsApp khud khul jata hai agent ke number par, link ke sath.
+- **Privacy:** masla sirf reporter, us gali ka agent aur society admin dekhte hain. Gali ke masle par padosi sirf "+1" kar sakte hain (naam nahi dikhta), taake ek hi masle ke 20 report na banen. Legal / doosra masla poori tarah private.
+- **Status (database function ke zariye, koi fake nahi kar sakta):** Report (laal) → Agent ne dekha → Kaam jari (peela) → Hal hua (hara) → Resident ne confirm kiya (hara ✓). Resident "dobara khol" bhi sakta hai. 7 din tak confirm na ho to khud band. Har category ka waqt muqarrar (pani 24h, light 48h, sarak 7 din); waqt guzarne par "late".
+- **Agent panel** (`/w/<id>`): khule / late masle, gali ke sab ghar owner ke naam-number ke sath, har ghar ka "check" (sab theek / masla mila / ghar par koi nahi), aur kharcha raseed ke sath.
+- **Fund ka hisaab** (`/hisaab/<id>`): kul jama, kul kharch, baqi, mahana jama-kharch, cheez-war kharcha, har kharche ki raseed, aur har agent ki karkardagi (hal, late, average waqt, rating) — sab verified residents ko nazar.
+- Agent jo kharcha darj kare (ya masla hal karte waqt amount likhe) woh "pending" rehta hai; admin approve kare tab hisaab mein aata hai.
+
+Database: `supabase/migrations/0004_welfare_accountability.sql` (pehli 3 files ke baad chalayein).
+
 ## Rozana Hadees (header ke upar)
 
 `lib/hadith.ts` mein 200 ahadith (Urdu tarjuma) hain — Sahih Bukhari, Sahih Muslim, aur Sunan Tirmidhi / Abu Dawud / Ibn Majah ki woh riwayat jinhein har grader ne Sahih ya Hasan kaha hai, reference number ke sath. Pakistan ki tareekh ke hisaab se roz ek nayi hadees aati hai (200 din ka cycle). Launch se pehle kisi aalim se ek nazar review karwa lein; koi hadees badalni ho to isi file mein text badal dein.

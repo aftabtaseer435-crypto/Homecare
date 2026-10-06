@@ -8,6 +8,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { broadcastNotice, sendReceipt } from '@/lib/notify';
 import { whatsappApiEnabled } from '@/lib/whatsapp';
 import { todayPK } from '@/lib/format';
+import { uploadFile } from '@/lib/upload';
 
 const sidOf = (fd: FormData) => str(fd, 'sid');
 
@@ -297,4 +298,67 @@ export async function removeMember(fd: FormData) {
   const { error } = await supabase.from('society_members').delete().eq('society_id', sid).eq('user_id', uid);
   if (error) back(`/s/${sid}/team`, 'err', error.message);
   back(`/s/${sid}/team`, 'ok', 'Member remove ho gaya');
+}
+
+// ---------------------------------------------------------------- WELFARE AGENTS
+export async function addAgent(fd: FormData) {
+  const sid = sidOf(fd);
+  const { supabase } = await requireSocietyStaff(sid, true);
+  const path = `/s/${sid}/welfare`;
+  const phone = normalizePhone(str(fd, 'phone'));
+  if (!phone) back(path, 'err', 'Mobile number sahi nahi');
+  const admin = createAdminClient();
+  const { data: prof } = await admin.from('profiles').select('id').eq('phone', phone!).maybeSingle();
+  if (!prof) back(path, 'err', 'Is number ka account nahi mila. Agent pehle is number se app par login kare, phir add karein.');
+  const [block, street] = str(fd, 'area').split('|');
+  const { error } = await supabase.from('welfare_agents').insert({
+    society_id: sid, user_id: prof!.id, block: block ?? '', street: street ? street : null,
+  });
+  if (error) back(path, 'err', error.code === '23505' ? 'Yeh agent is area mein pehle se hai' : error.message);
+  back(path, 'ok', 'Welfare agent muqarrar ho gaya. Ab is area ke naye masle usay jayenge.');
+}
+
+export async function removeAgent(fd: FormData) {
+  const sid = sidOf(fd);
+  const { supabase } = await requireSocietyStaff(sid, true);
+  await supabase.from('welfare_agents').update({ active: false }).eq('id', str(fd, 'agent_row')).eq('society_id', sid);
+  back(`/s/${sid}/welfare`, 'ok', 'Agent hata diya gaya (purana record mehfooz hai).');
+}
+
+// ---------------------------------------------------------------- FUND LEDGER
+export async function addExpense(fd: FormData) {
+  const sid = sidOf(fd);
+  const { supabase, user } = await requireSocietyStaff(sid, true);
+  const path = `/s/${sid}/kharcha`;
+  const amount = num(fd, 'amount');
+  if (!amount || amount <= 0) back(path, 'err', 'Amount likhein');
+  const [block, street] = str(fd, 'area').split('|');
+  let receipt_path: string | null = null;
+  try {
+    receipt_path = await uploadFile(supabase, 'private-docs', user.id, 'receipts', fd.get('receipt'));
+  } catch (e) {
+    back(path, 'err', (e as Error).message);
+  }
+  const { error } = await supabase.from('fund_expenses').insert({
+    society_id: sid, amount, category: str(fd, 'category') || 'other', description: str(fd, 'description'),
+    vendor: str(fd, 'vendor') || null, spent_on: str(fd, 'spent_on') || todayPK(),
+    block: block || null, street: street || null, receipt_path, status: 'approved',
+  });
+  if (error) back(path, 'err', error.message);
+  revalidatePath(`/hisaab/${sid}`);
+  back(path, 'ok', 'Kharcha hisaab mein shamil — sab residents ko nazar aayega.');
+}
+
+export async function reviewExpense(fd: FormData) {
+  const sid = sidOf(fd);
+  const { supabase } = await requireSocietyStaff(sid, true);
+  const approve = str(fd, 'decision') === 'approve';
+  const { error } = await supabase
+    .from('fund_expenses')
+    .update({ status: approve ? 'approved' : 'rejected', reject_reason: approve ? null : str(fd, 'reason') || 'Admin ne reject kiya' })
+    .eq('id', str(fd, 'expense_id'))
+    .eq('society_id', sid);
+  if (error) back(`/s/${sid}/kharcha`, 'err', error.message);
+  revalidatePath(`/hisaab/${sid}`);
+  back(`/s/${sid}/kharcha`, 'ok', approve ? 'Approved — hisaab mein shamil' : 'Reject kar diya');
 }

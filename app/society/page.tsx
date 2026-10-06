@@ -18,6 +18,9 @@ const steps: [string, string][] = [
 ];
 
 const features: [string, string][] = [
+  ['Har rupay ka hisaab', 'Kitna jama hua, kahan kharch hua, raseed ke sath — har verified makan malik dekh sakta hai.'],
+  ['Gali ka welfare agent', 'Har block / gali ka zimmedar. Light ya legal masla ek click mein us tak, WhatsApp par.'],
+  ['Masle ka poora status', 'Laal → peela → hara. Agent hal kare, resident confirm kare — waqt aur rating sab record.'],
   ['Green / red board', 'Poori society gali-war plates mein: jama, baqi, aadha, exempt.'],
   ['WhatsApp reminders', '3 din pehle, due din aur late hone par — list khud banti hai, bhejna ek click.'],
   ['Payments aur receipts', 'Cash, bank, JazzCash, Easypaisa. Screenshot verify, receipt number.'],
@@ -39,10 +42,10 @@ export default function SocietyLanding() {
     <div className="space-y-16">
       <section className="grid items-center gap-10 lg:grid-cols-2">
         <div>
-          <span className="badge bg-society-soft px-3 py-1 text-sm text-society-ink">Society Fund</span>
-          <h1 className="mt-3 text-4xl font-extrabold leading-tight md:text-5xl">Development fund ka hisaab, register ke baghair.</h1>
+          <span className="badge bg-society-soft px-3 py-1 text-sm text-society-ink">Society</span>
+          <h1 className="mt-3 text-4xl font-extrabold leading-tight md:text-5xl">Aap ka fund, aap ka haq: har rupay ka hisaab.</h1>
           <p className="mt-4 max-w-lg text-lg text-ink-soft">
-            Har ghar ek plate: green matlab jama, red matlab baqi. Committee ko ek nazar mein pata, makan malik ko apna status apne phone par.
+            Har ghar ek plate: green matlab jama, red matlab baqi. Jo fund deta hai woh dekhta hai paisa kahan laga, aur gali ka welfare agent har masle ka jawabdeh hai.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link href="/societies/register" className="btn bg-society px-5 py-3 text-base">Society free register karein</Link>

@@ -60,7 +60,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
         </div>
 
         <ul className="grid gap-3" aria-label="App ke teen hisse">
-          <ModuleDoor href="/society" color="bg-society" name="Society Fund" body="Har ghar green ya red, reminders, receipts, defaulters" />
+          <ModuleDoor href="/society" color="bg-society" name="Society" body="Fund green / red, har rupay ka hisaab, gali ke masle" />
           <ModuleDoor href="/services" color="bg-service" name="Home Services" body="Electrician, plumber, masi, rickshaw — CNIC verified" />
           <ModuleDoor href="/properties" color="bg-property" name="Rent / Sale" body="Society-verified ghar, seedha owner se baat" />
         </ul>
@@ -70,10 +70,10 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
       <ModuleSection
         id="society"
         tone="society"
-        eyebrow="Society Fund"
+        eyebrow="Society"
         title="Development fund — bina ghar ghar jaye"
         body="2000 ghar ki society mein bhi admin ek screen par dekhta hai kis ne diya aur kis ne nahi. Due date se 3 din pehle reminder list khud ban jati hai."
-        points={['Har ghar ka green / red status', 'Cash, bank, JazzCash, Easypaisa entry', 'Receipt number aur WhatsApp receipt', 'Defaulters ki Excel list']}
+        points={['Har ghar ka green / red status', 'Har rupay ka hisaab — raseed ke sath, sab residents ko nazar', 'Gali ka welfare agent: light ya legal masla ek click mein', 'Receipt number, WhatsApp receipt, defaulters list']}
         primary={['Society register karein', '/societies/register']}
         secondary={['Society Fund ke baare mein', '/society']}
         visual={<SocietyBoard />}

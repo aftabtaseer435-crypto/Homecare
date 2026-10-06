@@ -14,17 +14,19 @@ export const modules: {
 }[] = [
   {
     id: 'society',
-    name: 'Society Fund',
+    name: 'Society',
     short: 'Society',
-    blurb: 'Development fund, green / red status, WhatsApp reminders',
+    blurb: 'Fund, hisaab, welfare masle, WhatsApp reminders',
     home: '/society',
     links: [
       { href: '/society', label: 'Overview' },
+      { href: '/welfare', label: 'Masla report karein', auth: true },
+      { href: '/hisaab', label: 'Fund ka hisaab', auth: true },
       { href: '/societies/join', label: 'Apna ghar add karein', auth: true },
       { href: '/societies/register', label: 'Society register karein', auth: true },
       { href: '/guides/society-admin', label: 'Admin guide' },
     ],
-    match: ['/society', '/societies', '/s/', '/my/houses'],
+    match: ['/society', '/societies', '/s/', '/my/houses', '/welfare', '/hisaab', '/w/'],
   },
   {
     id: 'services',

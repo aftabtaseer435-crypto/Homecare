@@ -2,20 +2,24 @@ import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { dueStatusStyle, fmtDate, houseLabel, rs } from '@/lib/format';
 import { Flash } from '@/components/ui';
+import { issueStatus } from '@/lib/welfare';
 
 export const metadata = { title: 'Dashboard' };
 
 export default async function Dashboard({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   const { supabase, user, profile } = await requireUser('/dashboard');
 
-  const [{ data: myOwners }, { data: staff }, { data: provider }, { data: requests }, { data: listings }] =
+  const [{ data: myOwners }, { data: staff }, { data: provider }, { data: requests }, { data: listings }, { data: myIssues }, { data: agentRows }] =
     await Promise.all([
       supabase.from('house_owners').select('id, status, house:houses(id, block, street, house_no, society:societies(id, name))').eq('user_id', user.id),
       supabase.from('society_members').select('role, society:societies(id, name, city)').eq('user_id', user.id),
       supabase.from('providers').select('id, display_name, status').eq('user_id', user.id).maybeSingle(),
       supabase.from('society_requests').select('id, society_name, status, created_at').eq('requester_id', user.id).order('created_at', { ascending: false }),
       supabase.from('property_listings').select('id, status').eq('owner_id', user.id),
+      supabase.from('welfare_issues').select('id, ref_no, category, status').eq('reporter_id', user.id).order('created_at', { ascending: false }).limit(5),
+      supabase.from('welfare_agents').select('society_id, society:societies(name)').eq('user_id', user.id).eq('active', true),
     ]);
+  const agentSocieties = Array.from(new Map(((agentRows ?? []) as any[]).map((r) => [r.society_id, r.society?.name])).entries());
 
   const verifiedHouseIds = (myOwners ?? []).filter((o) => o.status === 'verified').map((o: any) => o.house.id);
   const { data: dues } = verifiedHouseIds.length
@@ -40,7 +44,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
       </div>
 
       {/* ===== Society Fund ===== */}
-      <ModuleBlock tone="society" title="Society Fund" action={<Link href="/societies/join" className="btn-outline btn-sm">Ghar add karein</Link>}>
+      <ModuleBlock tone="society" title="Society" action={<Link href="/societies/join" className="btn-outline btn-sm">Ghar add karein</Link>}>
       {/* Society admin panels first for admins — that's their daily job */}
       {(staff ?? []).length > 0 && (
         <section>
@@ -121,6 +125,32 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
         )}
       </section>
 
+        {/* Welfare + accountability */}
+        <section className="grid gap-3 sm:grid-cols-3">
+          <Action href="/welfare" title="Masla report karein" body="Light, pani, gutter, legal — ek click mein gali ke welfare agent ko" />
+          <Action href="/hisaab" title="Fund ka hisaab" body="Aap ka paisa kahan aur kitna laga — raseed ke sath" />
+          <div className="rounded-2xl border border-line bg-canvas/50 p-4">
+            <Link href="/welfare" className="font-bold text-ink no-underline hover:no-underline">Mere masle</Link>
+            {(myIssues ?? []).length === 0 ? (
+              <div className="mt-0.5 text-sm text-ink-mute">Koi masla report nahi kiya</div>
+            ) : (
+              <ul className="mt-2 space-y-1.5">
+                {((myIssues ?? []) as any[]).map((i) => {
+                  const st = issueStatus(i.status);
+                  return (
+                    <li key={i.id}><Link href={`/welfare/issues/${i.id}`} className="flex items-center justify-between gap-2 text-sm no-underline hover:no-underline"><span className="font-bold text-ink">{i.ref_no}</span><span className={`badge ${st.soft}`}>{st.short}</span></Link></li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
+        {agentSocieties.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-ink p-4 text-white">
+            <span className="font-bold">Welfare agent panel:</span>
+            {agentSocieties.map(([sid, name]) => <Link key={sid} href={`/w/${sid}`} className="btn btn-sm bg-plate text-plate-ink hover:bg-[#FFC933]">{name}</Link>)}
+          </div>
+        )}
         {!(staff ?? []).length && !pendingReq && (
           <p className="text-sm text-ink-mute">Committee member hain? <Link href="/societies/register">Apni society free register karein</Link>.</p>
         )}

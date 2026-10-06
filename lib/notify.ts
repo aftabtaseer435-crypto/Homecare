@@ -98,6 +98,9 @@ export async function runDailyJob(today = todayPK()) {
   const admin = createAdminClient();
   const summary = { duesCreated: 0, remindersSent: 0, remindersFailed: 0, skipped: 0 };
 
+  // Resolved masle the resident never confirmed close after 7 days
+  await admin.rpc('welfare_autoclose');
+
   const { data: plans } = await admin.from('fund_plans').select('id').eq('active', true);
   for (const p of plans ?? []) {
     const { data } = await admin.rpc('generate_dues', { p_plan: p.id, p_ref: today });
