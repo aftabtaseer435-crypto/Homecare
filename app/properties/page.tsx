@@ -56,16 +56,16 @@ export default async function Properties({ searchParams }: { searchParams: SP })
             const photo = [...(l.listing_photos ?? [])].sort((a: any, b: any) => a.sort - b.sort)[0];
             return (
               <Link key={l.id} href={`/properties/${l.id}`} className="card overflow-hidden p-0 no-underline hover:border-brand-500">
-                <div className="relative aspect-[4/3] bg-gray-100">
+                <div className="relative aspect-[4/3] bg-canvas">
                   {photo ? <img src={storagePublicUrl(photo.path)!} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-5xl">🏠</div>}
-                  <span className={`badge absolute left-2 top-2 ${l.listing_type === 'rent' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'}`}>{l.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
-                  {l.society_verified && <span className="badge absolute right-2 top-2 bg-green-600 text-white">✓ Society verified</span>}
+                  <span className={`badge absolute left-2 top-2 ${l.listing_type === 'rent' ? 'bg-ink text-white' : 'bg-plate text-plate-ink'}`}>{l.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
+                  {l.society_verified && <span className="badge absolute right-2 top-2 bg-paid text-white">✓ Society verified</span>}
                 </div>
                 <div className="space-y-1 p-4">
-                  <div className="text-lg font-bold text-gray-900">{rs(l.price)}{l.listing_type === 'rent' && <span className="text-sm font-normal text-gray-500"> / mahina</span>}</div>
-                  <div className="font-semibold text-gray-800">{l.title}</div>
+                  <div className="text-lg font-bold text-ink">{rs(l.price)}{l.listing_type === 'rent' && <span className="text-sm font-normal text-ink-mute"> / mahina</span>}</div>
+                  <div className="font-semibold text-ink">{l.title}</div>
                   <div className="muted">{[l.society?.name, l.area_text, l.city].filter(Boolean).join(' · ')}</div>
-                  <div className="text-sm text-gray-600">{[l.plot_size, l.bedrooms && `${l.bedrooms} bed`, l.bathrooms && `${l.bathrooms} bath`, l.portion && l.portion !== 'full' && `${l.portion} portion`].filter(Boolean).join(' · ')}</div>
+                  <div className="text-sm text-ink-soft">{[l.plot_size, l.bedrooms && `${l.bedrooms} bed`, l.bathrooms && `${l.bathrooms} bath`, l.portion && l.portion !== 'full' && `${l.portion} portion`].filter(Boolean).join(' · ')}</div>
                 </div>
               </Link>
             );

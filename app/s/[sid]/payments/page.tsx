@@ -67,7 +67,7 @@ export default async function Payments({
     if (data?.signedUrl) proofUrls.set(p.id, data.signedUrl);
   }
 
-  // just-saved payment → offer the WhatsApp receipt from the admin's own WhatsApp
+  // just-saved payment offer the WhatsApp receipt from the admin's own WhatsApp
   let receipt: { text: string; owners: { owner_name: string; owner_phone: string }[]; houseId: string; dueId: string; receiptNo: string } | null = null;
   if (searchParams.receipt) {
     const { data: p } = await supabase
@@ -97,7 +97,7 @@ export default async function Payments({
       <Flash searchParams={searchParams} />
 
       {receipt && (
-        <div className="card flex flex-wrap items-center gap-3 border-green-300 bg-green-50">
+        <div className="card flex flex-wrap items-center gap-3 border-paid/30 bg-paid-soft">
           <div className="flex-1 text-sm">Receipt <b>{receipt.receiptNo}</b> — owner ko WhatsApp par bhejein:</div>
           {receipt.owners.length === 0 ? (
             <span className="muted">Is ghar ka owner number record mein nahi.</span>
@@ -124,12 +124,12 @@ export default async function Payments({
           <button className="btn-outline">Dhoondein</button>
         </form>
 
-        {(searchParams.street || searchParams.house) && !house && <p className="text-sm text-red-600">Ghar nahi mila.</p>}
+        {(searchParams.street || searchParams.house) && !house && <p className="text-sm text-due">Ghar nahi mila.</p>}
 
         {house && (
-          <div className="rounded-lg border border-gray-200 p-4">
+          <div className="rounded-lg border border-line p-4">
             <div className="mb-3 font-semibold">
-              {houseLabel(house)} {owner && <span className="font-normal text-gray-500">· {owner.owner_name}</span>}
+              {houseLabel(house)} {owner && <span className="font-normal text-ink-mute">· {owner.owner_name}</span>}
             </div>
             <table className="table mb-4">
               <thead><tr><th>Fund</th><th>Amount</th><th>Jama</th><th>Due</th><th>Status</th></tr></thead>
@@ -142,7 +142,7 @@ export default async function Payments({
               </tbody>
             </table>
             {openDues.length === 0 ? (
-              <p className="text-sm text-green-700">Sab dues clear hain.</p>
+              <p className="text-sm text-paid">Sab dues clear hain.</p>
             ) : (
               <form action={recordPayment} className="grid gap-3 md:grid-cols-5">
                 <input type="hidden" name="sid" value={sid} />

@@ -36,7 +36,7 @@ export default function ProviderForm({
         <label className="label">Kaun sa kaam karte hain? * (ek se zyada choose kar sakte hain)</label>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
           {categories.map((c) => (
-            <label key={c.id} className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm">
+            <label key={c.id} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm">
               <input type="checkbox" name="categories" value={c.id} defaultChecked={selCats.has(c.id)} /> {c.icon} {c.name}
             </label>
           ))}
@@ -48,8 +48,8 @@ export default function ProviderForm({
           <label className="label">Kin societies mein kaam karte hain?</label>
           <div className="grid max-h-56 grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2">
             {societies.map((s) => (
-              <label key={s.id} className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm">
-                <input type="checkbox" name="societies" value={s.id} defaultChecked={selSocs.has(s.id)} /> {s.name} <span className="text-gray-400">({s.city})</span>
+              <label key={s.id} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm">
+                <input type="checkbox" name="societies" value={s.id} defaultChecked={selSocs.has(s.id)} /> {s.name} <span className="text-ink-mute">({s.city})</span>
               </label>
             ))}
           </div>

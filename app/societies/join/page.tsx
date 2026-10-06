@@ -110,12 +110,12 @@ export default async function JoinSociety({
       <div className="space-y-2">
         {(societies ?? []).map((s) => (
           <Link key={s.id} href={`/societies/join?society=${s.id}`} className="card block no-underline hover:border-brand-500">
-            <div className="font-semibold text-gray-900">{s.name}</div>
+            <div className="font-semibold text-ink">{s.name}</div>
             <div className="muted">{s.city}{s.address ? ` · ${s.address}` : ''}</div>
           </Link>
         ))}
         {(societies ?? []).length === 0 && (
-          <div className="card text-sm text-gray-500">
+          <div className="card text-sm text-ink-mute">
             Koi society nahi mili. Apni society ko <Link href="/societies/register">free register</Link> karwayein.
           </div>
         )}

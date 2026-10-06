@@ -23,15 +23,15 @@ export default async function AdminRequests({ searchParams }: { searchParams: { 
       <div className="grid gap-4 md:grid-cols-2">
         {pending.map((r) => (
           <div key={r.id} className="card space-y-2 text-sm">
-            <div className="text-base font-semibold">{r.society_name} <span className="font-normal text-gray-500">· {r.city}</span></div>
+            <div className="text-base font-semibold">{r.society_name} <span className="font-normal text-ink-mute">· {r.city}</span></div>
             <div>{r.address}</div>
             {r.map_url && <a href={r.map_url} target="_blank">Map</a>}
-            <div className="grid grid-cols-2 gap-1 text-gray-600">
+            <div className="grid grid-cols-2 gap-1 text-ink-soft">
               <span>Admin: {r.admin_name}</span><span>Mobile: {displayPhone(r.admin_phone)}</span>
               <span>President: {r.president_name ?? '—'}</span><span>Ghar: {r.total_houses ?? '—'}</span>
               <span>Reg no: {r.registration_no ?? '—'}</span><span>Email: {r.email ?? '—'}</span>
             </div>
-            {r.notes && <p className="rounded bg-gray-50 p-2">{r.notes}</p>}
+            {r.notes && <p className="rounded bg-canvas p-2">{r.notes}</p>}
             <div className="muted">{fmtDate(r.created_at)}</div>
             <div className="flex gap-2 pt-2">
               <form action={approveRequest}><input type="hidden" name="request_id" value={r.id} /><SubmitButton className="btn btn-sm">Approve</SubmitButton></form>

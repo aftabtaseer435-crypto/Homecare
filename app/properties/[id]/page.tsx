@@ -46,7 +46,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Flash searchParams={searchParams} />
-      {listing.status !== 'active' && <div className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800">Status: {listing.status}</div>}
+      {listing.status !== 'active' && <div className="rounded-lg bg-plate-soft p-3 text-sm text-plate-ink">Status: {listing.status}</div>}
 
       {photos.length > 0 ? (
         <div className="grid gap-2 md:grid-cols-3">
@@ -56,7 +56,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
           </div>
         </div>
       ) : (
-        <div className="flex h-48 items-center justify-center rounded-xl bg-gray-100 text-6xl">🏠</div>
+        <div className="flex h-48 items-center justify-center rounded-xl bg-canvas text-6xl">🏠</div>
       )}
       {photos.length > 4 && (
         <div className="flex gap-2 overflow-x-auto">
@@ -68,13 +68,13 @@ export default async function ListingPage({ params, searchParams }: { params: { 
         <div className="space-y-4 md:col-span-2">
           <div>
             <div className="flex flex-wrap gap-2">
-              <span className={`badge ${listing.listing_type === 'rent' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{listing.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
-              {listing.society_verified && <span className="badge bg-green-100 text-green-800">✓ Society verified owner</span>}
+              <span className={`badge ${listing.listing_type === 'rent' ? 'bg-brand-50 text-brand-700' : 'bg-plate-soft text-plate-ink'}`}>{listing.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
+              {listing.society_verified && <span className="badge bg-paid-soft text-paid">✓ Society verified owner</span>}
             </div>
             <h1 className="mt-2">{listing.title}</h1>
             <p className="muted">{[listing.society?.name, listing.area_text, listing.city].filter(Boolean).join(' · ')}</p>
           </div>
-          <div className="text-3xl font-bold text-brand-700">{rs(listing.price)}{listing.listing_type === 'rent' && <span className="text-base font-normal text-gray-500"> / mahina</span>}</div>
+          <div className="text-3xl font-bold text-brand-700">{rs(listing.price)}{listing.listing_type === 'rent' && <span className="text-base font-normal text-ink-mute"> / mahina</span>}</div>
           <div className="card grid grid-cols-2 gap-3 sm:grid-cols-3">
             {facts.map(([k, v]) => <div key={k as string}><div className="muted">{k}</div><div className="font-semibold">{v as any}</div></div>)}
           </div>
@@ -118,7 +118,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
 
           {user && !isOwner && (
             <details className="card">
-              <summary className="cursor-pointer text-sm text-gray-600">Fake / ghalat listing report karein</summary>
+              <summary className="cursor-pointer text-sm text-ink-soft">Fake / ghalat listing report karein</summary>
               <form action={submitComplaint} className="mt-3 space-y-2">
                 <input type="hidden" name="listing_id" value={listing.id} />
                 <textarea name="reason" rows={3} className="input" required />

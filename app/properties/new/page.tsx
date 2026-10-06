@@ -56,7 +56,7 @@ export default async function NewListing({ searchParams }: { searchParams: { ok?
         <div><label className="label">Advance / security (Rs)</label><input name="advance" type="number" min="0" className="input" /></div>
         <div className="md:col-span-2"><label className="label">Detail</label><textarea name="description" rows={4} className="input" placeholder="Gas, bijli, pani meter alag, parking, school qareeb…" /></div>
         <div><label className="label">Contact number *</label><input name="contact_phone" className="input" required defaultValue={displayPhone(profile.phone)} /></div>
-        <p className="flex items-end pb-2 text-xs text-gray-500">Yeh number listing par buyers / tenants ko dikhega.</p>
+        <p className="flex items-end pb-2 text-xs text-ink-mute">Yeh number listing par buyers / tenants ko dikhega.</p>
         <div className="md:col-span-2"><label className="label">Photos (15 tak)</label><input name="photos" type="file" accept="image/*" multiple className="input" /></div>
         <div className="md:col-span-2"><SubmitButton pendingText="Upload ho raha hai…">Listing publish karein</SubmitButton></div>
       </form>

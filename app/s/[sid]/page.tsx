@@ -65,30 +65,30 @@ export default async function SocietyOverview({
           <div className="grid gap-3 md:grid-cols-4">
             <Stat label="Paid (green)" value={paid} tone="green" />
             <Stat label="Not paid (red)" value={unpaid} tone="red" />
-            <Stat label="Collection" value={`${rs(collected)}`} />
+            <Stat label="Collection" value={rs(collected)} hint={target ? `${Math.round((collected / target) * 100)}% of target` : undefined} />
             <Stat label="Target" value={rs(target)} />
           </div>
 
           {(pendingOwners || pendingPayments) ? (
             <div className="flex flex-wrap gap-3 text-sm">
-              {!!pendingOwners && <Link href={`${base}/owners`} className="badge bg-yellow-100 px-3 py-1 text-yellow-800">{pendingOwners} owner approval pending</Link>}
-              {!!pendingPayments && <Link href={`${base}/payments`} className="badge bg-yellow-100 px-3 py-1 text-yellow-800">{pendingPayments} payment verify karni hain</Link>}
+              {!!pendingOwners && <Link href={`${base}/owners`} className="badge bg-plate-soft px-3 py-1.5 text-plate-ink no-underline">{pendingOwners} owner approval pending</Link>}
+              {!!pendingPayments && <Link href={`${base}/payments`} className="badge bg-plate-soft px-3 py-1.5 text-plate-ink no-underline">{pendingPayments} payment verify karni hain</Link>}
             </div>
           ) : null}
 
           <div className="card">
-            <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
+            <div className="mb-5 flex flex-wrap items-center gap-4 text-xs font-semibold text-ink-soft">
               <Legend status="paid" /> <Legend status="unpaid" /> <Legend status="partial" /> <Legend status="exempt" /> <Legend status={null} />
             </div>
             <div className="space-y-6">
               {groups.map((g) => (
                 <div key={g.block}>
-                  {g.block && <h2 className="mb-2">Block {g.block}</h2>}
+                  {g.block && <h2 className="mb-3 font-display">Block {g.block}</h2>}
                   <div className="space-y-2">
                     {g.streets.map((s) => (
                       <div key={s.street} className="flex items-start gap-3">
-                        <div className="w-16 shrink-0 pt-1 text-xs font-semibold text-gray-500">Gali {s.street}</div>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="w-16 shrink-0 pt-1.5 text-xs font-semibold text-ink-mute">Gali {s.street}</div>
+                        <div className="flex flex-wrap gap-1.5">
                           {s.houses.map((h) => {
                             const d = byHouse.get(h.id);
                             const st = dueStatusStyle(d?.status);
@@ -97,7 +97,7 @@ export default async function SocietyOverview({
                                 key={h.id}
                                 href={`${base}/payments?house=${h.id}&plan=${plan.id}&period=${period}`}
                                 title={`Gali ${h.street} Ghar ${h.house_no}: ${st.label}${d ? ` — ${rs(d.amount_due)}` : ''}`}
-                                className={`flex h-8 min-w-[2rem] items-center justify-center rounded px-1 text-xs font-semibold no-underline ${st.cls}`}
+                                className={`${st.plate} h-8 no-underline transition-transform hover:-translate-y-0.5 hover:no-underline`}
                               >
                                 {h.house_no}
                               </Link>
@@ -121,7 +121,7 @@ function Legend({ status }: { status: string | null }) {
   const s = dueStatusStyle(status);
   return (
     <span className="flex items-center gap-1">
-      <span className={`inline-block h-3 w-3 rounded ${s.cls}`} /> {s.label}
+      <span className={`inline-block h-3 w-3 rounded-sm ${s.cls}`} /> {s.label}
     </span>
   );
 }

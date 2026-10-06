@@ -11,7 +11,7 @@ import { logManualMessage } from '../actions';
 
 /**
  * Manual WhatsApp reminders: list of owners who should get a reminder,
- * each with a pre-written message. Admin taps → WhatsApp opens → Send.
+ * each with a pre-written message. Admin taps WhatsApp opens Send.
  */
 export default async function Reminders({ params, searchParams }: { params: { sid: string }; searchParams: { tab?: string; street?: string } }) {
   const { supabase } = await requireSocietyStaff(params.sid);
@@ -76,8 +76,8 @@ export default async function Reminders({ params, searchParams }: { params: { si
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Link href="?tab=upcoming" className={`badge px-3 py-1 no-underline ${tab === 'upcoming' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700'}`}>Agle {before} din mein due</Link>
-        <Link href="?tab=overdue" className={`badge px-3 py-1 no-underline ${tab === 'overdue' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'}`}>Overdue</Link>
+        <Link href="?tab=upcoming" className={`badge px-3 py-1 no-underline ${tab === 'upcoming' ? 'bg-ink text-white' : 'bg-canvas text-ink-soft'}`}>Agle {before} din mein due</Link>
+        <Link href="?tab=overdue" className={`badge px-3 py-1 no-underline ${tab === 'overdue' ? 'bg-due text-white' : 'bg-canvas text-ink-soft'}`}>Overdue</Link>
         <form className="ml-auto flex gap-2">
           <input type="hidden" name="tab" value={tab} />
           <input name="street" defaultValue={searchParams.street} placeholder="Gali" className="input w-24" />

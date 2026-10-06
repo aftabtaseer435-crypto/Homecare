@@ -37,7 +37,7 @@ export default async function Notices({ params, searchParams }: { params: { sid:
         {(notices ?? []).map((n) => (
           <div key={n.id} className="card">
             <div className="font-semibold">{n.title}</div>
-            <div className="mt-1 whitespace-pre-line text-sm text-gray-700">{n.body}</div>
+            <div className="mt-1 whitespace-pre-line text-sm text-ink-soft">{n.body}</div>
             <div className="mt-3 flex items-center justify-between">
               <span className="muted">{fmtDate(n.created_at)}</span>
               <WaButton label="WhatsApp group mein share" href={waSend(null, noticeText({ society: society?.name ?? '', title: n.title, body: n.body }))} />

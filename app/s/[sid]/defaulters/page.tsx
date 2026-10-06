@@ -35,7 +35,7 @@ export default async function Defaulters({ params, searchParams }: { params: { s
           {list.slice(0, 1000).map((r) => (
             <tr key={r.id}>
               <td><Link href={`/s/${params.sid}/payments?house=${r.house.id}`}>{houseLabel(r.house)}</Link></td>
-              <td>{r.owner?.owner_name ?? <span className="text-gray-400">—</span>}</td>
+              <td>{r.owner?.owner_name ?? <span className="text-ink-mute">—</span>}</td>
               <td>{displayPhone(r.owner?.owner_phone)}</td>
               <td>{r.plan?.name} {r.period}</td>
               <td>{fmtDate(r.due_date)}</td>

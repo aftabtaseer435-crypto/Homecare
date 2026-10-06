@@ -45,7 +45,7 @@ export default async function MyListings({ searchParams }: { searchParams: { ok?
         <div className="grid gap-3 md:grid-cols-3">
           {((saved ?? []) as any[]).filter((s) => s.listing).map((s) => (
             <Link key={s.listing.id} href={`/properties/${s.listing.id}`} className="card no-underline hover:border-brand-500">
-              <div className="font-semibold text-gray-900">{s.listing.title}</div>
+              <div className="font-semibold text-ink">{s.listing.title}</div>
               <div className="muted">{s.listing.city} · {rs(s.listing.price)} · {s.listing.status}</div>
             </Link>
           ))}

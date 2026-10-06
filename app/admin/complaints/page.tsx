@@ -29,7 +29,7 @@ export default async function AdminComplaints({ searchParams }: { searchParams: 
               <td>
                 {c.provider && <Link href={`/providers/${c.provider.id}`}>{c.provider.display_name}</Link>}
                 {c.listing && <Link href={`/properties/${c.listing.id}`}>{c.listing.title}</Link>}
-                {c.provider && (openPer.get(c.provider.id) ?? 0) >= 3 && <div className="badge mt-1 bg-red-100 text-red-700">{openPer.get(c.provider.id)} open complaints</div>}
+                {c.provider && (openPer.get(c.provider.id) ?? 0) >= 3 && <div className="badge mt-1 bg-due-soft text-due">{openPer.get(c.provider.id)} open complaints</div>}
               </td>
               <td className="max-w-md whitespace-pre-line">{c.reason}</td>
               <td>{fmtDate(c.created_at)}</td>

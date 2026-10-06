@@ -28,7 +28,7 @@ export default async function Team({ params, searchParams }: { params: { sid: st
                   <form action={removeMember}>
                     <input type="hidden" name="sid" value={params.sid} />
                     <input type="hidden" name="user_id" value={m.user_id} />
-                    <SubmitButton className="text-xs text-red-600" confirm="Remove karein?">Remove</SubmitButton>
+                    <SubmitButton className="text-xs text-due" confirm="Remove karein?">Remove</SubmitButton>
                   </form>
                 </td>
               </tr>

@@ -58,14 +58,14 @@ export default async function Houses({
         <p className="muted mb-4">Gali choose kar ke ghar edit karein (exempt, khali, rent pe, plot size).</p>
         <div className="mb-4 flex flex-wrap gap-2">
           {groups.map((x) => (
-            <a key={x.block} href={`?block=${encodeURIComponent(x.block)}`} className={`badge px-3 py-1 no-underline ${x.block === block ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700'}`}>
+            <a key={x.block} href={`?block=${encodeURIComponent(x.block)}`} className={`badge px-3 py-1 no-underline ${x.block === block ? 'bg-ink text-white' : 'bg-canvas text-ink-soft'}`}>
               {x.block ? `Block ${x.block}` : 'No block'} ({x.streets.reduce((n, st) => n + st.houses.length, 0)})
             </a>
           ))}
         </div>
         <div className="mb-4 flex flex-wrap gap-2">
           {g?.streets.map((x) => (
-            <a key={x.street} href={`?block=${encodeURIComponent(g.block)}&street=${encodeURIComponent(x.street)}`} className={`badge px-3 py-1 no-underline ${x.street === street ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700'}`}>
+            <a key={x.street} href={`?block=${encodeURIComponent(g.block)}&street=${encodeURIComponent(x.street)}`} className={`badge px-3 py-1 no-underline ${x.street === street ? 'bg-ink text-white' : 'bg-canvas text-ink-soft'}`}>
               Gali {x.street} ({x.houses.length})
             </a>
           ))}

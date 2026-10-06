@@ -85,11 +85,11 @@ export default async function CategoryProviders({
                 )}
               </Link>
               <div className="min-w-0 flex-1 space-y-1">
-                <Link href={`/providers/${p.id}`} className="text-base font-semibold text-gray-900">{p.display_name}</Link>
+                <Link href={`/providers/${p.id}`} className="text-base font-semibold text-ink">{p.display_name}</Link>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="badge bg-green-100 text-green-800">✓ Verified</span>
-                  {societyId && p.provider_societies.some((s: any) => s.society_id === societyId) && <span className="badge bg-blue-100 text-blue-800">Aap ki society</span>}
-                  {!p.available && <span className="badge bg-gray-100 text-gray-600">Abhi busy</span>}
+                  <span className="badge bg-paid-soft text-paid">✓ Verified</span>
+                  {societyId && p.provider_societies.some((s: any) => s.society_id === societyId) && <span className="badge bg-brand-50 text-brand-700">Aap ki society</span>}
+                  {!p.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
                   <Stars value={Number(p.rating_avg)} count={p.rating_count} />
                 </div>
                 <div className="muted">{p.city}{p.area_note ? ` · ${p.area_note}` : ''}{p.experience_years ? ` · ${p.experience_years} saal tajurba` : ''}</div>

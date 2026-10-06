@@ -28,7 +28,7 @@ export default async function Owners({
     .filter((o) => o.status === 'verified')
     .filter((o) => !q || o.owner_name.toLowerCase().includes(q) || o.owner_phone.includes(q) || `${o.house.street}-${o.house.house_no}`.includes(q));
 
-  // houses with more than one claim → conflict
+  // houses with more than one claim conflict
   const claimCount = new Map<string, number>();
   for (const o of owners) if (o.status !== 'rejected') claimCount.set(o.house.id, (claimCount.get(o.house.id) ?? 0) + 1);
 
@@ -46,7 +46,7 @@ export default async function Owners({
             <tbody>
               {pending.map((o) => (
                 <tr key={o.id}>
-                  <td>{o.owner_name}{(claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-red-100 text-red-700">Conflict: is ghar ke aur claims bhi hain</span>}</td>
+                  <td>{o.owner_name}{(claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-due-soft text-due">Conflict: is ghar ke aur claims bhi hain</span>}</td>
                   <td>{displayPhone(o.owner_phone)}</td>
                   <td>{houseLabel(o.house)}</td>
                   <td>{fmtDate(o.created_at)}</td>
@@ -102,13 +102,13 @@ export default async function Owners({
                 <td>{o.owner_name}</td>
                 <td>{displayPhone(o.owner_phone)}</td>
                 <td>{houseLabel(o.house)}</td>
-                <td>{o.user_id ? <span className="badge bg-green-100 text-green-800">Linked</span> : <span className="badge bg-gray-100 text-gray-600">Not yet</span>}</td>
+                <td>{o.user_id ? <span className="badge bg-paid-soft text-paid">Linked</span> : <span className="badge bg-canvas text-ink-soft">Not yet</span>}</td>
                 <td>
                   {role === 'admin' && (
                     <form action={removeOwner}>
                       <input type="hidden" name="sid" value={params.sid} />
                       <input type="hidden" name="owner_id" value={o.id} />
-                      <SubmitButton className="text-xs text-red-600" confirm="Owner remove karein?">Remove</SubmitButton>
+                      <SubmitButton className="text-xs text-due" confirm="Owner remove karein?">Remove</SubmitButton>
                     </form>
                   )}
                 </td>

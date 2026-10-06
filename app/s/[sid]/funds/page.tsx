@@ -31,7 +31,7 @@ export default async function Funds({ params, searchParams }: { params: { sid: s
                   <td>{FREQ[p.frequency]}</td>
                   <td>{p.due_day} tareekh</td>
                   <td>{fmtDate(p.start_date)}</td>
-                  <td>{p.active ? <span className="badge bg-green-100 text-green-800">Active</span> : <span className="badge bg-gray-100 text-gray-600">Band</span>}</td>
+                  <td>{p.active ? <span className="badge bg-paid-soft text-paid">Active</span> : <span className="badge bg-canvas text-ink-soft">Band</span>}</td>
                   <td className="flex flex-wrap gap-2">
                     <form action={generateDuesNow} className="flex gap-1">
                       <input type="hidden" name="sid" value={params.sid} />

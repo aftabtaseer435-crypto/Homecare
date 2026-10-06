@@ -22,19 +22,19 @@ export function daysBetween(fromISO: string, toISO: string) {
   return Math.round((Date.parse(toISO) - Date.parse(fromISO)) / 86_400_000);
 }
 
-/** Status colour classes — green paid, red not paid. */
+/** Status colours — green = paid, red = not paid (the core promise of the app). */
 export function dueStatusStyle(status: string | null | undefined) {
   switch (status) {
     case 'paid':
-      return { label: 'Paid', cls: 'bg-green-500 text-white', soft: 'bg-green-100 text-green-800' };
+      return { label: 'Paid', cls: 'bg-paid text-white', soft: 'bg-paid-soft text-paid', plate: 'plate plate-paid' };
     case 'partial':
-      return { label: 'Partial', cls: 'bg-orange-500 text-white', soft: 'bg-orange-100 text-orange-800' };
+      return { label: 'Partial', cls: 'bg-orange-500 text-white', soft: 'bg-orange-100 text-orange-800', plate: 'plate plate-partial' };
     case 'exempt':
-      return { label: 'Exempt', cls: 'bg-gray-400 text-white', soft: 'bg-gray-100 text-gray-700' };
+      return { label: 'Exempt', cls: 'bg-ink-mute/50 text-white', soft: 'bg-canvas text-ink-soft', plate: 'plate plate-exempt' };
     case 'unpaid':
-      return { label: 'Not paid', cls: 'bg-red-500 text-white', soft: 'bg-red-100 text-red-800' };
+      return { label: 'Not paid', cls: 'bg-due text-white', soft: 'bg-due-soft text-due', plate: 'plate plate-due' };
     default:
-      return { label: 'No due', cls: 'bg-gray-200 text-gray-600', soft: 'bg-gray-100 text-gray-500' };
+      return { label: 'No due', cls: 'bg-line text-ink-mute', soft: 'bg-canvas text-ink-mute', plate: 'plate plate-none' };
   }
 }
 

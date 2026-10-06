@@ -25,7 +25,7 @@ export default async function AdminCategories({ searchParams }: { searchParams: 
           <tbody>
             {(cats ?? []).map((c) => (
               <tr key={c.id} className={c.active ? '' : 'opacity-50'}>
-                <td>{c.icon}</td><td>{c.name} <span className="text-gray-400" dir="rtl">{c.name_ur}</span></td><td>{c.slug}</td><td>{c.grp}</td><td>{c.sort}</td>
+                <td>{c.icon}</td><td>{c.name} <span className="text-ink-mute" dir="rtl">{c.name_ur}</span></td><td>{c.slug}</td><td>{c.grp}</td><td>{c.sort}</td>
                 <td>
                   <form action={toggleCategory}>
                     <input type="hidden" name="id" value={c.id} />

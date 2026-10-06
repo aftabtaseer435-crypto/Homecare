@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { requireSocietyStaff } from '@/lib/auth';
+import SideNav from '@/components/SideNav';
 
 export default async function SocietyAdminLayout({ children, params }: { children: React.ReactNode; params: { sid: string } }) {
   const { supabase, role } = await requireSocietyStaff(params.sid);
   const { data: society } = await supabase.from('societies').select('name, city').eq('id', params.sid).single();
   const base = `/s/${params.sid}`;
-  const tabs = [
-    { href: base, label: 'Overview' },
+  const items = [
+    { href: base, label: 'Overview', exact: true },
     { href: `${base}/reminders`, label: 'WhatsApp reminders' },
     { href: `${base}/payments`, label: 'Payments' },
     { href: `${base}/defaulters`, label: 'Defaulters' },
@@ -22,19 +23,17 @@ export default async function SocietyAdminLayout({ children, params }: { childre
     { href: `${base}/messages`, label: 'Message log' },
   ];
   return (
-    <div>
-      <div className="mb-4">
-        <div className="muted">Society admin · {role === 'admin' ? 'Admin' : 'Collector'}</div>
-        <h1>{society?.name} <span className="text-base font-normal text-gray-500">{society?.city}</span></h1>
-      </div>
-      <nav className="mb-6 flex gap-1 overflow-x-auto border-b border-gray-200">
-        {tabs.map((t) => (
-          <Link key={t.href} href={t.href} className="whitespace-nowrap rounded-t-lg px-3 py-2 text-sm font-medium text-gray-600 no-underline hover:bg-white hover:text-brand-700">
-            {t.label}
-          </Link>
-        ))}
-      </nav>
-      {children}
+    <div className="grid gap-6 md:grid-cols-[13rem_1fr] md:gap-8">
+      <aside className="space-y-4 md:sticky md:top-24 md:self-start">
+        <div className="rounded-2xl bg-brand-800 p-4 text-white">
+          <div className="text-xs font-semibold text-brand-200">{role === 'admin' ? 'Society admin' : 'Collector'}</div>
+          <div className="mt-0.5 font-display text-lg font-bold leading-snug">{society?.name}</div>
+          <div className="text-sm text-brand-100">{society?.city}</div>
+        </div>
+        <SideNav items={items} label="Society admin" />
+        <Link href="/guides/society-admin" className="hidden px-3.5 text-sm font-semibold md:block">Admin guide</Link>
+      </aside>
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }

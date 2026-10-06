@@ -31,7 +31,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
     <div className="mx-auto max-w-3xl space-y-6">
       <Flash searchParams={searchParams} />
       {prov.status !== 'verified' && (
-        <div className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800">Yeh profile abhi public nahi (status: {prov.status}). Admin verify karega.</div>
+        <div className="rounded-lg bg-plate-soft p-3 text-sm text-plate-ink">Yeh profile abhi public nahi (status: {prov.status}). Admin verify karega.</div>
       )}
       <div className="card flex flex-col gap-5 sm:flex-row">
         {prov.photo_path ? (
@@ -42,13 +42,13 @@ export default async function ProviderProfile({ params, searchParams }: { params
         <div className="flex-1 space-y-2">
           <h1>{prov.display_name}</h1>
           <div className="flex flex-wrap gap-2">
-            {prov.status === 'verified' && <span className="badge bg-green-100 text-green-800">✓ CNIC Verified</span>}
-            {!prov.available && <span className="badge bg-gray-100 text-gray-600">Abhi busy</span>}
+            {prov.status === 'verified' && <span className="badge bg-paid-soft text-paid">✓ CNIC Verified</span>}
+            {!prov.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
             <Stars value={Number(prov.rating_avg)} count={prov.rating_count} />
           </div>
           <div className="flex flex-wrap gap-2">
             {prov.provider_categories.map((c: any) => (
-              <Link key={c.category.slug} href={`/services/${c.category.slug}`} className="badge bg-gray-100 text-gray-700 no-underline">{c.category.icon} {c.category.name}</Link>
+              <Link key={c.category.slug} href={`/services/${c.category.slug}`} className="badge bg-canvas text-ink-soft no-underline">{c.category.icon} {c.category.name}</Link>
             ))}
           </div>
           <div className="muted">
@@ -56,7 +56,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
             {prov.experience_years ? ` · ${prov.experience_years} saal tajurba` : ''}
           </div>
           {prov.rate_note && <div className="text-sm"><b>Rates:</b> {prov.rate_note}</div>}
-          <div className="text-sm text-gray-600">{displayPhone(prov.phone)}</div>
+          <div className="text-sm text-ink-soft">{displayPhone(prov.phone)}</div>
           <div className="pt-2">
             <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number SocietyHub se mila. Mujhe kaam karwana hai." />
           </div>
@@ -74,7 +74,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
         <div className="card">
           <h2 className="mb-2">In societies mein kaam karta hai</h2>
           <div className="flex flex-wrap gap-2">
-            {prov.provider_societies.map((s: any, i: number) => <span key={i} className="badge bg-blue-50 text-blue-800">{s.society?.name}</span>)}
+            {prov.provider_societies.map((s: any, i: number) => <span key={i} className="badge bg-brand-50 text-brand-700">{s.society?.name}</span>)}
           </div>
         </div>
       )}
@@ -82,7 +82,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
       <div className="card">
         <h2 className="mb-3">Reviews ({prov.rating_count})</h2>
         {user && contacted && (
-          <form action={submitReview} className="mb-5 space-y-2 rounded-lg bg-gray-50 p-3">
+          <form action={submitReview} className="mb-5 space-y-2 rounded-lg bg-canvas p-3">
             <input type="hidden" name="provider_id" value={prov.id} />
             <div className="flex items-center gap-3 text-sm">
               <span>Aap ka review:</span>
@@ -100,7 +100,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
         ) : (
           <ul className="space-y-3">
             {(reviews ?? []).map((r) => (
-              <li key={r.id} className="border-b border-gray-100 pb-3">
+              <li key={r.id} className="border-b border-line pb-3">
                 <Stars value={r.stars} /> <span className="muted ml-2">{fmtDate(r.created_at)}</span>
                 {r.comment && <p className="mt-1 text-sm">{r.comment}</p>}
               </li>
@@ -111,7 +111,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
 
       {user && user.id !== prov.user_id && (
         <details className="card">
-          <summary className="cursor-pointer text-sm text-gray-600">Shikayat / report karein</summary>
+          <summary className="cursor-pointer text-sm text-ink-soft">Shikayat / report karein</summary>
           <form action={submitComplaint} className="mt-3 space-y-2">
             <input type="hidden" name="provider_id" value={prov.id} />
             <textarea name="reason" rows={3} className="input" required placeholder="Kya masla hua?" />

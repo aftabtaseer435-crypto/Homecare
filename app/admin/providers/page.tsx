@@ -37,7 +37,7 @@ export default async function AdminProviders({ searchParams }: { searchParams: {
       <Flash searchParams={searchParams} />
       <div className="flex gap-2">
         {['pending', 'verified', 'suspended', 'rejected'].map((s) => (
-          <Link key={s} href={`?status=${s}`} className={`badge px-3 py-1 no-underline ${s === status ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700'}`}>{s}</Link>
+          <Link key={s} href={`?status=${s}`} className={`badge px-3 py-1 no-underline ${s === status ? 'bg-ink text-white' : 'bg-canvas text-ink-soft'}`}>{s}</Link>
         ))}
       </div>
       <div className="card">

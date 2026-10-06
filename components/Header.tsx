@@ -1,34 +1,35 @@
 import Link from 'next/link';
 import { getSession } from '@/lib/auth';
+import Logo from './Logo';
+import NavLinks from './NavLinks';
 
 export default async function Header() {
   const { user, profile } = await getSession();
   const appName = process.env.NEXT_PUBLIC_APP_NAME || 'SocietyHub';
+  const initials = (profile?.full_name ?? '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+
   return (
-    <header className="border-b border-gray-200 bg-white">
-      <div className="container-app flex flex-wrap items-center gap-x-5 gap-y-2 py-3">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-brand-700 no-underline">
-          <img src="/icon.svg" alt="" className="h-7 w-7" />
-          {appName}
-        </Link>
-        <nav className="flex flex-1 flex-wrap items-center gap-4 text-sm">
-          <Link href="/services" className="text-gray-700 no-underline hover:text-brand-700">Services</Link>
-          <Link href="/properties" className="text-gray-700 no-underline hover:text-brand-700">Rent / Sale</Link>
-          <Link href="/societies/join" className="text-gray-700 no-underline hover:text-brand-700">Meri Society</Link>
-          {profile?.is_super_admin && (
-            <Link href="/admin" className="text-gray-700 no-underline hover:text-brand-700">Super Admin</Link>
+    <header className="sticky top-0 z-30 border-b border-line/80 bg-canvas/85 backdrop-blur">
+      <div className="container-app flex h-16 items-center gap-6">
+        <Logo name={appName} />
+        <NavLinks superAdmin={!!profile?.is_super_admin} />
+        <div className="ml-auto flex items-center gap-2">
+          {user ? (
+            <>
+              <Link href="/dashboard" className="flex items-center gap-2 rounded-full border border-line bg-white py-1 pl-1 pr-3 text-sm font-semibold text-ink no-underline hover:border-ink/30 hover:no-underline">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">{initials}</span>
+                <span className="hidden max-w-[10rem] truncate sm:inline">{profile?.full_name || 'Mera account'}</span>
+              </Link>
+              <form action="/auth/signout" method="post" className="hidden md:block">
+                <button className="btn-ghost">Logout</button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="btn">Login</Link>
+            </>
           )}
-        </nav>
-        {user ? (
-          <div className="flex items-center gap-3 text-sm">
-            <Link href="/dashboard" className="btn-outline btn-sm">{profile?.full_name || 'Dashboard'}</Link>
-            <form action="/auth/signout" method="post">
-              <button className="text-gray-500 hover:text-red-600">Logout</button>
-            </form>
-          </div>
-        ) : (
-          <Link href="/login" className="btn btn-sm">Login</Link>
-        )}
+        </div>
       </div>
     </header>
   );

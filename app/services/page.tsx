@@ -27,10 +27,10 @@ export default async function Services() {
             <h2 className="mb-3">{grp}</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
               {list.map((c) => (
-                <Link key={c.id} href={`/services/${c.slug}`} className="card flex flex-col items-center gap-1 py-5 text-center no-underline hover:border-brand-500">
-                  <span className="text-3xl">{c.icon}</span>
-                  <span className="font-semibold text-gray-900">{c.name}</span>
-                  {c.name_ur && <span className="text-sm text-gray-500" dir="rtl">{c.name_ur}</span>}
+                <Link key={c.id} href={`/services/${c.slug}`} className="group flex flex-col items-start gap-3 rounded-2xl border border-line bg-white p-4 no-underline hover:border-brand-500 hover:no-underline">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-canvas text-2xl group-hover:bg-brand-50">{c.icon}</span>
+                  <span><span className="block font-semibold text-ink">{c.name}</span>
+                  {c.name_ur && <span className="block text-sm text-ink-mute" dir="rtl">{c.name_ur}</span>}</span>
                 </Link>
               ))}
             </div>
