@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { areaFilter, requireAgent } from '@/lib/agent';
+import { inAreas, requireAgent } from '@/lib/agent';
 import { Flash } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
 import { fetchAll } from '@/lib/fetchAll';
@@ -16,9 +16,9 @@ export default async function AgentHouses({ params, searchParams }: { params: { 
   const { supabase, areas } = await requireAgent(params.sid);
   const sid = params.sid;
 
-  const houses = await fetchAll<any>((from, to) =>
-    supabase.from('houses').select('id, block, street, house_no, occupancy').eq('society_id', sid).or(areaFilter(areas)).order('id').range(from, to),
-  );
+  const houses = (await fetchAll<any>((from, to) =>
+    supabase.from('houses').select('id, block, street, house_no, occupancy').eq('society_id', sid).order('id').range(from, to),
+  )).filter((h) => inAreas(areas, h.block, h.street));
   const galis = Array.from(new Map(houses.map((h) => [`${h.block}|${h.street}`, { block: h.block, street: h.street }])).values())
     .sort((a, b) => natural(a.block, b.block) || natural(a.street, b.street));
   const sel = galis.find((g) => g.street === searchParams.street && g.block === (searchParams.block ?? g.block)) ?? galis[0];

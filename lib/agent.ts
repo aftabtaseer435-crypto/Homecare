@@ -19,12 +19,9 @@ export async function requireAgent(sid: string) {
   return { ...s, areas, society };
 }
 
-/** PostgREST `or` filter matching houses / issues inside the agent's areas. */
-export function areaFilter(areas: AgentArea[]) {
-  const q = (v: string) => `"${v.replace(/"/g, '')}"`;
-  return areas
-    .map((a) => (a.street ? `and(block.eq.${q(a.block)},street.eq.${q(a.street)})` : `block.eq.${q(a.block)}`))
-    .join(',');
+/** Is a house / issue (block, street) inside one of the agent's areas? */
+export function inAreas(areas: AgentArea[], block: string | null | undefined, street: string | null | undefined) {
+  return areas.some((a) => a.block === (block ?? '') && (!a.street || a.street === street));
 }
 
 export function areaLabel(a: AgentArea) {

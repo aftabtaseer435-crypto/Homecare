@@ -48,8 +48,8 @@ export default async function IssuePage({ params, searchParams }: { params: { id
   const isAdmin = !!adminHere;
   const canWork = isAgent || isAdmin;
   const agentList = (agents ?? []) as any[];
-  const agent = agentList.find((a) => a.user_id === i.assigned_to) ?? agentList[0];
-  const agentIds = new Set(agentList.map((a) => a.user_id).concat(i.assigned_to ? [i.assigned_to] : []));
+  const agent = agentList.find((a) => a.user_id && a.user_id === i.assigned_to) ?? agentList[0];
+  const agentIds = new Set(agentList.map((a) => a.user_id).filter(Boolean).concat(i.assigned_to ? [i.assigned_to] : []));
   const signed = await signPaths([i.photo_path, i.resolution_photo_path, ...((updates ?? []) as any[]).map((u) => u.photo_path)]);
   const link = appUrl(`/welfare/issues/${i.id}`);
   const ownerName = owner?.owner_name ?? 'Resident';

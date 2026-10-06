@@ -6,7 +6,8 @@ import { CategoryChip, IssueStatusBadge } from '@/components/IssueBadge';
 import { fmtDate, houseLabel } from '@/lib/format';
 import { natural } from '@/lib/societyData';
 import { hoursLeft, openStatuses } from '@/lib/welfare';
-import { addAgent, removeAgent } from '../actions';
+import { addAgent, removeAgent, updateAgent } from '../actions';
+import { displayPhone } from '@/lib/phone';
 
 export default async function WelfareAdmin({ params, searchParams }: { params: { sid: string }; searchParams: { tab?: string; ok?: string; err?: string } }) {
   const { supabase } = await requireSocietyStaff(params.sid, true);
@@ -15,7 +16,7 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
 
   const [{ data: pairs }, { data: agentRows }, { data: stats }, { data: issues }] = await Promise.all([
     supabase.rpc('house_streets', { p_society: sid }),
-    supabase.from('welfare_agents').select('id, user_id, block, street, active').eq('society_id', sid).eq('active', true),
+    supabase.from('welfare_agents').select('id, user_id, name, phone, block, street, active').eq('society_id', sid).eq('active', true),
     supabase.rpc('welfare_agent_stats', { sid }),
     supabase
       .from('welfare_issues')
@@ -24,7 +25,9 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
       .order('created_at', { ascending: false })
       .limit(500),
   ]);
-  const statMap = new Map(((stats ?? []) as any[]).map((s) => [s.user_id, s]));
+  const statMap = new Map(((stats ?? []) as any[]).map((s) => [s.agent_id, s]));
+  const nameOfUser = new Map(((agentRows ?? []) as any[]).filter((a) => a.user_id).map((a) => [a.user_id, a.name]));
+  const agentRowsSorted = ((agentRows ?? []) as any[]).sort((a, b) => natural(a.block, b.block) || natural(a.street ?? '', b.street ?? ''));
   const blocks = Array.from(new Set(((pairs ?? []) as any[]).map((p) => p.block))).sort(natural);
   const galisOf = (b: string) => ((pairs ?? []) as any[]).filter((p) => p.block === b).map((p) => p.street).sort(natural);
 
@@ -54,8 +57,12 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
       </div>
 
       <Section title="Welfare agents">
-        <form action={addAgent} className="mb-5 grid gap-3 rounded-xl bg-canvas p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+        <form action={addAgent} className="mb-5 grid gap-3 rounded-xl bg-canvas p-4 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
           <input type="hidden" name="sid" value={sid} />
+          <div>
+            <label className="label" htmlFor="name">Agent ka naam</label>
+            <input id="name" name="name" className="input" required placeholder="Welfare Agent 17" />
+          </div>
           <div>
             <label className="label" htmlFor="phone">Agent ka mobile</label>
             <input id="phone" name="phone" className="input" required placeholder="0300 1234567" />
@@ -72,27 +79,36 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
             </select>
           </div>
           <SubmitButton>Muqarrar karein</SubmitButton>
-          <p className="hint sm:col-span-3">Agent pehle apne number se app par login kare. Ek agent ko kai galiyan di ja sakti hain (dobara add karein).</p>
+          <p className="hint sm:col-span-4">Account ki zaroorat nahi — agent jab is number se pehli dafa login karega, us ka panel khud khul jayega. Ek agent ko kai galiyan di ja sakti hain.</p>
         </form>
 
         {(agentRows ?? []).length === 0 ? (
           <p className="muted">Abhi koi agent nahi.</p>
         ) : (
           <table className="table">
-            <thead><tr><th>Agent</th><th>Area</th><th>Khule</th><th>Late</th><th>Hal</th><th>Avg waqt</th><th>Rating</th><th>Check (30 din)</th><th></th></tr></thead>
+            <thead><tr><th>Area</th><th>Agent (naam / mobile)</th><th>App</th><th>Khule</th><th>Late</th><th>Hal</th><th>Avg</th><th>Rating</th><th>Check 30d</th><th></th></tr></thead>
             <tbody>
-              {((agentRows ?? []) as any[]).map((a) => {
-                const s = statMap.get(a.user_id);
+              {agentRowsSorted.map((a) => {
+                const st = statMap.get(a.id);
                 return (
                   <tr key={a.id}>
-                    <td className="font-bold">{s?.name ?? '—'}</td>
-                    <td>{a.block ? `Block ${a.block}, ` : ''}{a.street ? `Gali ${a.street}` : 'poora block'}</td>
-                    <td>{s?.open ?? 0}</td>
-                    <td className={s?.overdue ? 'font-bold text-due-ink' : ''}>{s?.overdue ?? 0}</td>
-                    <td>{s?.resolved ?? 0}</td>
-                    <td>{s?.avg_hours != null ? `${s.avg_hours} h` : '—'}</td>
-                    <td>{s?.avg_rating ? `${s.avg_rating}★` : '—'}</td>
-                    <td>{s?.visits_30d ?? 0}</td>
+                    <td className="whitespace-nowrap font-bold">{a.block ? `Block ${a.block}, ` : ''}{a.street ? `Gali ${a.street}` : 'poora block'}</td>
+                    <td>
+                      <form action={updateAgent} className="flex min-w-[16rem] gap-1.5">
+                        <input type="hidden" name="sid" value={sid} />
+                        <input type="hidden" name="agent_row" value={a.id} />
+                        <input name="name" defaultValue={a.name ?? ''} className="input py-1.5 text-sm" aria-label="Naam" required />
+                        <input name="phone" defaultValue={displayPhone(a.phone)} className="input w-36 py-1.5 text-sm" aria-label="Mobile" required />
+                        <SubmitButton className="btn-outline btn-sm">Save</SubmitButton>
+                      </form>
+                    </td>
+                    <td>{a.user_id ? <span className="badge bg-paid-soft text-paid-ink">Active</span> : <span className="badge bg-plate-soft text-plate-ink">Login baqi</span>}</td>
+                    <td>{st?.open ?? 0}</td>
+                    <td className={st?.overdue ? 'font-bold text-due-ink' : ''}>{st?.overdue ?? 0}</td>
+                    <td>{st?.resolved ?? 0}</td>
+                    <td>{st?.avg_hours != null ? `${st.avg_hours}h` : '—'}</td>
+                    <td>{st?.avg_rating ? `${st.avg_rating}★` : '—'}</td>
+                    <td>{st?.visits_30d ?? 0}</td>
                     <td>
                       <form action={removeAgent}>
                         <input type="hidden" name="sid" value={sid} />
@@ -115,7 +131,7 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
 
       <section>
         <nav className="mb-3 flex gap-2 overflow-x-auto" aria-label="Filter">
-          {[['open', `Khule (${open.length})`], ['overdue', `Late (${overdue.length})`], ['unassigned', `Bina agent (${unassigned.length})`], ['all', 'Sab']].map(([id, label]) => (
+          {[['open', `Khule (${open.length})`], ['overdue', `Late (${overdue.length})`], ['unassigned', `Agent ke baghair (${unassigned.length})`], ['all', 'Sab']].map(([id, label]) => (
             <Link key={id} href={`?tab=${id}`} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${tab === id ? 'bg-ink text-white' : 'bg-white text-ink-soft'}`}>{label}</Link>
           ))}
         </nav>
@@ -129,7 +145,7 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
                   <span className="plate h-7 px-2 text-[11px]">{i.ref_no}</span>
                   <div className="min-w-[12rem] flex-1">
                     <CategoryChip id={i.category} />
-                    <div className="text-xs text-ink-mute">{houseLabel(i.house)} · {fmtDate(i.created_at)}{!i.assigned_to ? ' · bina agent' : ` · ${statMap.get(i.assigned_to)?.name ?? 'agent'}`}</div>
+                    <div className="text-xs text-ink-mute">{houseLabel(i.house)} · {fmtDate(i.created_at)}{!i.assigned_to ? ' · agent ne abhi login nahi kiya' : ` · ${nameOfUser.get(i.assigned_to) ?? 'agent'}`}</div>
                   </div>
                   {left !== null && <span className={`text-xs font-bold ${left < 0 ? 'text-due-ink' : 'text-ink-soft'}`}>{left < 0 ? `${Math.abs(left)}h late` : `${left}h baqi`}</span>}
                   <IssueStatusBadge status={i.status} />

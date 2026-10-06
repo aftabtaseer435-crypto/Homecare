@@ -133,7 +133,7 @@ export default async function Hisaab({ params, searchParams }: { params: { sid: 
             <thead><tr><th>Agent</th><th>Area</th><th>Hal</th><th>Khule</th><th>Late</th><th>Avg waqt</th><th>Rating</th></tr></thead>
             <tbody>
               {((stats ?? []) as any[]).map((s) => (
-                <tr key={s.user_id}>
+                <tr key={s.agent_id}>
                   <td className="font-bold">{s.name}</td>
                   <td>{s.area}</td>
                   <td className="text-paid-ink font-bold">{s.resolved}</td>

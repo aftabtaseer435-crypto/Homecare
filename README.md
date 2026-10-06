@@ -135,6 +135,18 @@ Maqsad: jo fund deta hai usay pata ho paisa kahan aur kitna laga, aur gali ka ha
 
 Database: `supabase/migrations/0004_welfare_accountability.sql` (pehli 3 files ke baad chalayein).
 
+## Pehli society: Al-Quraish Phase 1, Multan (test data)
+
+`supabase/seed/alquraish_phase1.sql` (0005 ke baad chalayein; dobara chalane se kuch duplicate nahi hota):
+- 16 galiyan × 75 ghar = 1,200 ghar
+- Welfare Agent 1 … 16 — har gali ka ek agent, mobile 0300-0000001 … 0300-0000016
+- Chairman Husnain Bhatti — society admin, mobile 0300-0000100 (asli number Team page se badlein)
+
+Agent / admin ko account banane ki zaroorat nahi: jab woh apne number se pehli dafa login karte hain, panel khud khul jata hai (`0005_invites_by_phone.sql`).
+
+Testing ke liye Supabase → Authentication → Phone → Test Phone Numbers mein yeh numbers daalein (sab ka OTP 123456):
+`923000000001=123456,923000000002=123456,…,923000000016=123456,923000000100=123456`
+
 ## Rozana Hadees (header ke upar)
 
 `lib/hadith.ts` mein 200 ahadith (Urdu tarjuma) hain — Sahih Bukhari, Sahih Muslim, aur Sunan Tirmidhi / Abu Dawud / Ibn Majah ki woh riwayat jinhein har grader ne Sahih ya Hasan kaha hai, reference number ke sath. Pakistan ki tareekh ke hisaab se roz ek nayi hadees aati hai (200 din ka cycle). Launch se pehle kisi aalim se ek nazar review karwa lein; koi hadees badalni ho to isi file mein text badal dein.

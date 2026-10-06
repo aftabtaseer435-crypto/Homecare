@@ -283,8 +283,13 @@ export async function addMember(fd: FormData) {
   if (!phone) back(`/s/${sid}/team`, 'err', 'Mobile number sahi nahi');
   const admin = createAdminClient();
   const { data: prof } = await admin.from('profiles').select('id').eq('phone', phone!).maybeSingle();
-  if (!prof) back(`/s/${sid}/team`, 'err', 'Is number ka account nahi mila. Pehle woh app par login kare.');
   const role = str(fd, 'role') === 'admin' ? 'admin' : 'collector';
+  if (!prof) {
+    const { supabase } = await requireSocietyStaff(sid, true);
+    const { error } = await supabase.from('society_member_invites').upsert({ society_id: sid, phone: phone!, name: str(fd, 'name') || null, role }, { onConflict: 'society_id,phone' });
+    if (error) back(`/s/${sid}/team`, 'err', error.message);
+    back(`/s/${sid}/team`, 'ok', 'Invite save ho gaya — jab woh is number se pehli dafa login karega, khud team mein aa jayega.');
+  }
   const { error } = await admin.from('society_members').upsert({ society_id: sid, user_id: prof!.id, role });
   if (error) back(`/s/${sid}/team`, 'err', error.message);
   back(`/s/${sid}/team`, 'ok', 'Team member add ho gaya');
@@ -307,15 +312,32 @@ export async function addAgent(fd: FormData) {
   const path = `/s/${sid}/welfare`;
   const phone = normalizePhone(str(fd, 'phone'));
   if (!phone) back(path, 'err', 'Mobile number sahi nahi');
-  const admin = createAdminClient();
-  const { data: prof } = await admin.from('profiles').select('id').eq('phone', phone!).maybeSingle();
-  if (!prof) back(path, 'err', 'Is number ka account nahi mila. Agent pehle is number se app par login kare, phir add karein.');
+  const name = str(fd, 'name');
+  if (!name) back(path, 'err', 'Agent ka naam likhein');
+  // Linked now if this number already has an account, otherwise on first login
+  const { data: prof } = await createAdminClient().from('profiles').select('id').eq('phone', phone!).maybeSingle();
   const [block, street] = str(fd, 'area').split('|');
   const { error } = await supabase.from('welfare_agents').insert({
-    society_id: sid, user_id: prof!.id, block: block ?? '', street: street ? street : null,
+    society_id: sid, user_id: prof?.id ?? null, name, phone, block: block ?? '', street: street ? street : null,
   });
   if (error) back(path, 'err', error.code === '23505' ? 'Yeh agent is area mein pehle se hai' : error.message);
-  back(path, 'ok', 'Welfare agent muqarrar ho gaya. Ab is area ke naye masle usay jayenge.');
+  back(path, 'ok', prof ? 'Agent muqarrar ho gaya.' : 'Agent muqarrar ho gaya. Jab woh is number se pehli dafa login karega, panel khud khul jayega.');
+}
+
+export async function updateAgent(fd: FormData) {
+  const sid = sidOf(fd);
+  const { supabase } = await requireSocietyStaff(sid, true);
+  const path = `/s/${sid}/welfare`;
+  const phone = normalizePhone(str(fd, 'phone'));
+  if (!phone) back(path, 'err', 'Mobile number sahi nahi');
+  const { data: prof } = await createAdminClient().from('profiles').select('id').eq('phone', phone!).maybeSingle();
+  const { error } = await supabase
+    .from('welfare_agents')
+    .update({ name: str(fd, 'name'), phone, user_id: prof?.id ?? null })
+    .eq('id', str(fd, 'agent_row'))
+    .eq('society_id', sid);
+  if (error) back(path, 'err', error.code === '23505' ? 'Yeh number is area mein pehle se hai' : error.message);
+  back(path, 'ok', 'Agent update ho gaya');
 }
 
 export async function removeAgent(fd: FormData) {
@@ -361,4 +383,11 @@ export async function reviewExpense(fd: FormData) {
   if (error) back(`/s/${sid}/kharcha`, 'err', error.message);
   revalidatePath(`/hisaab/${sid}`);
   back(`/s/${sid}/kharcha`, 'ok', approve ? 'Approved — hisaab mein shamil' : 'Reject kar diya');
+}
+
+export async function removeInvite(fd: FormData) {
+  const sid = sidOf(fd);
+  const { supabase } = await requireSocietyStaff(sid, true);
+  await supabase.from('society_member_invites').delete().eq('id', str(fd, 'invite_id')).eq('society_id', sid);
+  back(`/s/${sid}/team`, 'ok', 'Invite hata diya');
 }

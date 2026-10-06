@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { requireAgent, areaFilter } from '@/lib/agent';
+import { inAreas, requireAgent } from '@/lib/agent';
+import { fetchAll } from '@/lib/fetchAll';
 import { Empty, Flash, Stat } from '@/components/ui';
 import { CategoryChip, IssueStatusBadge } from '@/components/IssueBadge';
 import { fmtDate, houseLabel } from '@/lib/format';
@@ -9,17 +10,18 @@ export default async function AgentIssues({ params, searchParams }: { params: { 
   const { supabase, user, areas } = await requireAgent(params.sid);
   const tab = searchParams.tab ?? 'open';
 
-  const [{ data: issues }, { data: stats }] = await Promise.all([
-    supabase
-      .from('welfare_issues')
-      .select('id, ref_no, category, title, status, due_at, created_at, scope, house:houses(block, street, house_no), supporters:welfare_issue_supporters(count)')
-      .eq('society_id', params.sid)
-      .or(areaFilter(areas))
-      .order('created_at', { ascending: false })
-      .limit(500),
+  const [issues, { data: stats }] = await Promise.all([
+    fetchAll<any>((from, to) =>
+      supabase
+        .from('welfare_issues')
+        .select('id, ref_no, category, title, status, due_at, created_at, scope, block, street, house:houses(block, street, house_no), supporters:welfare_issue_supporters(count)')
+        .eq('society_id', params.sid)
+        .order('created_at', { ascending: false })
+        .range(from, to),
+    ),
     supabase.rpc('welfare_agent_stats', { sid: params.sid }),
   ]);
-  const all = (issues ?? []) as any[];
+  const all = issues.filter((i) => inAreas(areas, i.block, i.street));
   const now = Date.now();
   const open = all.filter((i) => openStatuses.includes(i.status));
   const overdue = open.filter((i) => i.due_at && Date.parse(i.due_at) < now);
