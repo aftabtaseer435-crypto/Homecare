@@ -1,0 +1,85 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { createClient } from '@/lib/supabase/server';
+import { back, num, str } from '@/lib/actions';
+import { normalizePhone } from '@/lib/phone';
+import { uploadFile } from '@/lib/upload';
+
+async function saveLinks(supabase: ReturnType<typeof createClient>, providerId: string, fd: FormData) {
+  const cats = fd.getAll('categories').map(String);
+  const socs = fd.getAll('societies').map(String);
+  await supabase.from('provider_categories').delete().eq('provider_id', providerId);
+  if (cats.length) await supabase.from('provider_categories').insert(cats.map((category_id) => ({ provider_id: providerId, category_id })));
+  await supabase.from('provider_societies').delete().eq('provider_id', providerId);
+  if (socs.length) await supabase.from('provider_societies').insert(socs.map((society_id) => ({ provider_id: providerId, society_id })));
+}
+
+function fields(fd: FormData) {
+  return {
+    display_name: str(fd, 'display_name'),
+    city: str(fd, 'city'),
+    phone: normalizePhone(str(fd, 'phone')),
+    whatsapp: normalizePhone(str(fd, 'whatsapp')),
+    experience_years: num(fd, 'experience_years'),
+    rate_note: str(fd, 'rate_note') || null,
+    area_note: str(fd, 'area_note') || null,
+    bio: str(fd, 'bio') || null,
+  };
+}
+
+export async function registerProvider(fd: FormData) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) back('/login?next=/provider/register', 'err', 'Pehle login karein');
+  const f = fields(fd);
+  if (!f.phone) back('/provider/register', 'err', 'Mobile number sahi nahi');
+  if (fd.getAll('categories').length === 0) back('/provider/register', 'err', 'Kam az kam ek kaam choose karein');
+
+  let photo_path: string | null = null, cnic_front_path: string | null = null, cnic_back_path: string | null = null;
+  try {
+    photo_path = await uploadFile(supabase, 'public-media', user!.id, 'provider', fd.get('photo'));
+    cnic_front_path = await uploadFile(supabase, 'private-docs', user!.id, 'cnic', fd.get('cnic_front'));
+    cnic_back_path = await uploadFile(supabase, 'private-docs', user!.id, 'cnic', fd.get('cnic_back'));
+  } catch (e) {
+    back('/provider/register', 'err', (e as Error).message);
+  }
+
+  const { data: p, error } = await supabase
+    .from('providers')
+    .insert({ ...f, phone: f.phone!, user_id: user!.id, photo_path, cnic_front_path, cnic_back_path })
+    .select('id')
+    .single();
+  if (error) back('/provider/register', 'err', error.code === '23505' ? 'Aap ki provider profile pehle se bani hui hai.' : error.message);
+  await saveLinks(supabase, p!.id, fd);
+  back('/provider/dashboard', 'ok', 'Profile ban gayi! Admin CNIC verify karega, phir aap list mein nazar aayenge.');
+}
+
+export async function updateProvider(fd: FormData) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) back('/login', 'err', 'Pehle login karein');
+  const { data: prov } = await supabase.from('providers').select('id').eq('user_id', user!.id).single();
+  if (!prov) back('/provider/register', 'err', 'Pehle register karein');
+  const f = fields(fd);
+  if (!f.phone) back('/provider/dashboard', 'err', 'Mobile number sahi nahi');
+  let photo_path: string | null = null;
+  try {
+    photo_path = await uploadFile(supabase, 'public-media', user!.id, 'provider', fd.get('photo'));
+  } catch (e) {
+    back('/provider/dashboard', 'err', (e as Error).message);
+  }
+  const { error } = await supabase.from('providers').update({ ...f, phone: f.phone!, ...(photo_path ? { photo_path } : {}) }).eq('id', prov!.id);
+  if (error) back('/provider/dashboard', 'err', error.message);
+  await saveLinks(supabase, prov!.id, fd);
+  revalidatePath(`/providers/${prov!.id}`);
+  back('/provider/dashboard', 'ok', 'Profile update ho gayi');
+}
+
+export async function setAvailability(fd: FormData) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) back('/login', 'err', 'Pehle login karein');
+  await supabase.from('providers').update({ available: str(fd, 'available') === 'true' }).eq('user_id', user!.id);
+  back('/provider/dashboard', 'ok', 'Status update ho gaya');
+}

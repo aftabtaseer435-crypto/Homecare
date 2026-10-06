@@ -1,0 +1,123 @@
+import { requireSocietyStaff } from '@/lib/auth';
+import { Flash } from '@/components/ui';
+import SubmitButton from '@/components/SubmitButton';
+import { displayPhone } from '@/lib/phone';
+import { fmtDate, houseLabel } from '@/lib/format';
+import { fetchAll } from '@/lib/fetchAll';
+import { addOwner, removeOwner, setOwnerStatus } from '../actions';
+
+export default async function Owners({
+  params,
+  searchParams,
+}: {
+  params: { sid: string };
+  searchParams: { q?: string; ok?: string; err?: string };
+}) {
+  const { supabase, role } = await requireSocietyStaff(params.sid);
+  const owners = await fetchAll<any>((from, to) =>
+    supabase
+      .from('house_owners')
+      .select('id, owner_name, owner_phone, status, user_id, created_at, house:houses!inner(id, society_id, block, street, house_no)')
+      .eq('house.society_id', params.sid)
+      .order('created_at', { ascending: false })
+      .range(from, to),
+  );
+  const pending = owners.filter((o) => o.status === 'pending');
+  const q = (searchParams.q ?? '').toLowerCase().trim();
+  const verified = owners
+    .filter((o) => o.status === 'verified')
+    .filter((o) => !q || o.owner_name.toLowerCase().includes(q) || o.owner_phone.includes(q) || `${o.house.street}-${o.house.house_no}`.includes(q));
+
+  // houses with more than one claim → conflict
+  const claimCount = new Map<string, number>();
+  for (const o of owners) if (o.status !== 'rejected') claimCount.set(o.house.id, (claimCount.get(o.house.id) ?? 0) + 1);
+
+  return (
+    <div className="space-y-6">
+      <Flash searchParams={searchParams} />
+
+      <section className="card">
+        <h2 className="mb-3">Approval ke liye ({pending.length})</h2>
+        {pending.length === 0 ? (
+          <p className="muted">Koi pending request nahi.</p>
+        ) : (
+          <table className="table">
+            <thead><tr><th>Owner</th><th>Mobile</th><th>Ghar</th><th>Date</th><th></th></tr></thead>
+            <tbody>
+              {pending.map((o) => (
+                <tr key={o.id}>
+                  <td>{o.owner_name}{(claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-red-100 text-red-700">Conflict: is ghar ke aur claims bhi hain</span>}</td>
+                  <td>{displayPhone(o.owner_phone)}</td>
+                  <td>{houseLabel(o.house)}</td>
+                  <td>{fmtDate(o.created_at)}</td>
+                  <td className="flex gap-2">
+                    <form action={setOwnerStatus}>
+                      <input type="hidden" name="sid" value={params.sid} />
+                      <input type="hidden" name="owner_id" value={o.id} />
+                      <input type="hidden" name="status" value="verified" />
+                      <SubmitButton className="btn btn-sm">Approve</SubmitButton>
+                    </form>
+                    <form action={setOwnerStatus}>
+                      <input type="hidden" name="sid" value={params.sid} />
+                      <input type="hidden" name="owner_id" value={o.id} />
+                      <input type="hidden" name="status" value="rejected" />
+                      <SubmitButton className="btn-outline btn-sm">Reject</SubmitButton>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      <form action={addOwner} className="card grid gap-3 md:grid-cols-6">
+        <h2 className="md:col-span-6">Owner khud add karein</h2>
+        <p className="muted md:col-span-6">Jo owner app use nahi karta uska record bhi bana sakte hain — WhatsApp reminders isi number par jayenge.</p>
+        <input type="hidden" name="sid" value={params.sid} />
+        <div><label className="label">Block</label><input name="block" className="input" /></div>
+        <div><label className="label">Gali *</label><input name="street" className="input" required /></div>
+        <div><label className="label">Ghar *</label><input name="house_no" className="input" required /></div>
+        <div><label className="label">Owner naam *</label><input name="owner_name" className="input" required /></div>
+        <div><label className="label">Mobile *</label><input name="owner_phone" className="input" required placeholder="0300..." /></div>
+        <div className="flex items-end"><SubmitButton>Add</SubmitButton></div>
+        <label className="flex items-center gap-2 text-sm md:col-span-6">
+          <input type="checkbox" name="whatsapp_opt_in" defaultChecked /> Owner ne WhatsApp reminders ki ijazat di hai
+        </label>
+      </form>
+
+      <section className="card">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2>Verified owners ({verified.length})</h2>
+          <form className="flex gap-2">
+            <input name="q" defaultValue={searchParams.q} className="input" placeholder="Naam, number, gali-ghar (1-12)" />
+            <button className="btn-outline">Search</button>
+          </form>
+        </div>
+        <table className="table">
+          <thead><tr><th>Owner</th><th>Mobile</th><th>Ghar</th><th>App account</th><th></th></tr></thead>
+          <tbody>
+            {verified.slice(0, 300).map((o) => (
+              <tr key={o.id}>
+                <td>{o.owner_name}</td>
+                <td>{displayPhone(o.owner_phone)}</td>
+                <td>{houseLabel(o.house)}</td>
+                <td>{o.user_id ? <span className="badge bg-green-100 text-green-800">Linked</span> : <span className="badge bg-gray-100 text-gray-600">Not yet</span>}</td>
+                <td>
+                  {role === 'admin' && (
+                    <form action={removeOwner}>
+                      <input type="hidden" name="sid" value={params.sid} />
+                      <input type="hidden" name="owner_id" value={o.id} />
+                      <SubmitButton className="text-xs text-red-600" confirm="Owner remove karein?">Remove</SubmitButton>
+                    </form>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {verified.length > 300 && <p className="muted mt-2">Pehle 300 dikhaye gaye — search use karein.</p>}
+      </section>
+    </div>
+  );
+}
