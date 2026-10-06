@@ -7,6 +7,26 @@ import SubmitButton from '@/components/SubmitButton';
 import { fmtDate, storagePublicUrl } from '@/lib/format';
 import { displayPhone } from '@/lib/phone';
 import { submitComplaint, submitReview } from './actions';
+import { createPublicClient } from '@/lib/supabase/public';
+import { jsonLd, siteUrl } from '@/lib/seo';
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { data: p } = await createPublicClient()
+    .from('providers')
+    .select('display_name, city, area_note, rating_avg, rating_count, photo_path, provider_categories(category:service_categories(name))')
+    .eq('id', params.id)
+    .maybeSingle();
+  if (!p) return { title: 'Provider', robots: { index: false } };
+  const pr = p as any;
+  const cats = pr.provider_categories.map((c: any) => c.category?.name).filter(Boolean).join(', ');
+  const rating = pr.rating_count ? ` ${Number(pr.rating_avg).toFixed(1)}★ (${pr.rating_count} reviews).` : '';
+  return {
+    title: `${pr.display_name} — ${cats} in ${pr.city}`,
+    description: `${pr.display_name}: CNIC-verified ${cats} in ${pr.city}${pr.area_note ? `, ${pr.area_note}` : ''}.${rating} Seedha call ya WhatsApp karein.`,
+    alternates: { canonical: `/providers/${params.id}` },
+    openGraph: pr.photo_path ? { images: [storagePublicUrl(pr.photo_path)!] } : undefined,
+  };
+}
 
 export default async function ProviderProfile({ params, searchParams }: { params: { id: string }; searchParams: { ok?: string; err?: string } }) {
   const supabase = createClient();
@@ -27,22 +47,36 @@ export default async function ProviderProfile({ params, searchParams }: { params
   ]);
   const myReview = (reviews ?? []).find((r) => r.user_id === user?.id);
 
+  const ld = prov.status === 'verified' ? {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: prov.display_name,
+    url: `${siteUrl()}/providers/${prov.id}`,
+    telephone: '+' + prov.phone,
+    image: prov.photo_path ? storagePublicUrl(prov.photo_path) : undefined,
+    address: { '@type': 'PostalAddress', addressLocality: prov.city, addressCountry: 'PK' },
+    areaServed: prov.area_note || prov.city,
+    knowsAbout: prov.provider_categories.map((c: any) => c.category?.name),
+    ...(prov.rating_count > 0 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(prov.rating_avg), reviewCount: prov.rating_count } } : {}),
+  } : null;
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      {ld && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />}
       <Flash searchParams={searchParams} />
       {prov.status !== 'verified' && (
         <div className="rounded-lg bg-plate-soft p-3 text-sm text-plate-ink">Yeh profile abhi public nahi (status: {prov.status}). Admin verify karega.</div>
       )}
       <div className="card flex flex-col gap-5 sm:flex-row">
         {prov.photo_path ? (
-          <img src={storagePublicUrl(prov.photo_path)!} alt="" className="h-32 w-32 rounded-2xl object-cover" />
+          <img src={storagePublicUrl(prov.photo_path)!} alt={prov.display_name} className="h-32 w-32 rounded-2xl object-cover" />
         ) : (
           <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-brand-50 text-5xl">{prov.provider_categories[0]?.category?.icon ?? '🛠️'}</div>
         )}
         <div className="flex-1 space-y-2">
           <h1>{prov.display_name}</h1>
           <div className="flex flex-wrap gap-2">
-            {prov.status === 'verified' && <span className="badge bg-paid-soft text-paid">✓ CNIC Verified</span>}
+            {prov.status === 'verified' && <span className="badge bg-paid-soft text-paid-ink">✓ CNIC Verified</span>}
             {!prov.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
             <Stars value={Number(prov.rating_avg)} count={prov.rating_count} />
           </div>
@@ -91,7 +125,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
               </select>
             </div>
             <textarea name="comment" rows={2} defaultValue={myReview?.comment ?? ''} className="input" placeholder="Kaam kaisa raha?" />
-            <SubmitButton className="btn btn-sm">{myReview ? 'Review update' : 'Review dein'}</SubmitButton>
+            <SubmitButton className="btn bg-service hover:bg-service-ink btn-sm">{myReview ? 'Review update' : 'Review dein'}</SubmitButton>
           </form>
         )}
         {user && !contacted && <p className="muted mb-4">Call ya WhatsApp karne ke baad aap review de sakte hain.</p>}

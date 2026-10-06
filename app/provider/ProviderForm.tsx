@@ -64,7 +64,7 @@ export default function ProviderForm({
           <div><label className="label">CNIC back *</label><input name="cnic_back" type="file" accept="image/*" className="input" required /></div>
         </>
       )}
-      <div className="md:col-span-2"><SubmitButton>{isEdit ? 'Save' : 'Register karein'}</SubmitButton></div>
+      <div className="md:col-span-2"><SubmitButton className="btn bg-service hover:bg-service-ink">{isEdit ? 'Save' : 'Register karein'}</SubmitButton></div>
     </form>
   );
 }

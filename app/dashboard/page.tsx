@@ -39,16 +39,18 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
         <p className="mt-1 text-ink-mute">Aaj kya karna hai?</p>
       </div>
 
+      {/* ===== Society Fund ===== */}
+      <ModuleBlock tone="society" title="Society Fund" action={<Link href="/societies/join" className="btn-outline btn-sm">Ghar add karein</Link>}>
       {/* Society admin panels first for admins — that's their daily job */}
       {(staff ?? []).length > 0 && (
         <section>
-          <h2 className="mb-3">Meri societies (admin)</h2>
+          <h3 className="mb-3">Meri societies (admin panel)</h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(staff ?? []).map((m: any) => (
               <Link key={m.society.id} href={`/s/${m.society.id}`} className="group flex items-center gap-4 rounded-2xl bg-brand-800 p-5 text-white no-underline hover:bg-brand-900 hover:no-underline">
                 <div className="flex-1">
                   <div className="font-display text-lg font-bold">{m.society.name}</div>
-                  <div className="text-sm text-brand-100">{m.society.city} · {m.role === 'admin' ? 'Admin' : 'Collector'}</div>
+                  <div className="text-sm text-white/85">{m.society.city} · {m.role === 'admin' ? 'Admin' : 'Collector'}</div>
                 </div>
                 <span className="rounded-lg bg-white/15 px-3 py-1.5 text-sm font-semibold group-hover:bg-white/25">Panel kholein</span>
               </Link>
@@ -66,10 +68,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
 
       {/* Houses */}
       <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2>Mere ghar</h2>
-          <Link href="/societies/join" className="btn-outline btn-sm">Ghar add karein</Link>
-        </div>
+        <h3 className="mb-3">Mere ghar</h3>
         {(myOwners ?? []).length === 0 ? (
           <div className="rounded-2xl border border-dashed border-ink/20 bg-white/60 p-6">
             <p className="text-ink-soft">Abhi koi ghar add nahi. Apni society aur ghar number choose karein — admin approve karega to fund ka status yahan nazar aayega.</p>
@@ -103,7 +102,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
                           {d.status !== 'paid' && d.status !== 'exempt' ? (
                             <div className="mt-1"><span className="font-display text-2xl font-bold">{rs(balance)}</span> <span className="text-sm text-ink-mute">due {fmtDate(d.due_date)}</span></div>
                           ) : (
-                            <div className="mt-1 text-sm text-paid">Is period ka fund jama hai. Shukriya!</div>
+                            <div className="mt-1 text-sm text-paid-ink">Is period ka fund jama hai. Shukriya!</div>
                           )}
                         </div>
                         <Link href={`/my/houses/${o.house.id}`} className="btn-outline btn-sm">History aur payment</Link>
@@ -122,30 +121,62 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
         )}
       </section>
 
-      {/* Quick actions */}
-      <section>
-        <h2 className="mb-3">Aur kya kar sakte hain</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Action href="/services" title="Electrician, plumber, masi" body="Apne area ke verified log" />
-          <Action href={provider ? '/provider/dashboard' : '/provider/register'} title={provider ? 'Provider dashboard' : 'Provider banein'} body={provider ? `${provider.display_name} (${provider.status})` : 'Apna kaam list karein, free'} />
-          <Action href="/properties/new" title="Ghar rent / sale karein" body={`Meri listings: ${(listings ?? []).filter((l) => l.status === 'active').length} active`} sub={['Meri listings', '/my/listings']} />
-          <Action href="/societies/register" title="Society register karein" body="Committee ke liye free" />
+        {!(staff ?? []).length && !pendingReq && (
+          <p className="text-sm text-ink-mute">Committee member hain? <Link href="/societies/register">Apni society free register karein</Link>.</p>
+        )}
+      </ModuleBlock>
+
+      {/* ===== Home Services ===== */}
+      <ModuleBlock tone="services" title="Home Services">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Action href="/services" title="Service dhoondein" body="Electrician, plumber, masi, rickshaw — apne area ke verified log" />
+          <Action href={provider ? '/provider/dashboard' : '/provider/register'} title={provider ? 'Mera provider dashboard' : 'Provider banein'} body={provider ? `${provider.display_name} (${provider.status})` : 'Apna kaam list karein, free'} />
         </div>
-      </section>
+      </ModuleBlock>
+
+      {/* ===== Rent / Sale ===== */}
+      <ModuleBlock tone="property" title="Rent / Sale">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Action href="/properties" title="Ghar dekhein" body="Society-verified ghar rent aur sale" />
+          <Action href="/properties/new" title="Apna ghar list karein" body={`Meri listings: ${(listings ?? []).filter((l) => l.status === 'active').length} active`} sub={['Meri listings', '/my/listings']} />
+        </div>
+      </ModuleBlock>
 
       <div className="text-sm text-ink-mute">
         Madad chahiye? <Link href="/guides">Guides parhein</Link>
         <span className="mx-2">|</span>
-        <form action="/auth/signout" method="post" className="inline md:hidden"><button className="font-semibold text-due">Logout</button></form>
+        <form action="/auth/signout" method="post" className="inline lg:hidden"><button className="font-semibold text-due">Logout</button></form>
       </div>
     </div>
   );
 }
 
+const toneCls = {
+  society: { bar: 'bg-society', chip: 'bg-society-soft text-society-ink' },
+  services: { bar: 'bg-service', chip: 'bg-service-soft text-service-ink' },
+  property: { bar: 'bg-property', chip: 'bg-property-soft text-property-ink' },
+};
+
+function ModuleBlock({ tone, title, action, children }: { tone: keyof typeof toneCls; title: string; action?: React.ReactNode; children: React.ReactNode }) {
+  const t = toneCls[tone];
+  return (
+    <section className="overflow-hidden rounded-3xl border border-line bg-white" aria-label={title}>
+      <div className={`h-1.5 ${t.bar}`} aria-hidden="true" />
+      <div className="space-y-5 p-4 md:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className={`badge ${t.chip} px-3 py-1 text-sm`}>{title}</h2>
+          {action}
+        </div>
+        {children}
+      </div>
+    </section>
+  );
+}
+
 function Action({ href, title, body, sub }: { href: string; title: string; body: string; sub?: [string, string] }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-4">
-      <Link href={href} className="font-semibold text-ink no-underline hover:text-brand-700 hover:no-underline">{title}</Link>
+    <div className="rounded-2xl border border-line bg-canvas/50 p-4">
+      <Link href={href} className="font-bold text-ink no-underline hover:text-brand-700 hover:no-underline">{title}</Link>
       <div className="mt-0.5 text-sm text-ink-mute">{body}</div>
       {sub && <Link href={sub[1]} className="mt-2 inline-block text-sm font-semibold">{sub[0]}</Link>}
     </div>

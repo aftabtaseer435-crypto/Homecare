@@ -4,6 +4,18 @@ import { createClient } from '@/lib/supabase/server';
 import { Empty, PageHeader, Stars } from '@/components/ui';
 import ContactButtons from '@/components/ContactButtons';
 import { storagePublicUrl } from '@/lib/format';
+import { createPublicClient } from '@/lib/supabase/public';
+import { jsonLd, siteUrl } from '@/lib/seo';
+
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { data: cat } = await createPublicClient().from('service_categories').select('name, name_ur').eq('slug', params.slug).maybeSingle();
+  if (!cat) return { title: 'Service nahi mili' };
+  return {
+    title: `${cat.name} near you — verified ${cat.name.toLowerCase()} with ratings`,
+    description: `Apni society aur area ke CNIC-verified ${cat.name}${cat.name_ur ? ` (${cat.name_ur})` : ''}. Rating, tajurba aur rates dekhein, seedha call ya WhatsApp karein.`,
+    alternates: { canonical: `/services/${params.slug}` },
+  };
+}
 
 export default async function CategoryProviders({
   params,
@@ -50,8 +62,16 @@ export default async function CategoryProviders({
     ];
   }
 
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${cat.name} providers`,
+    itemListElement: list.slice(0, 20).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `${siteUrl()}/providers/${p.id}`, name: p.display_name })),
+  };
+
   return (
     <div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
       <PageHeader title={`${cat.icon ?? ''} ${cat.name}`} subtitle={cat.name_ur ?? undefined} action={<Link href="/services" className="btn-outline">← Saari services</Link>} />
 
       <form className="mb-5 flex flex-wrap items-end gap-2">
@@ -79,7 +99,7 @@ export default async function CategoryProviders({
             <div key={p.id} className="card flex gap-4">
               <Link href={`/providers/${p.id}`} className="shrink-0">
                 {p.photo_path ? (
-                  <img src={storagePublicUrl(p.photo_path)!} alt="" className="h-20 w-20 rounded-xl object-cover" />
+                  <img src={storagePublicUrl(p.photo_path)!} alt={p.display_name} loading="lazy" className="h-20 w-20 rounded-xl object-cover" />
                 ) : (
                   <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-brand-50 text-3xl">{cat.icon}</div>
                 )}
@@ -87,7 +107,7 @@ export default async function CategoryProviders({
               <div className="min-w-0 flex-1 space-y-1">
                 <Link href={`/providers/${p.id}`} className="text-base font-semibold text-ink">{p.display_name}</Link>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="badge bg-paid-soft text-paid">✓ Verified</span>
+                  <span className="badge bg-paid-soft text-paid-ink">✓ Verified</span>
                   {societyId && p.provider_societies.some((s: any) => s.society_id === societyId) && <span className="badge bg-brand-50 text-brand-700">Aap ki society</span>}
                   {!p.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
                   <Stars value={Number(p.rating_avg)} count={p.rating_count} />

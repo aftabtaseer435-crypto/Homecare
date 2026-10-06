@@ -26,13 +26,13 @@ export function daysBetween(fromISO: string, toISO: string) {
 export function dueStatusStyle(status: string | null | undefined) {
   switch (status) {
     case 'paid':
-      return { label: 'Paid', cls: 'bg-paid text-white', soft: 'bg-paid-soft text-paid', plate: 'plate plate-paid' };
+      return { label: 'Paid', cls: 'bg-paid text-white', soft: 'bg-paid-soft text-paid-ink', plate: 'plate plate-paid' };
     case 'partial':
-      return { label: 'Partial', cls: 'bg-orange-500 text-white', soft: 'bg-orange-100 text-orange-800', plate: 'plate plate-partial' };
+      return { label: 'Partial', cls: 'bg-part text-white', soft: 'bg-part-soft text-part-ink', plate: 'plate plate-partial' };
     case 'exempt':
-      return { label: 'Exempt', cls: 'bg-ink-mute/50 text-white', soft: 'bg-canvas text-ink-soft', plate: 'plate plate-exempt' };
+      return { label: 'Exempt', cls: 'bg-ink-mute text-white', soft: 'bg-canvas text-ink-soft', plate: 'plate plate-exempt' };
     case 'unpaid':
-      return { label: 'Not paid', cls: 'bg-due text-white', soft: 'bg-due-soft text-due', plate: 'plate plate-due' };
+      return { label: 'Not paid', cls: 'bg-due text-white', soft: 'bg-due-soft text-due-ink', plate: 'plate plate-due' };
     default:
       return { label: 'No due', cls: 'bg-line text-ink-mute', soft: 'bg-canvas text-ink-mute', plate: 'plate plate-none' };
   }

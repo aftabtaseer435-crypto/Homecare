@@ -14,7 +14,7 @@ export default async function MyListings({ searchParams }: { searchParams: { ok?
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Meri listings" action={<Link href="/properties/new" className="btn">+ Nayi listing</Link>} />
+      <PageHeader title="Meri listings" action={<Link href="/properties/new" className="btn bg-property hover:bg-property-ink">+ Nayi listing</Link>} />
       <Flash searchParams={searchParams} />
       {(mine ?? []).length === 0 ? (
         <Empty href="/properties/new" cta="Ghar list karein">Abhi koi listing nahi.</Empty>

@@ -121,6 +121,19 @@ supabase/migrations/        schema, RLS security, triggers, functions, seed
 
 ---
 
+## Rozana Hadees (header ke upar)
+
+`lib/hadith.ts` mein 200 ahadith (Urdu tarjuma) hain — Sahih Bukhari, Sahih Muslim, aur Sunan Tirmidhi / Abu Dawud / Ibn Majah ki woh riwayat jinhein har grader ne Sahih ya Hasan kaha hai, reference number ke sath. Pakistan ki tareekh ke hisaab se roz ek nayi hadees aati hai (200 din ka cycle). Launch se pehle kisi aalim se ek nazar review karwa lein; koi hadees badalni ho to isi file mein text badal dein.
+
+## SEO
+
+- Har public page ka apna title, description aur canonical URL
+- `sitemap.xml` (services, providers, listings, guides khud shamil) aur `robots.txt`
+- Structured data: Organization, WebSite, FAQ, HowTo (guides), LocalBusiness (providers), Offer (listings)
+- Social share image (`/opengraph-image`)
+- Private pages (dashboard, admin, society panel) `noindex`
+- Launch ke baad Google Search Console mein domain verify kar ke `https://YOUR-DOMAIN/sitemap.xml` submit karein
+
 ## 5. Play Store (Android app)
 
 App TWA wrapper hai — isi website ko Play Store app bana deta hai. Poore steps: [`android/README.md`](android/README.md). Is ke liye already code mein: app icons, manifest, offline page, service worker, `/.well-known/assetlinks.json`, privacy policy (`/privacy`) aur account delete (`/account/delete`).

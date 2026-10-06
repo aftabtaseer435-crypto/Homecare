@@ -29,7 +29,7 @@ export default function WaButton({
         setDone(true);
         onSent?.().catch(() => {});
       }}
-      className={`btn ${small ? 'btn-sm' : ''} ${done || sentLabel ? 'bg-line text-ink-soft hover:bg-line' : 'bg-[#1FAF54] hover:bg-[#178F44]'}`}
+      className={`btn ${small ? 'btn-sm' : ''} ${done || sentLabel ? 'bg-line text-ink-soft hover:bg-line' : 'bg-wa hover:bg-wa-hover'}`}
     >
       {done ? '✓ Bhej diya' : sentLabel ?? label}
     </a>

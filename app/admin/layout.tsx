@@ -1,5 +1,8 @@
 import { requireSuperAdmin } from '@/lib/auth';
 import SideNav from '@/components/SideNav';
+import { noindex } from '@/lib/seo';
+
+export const metadata = noindex;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireSuperAdmin();

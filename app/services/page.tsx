@@ -2,7 +2,11 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { PageHeader } from '@/components/ui';
 
-export const metadata = { title: 'Home Services — Electrician, Plumber, Masi, Rickshaw' };
+export const metadata = {
+  title: 'Electrician, plumber, masi aur rickshaw — verified home services',
+  description: 'Apni society aur area ke CNIC-verified electrician, plumber, masi, AC repair, rickshaw aur mistri. Rating dekhein aur seedha call ya WhatsApp karein. Koi commission nahi.',
+  alternates: { canonical: '/services' },
+};
 
 export default async function Services() {
   const supabase = createClient();

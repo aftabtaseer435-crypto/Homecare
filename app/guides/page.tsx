@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { guides } from '@/lib/guides';
 
-export const metadata = { title: 'Guides — har user ke liye step-by-step' };
+export const metadata = {
+  title: 'Guides — society admin, makan malik, provider (step by step)',
+  description: 'Roman Urdu mein step-by-step guides: society setup, fund plan, WhatsApp reminders, payment entry, provider profile, ghar rent / sale aur phone par app install.',
+  alternates: { canonical: '/guides' },
+};
+
+export const revalidate = 3600;
 
 export default function Guides() {
   const [admin, owner, ...rest] = guides;

@@ -4,7 +4,7 @@ import SubmitButton from '@/components/SubmitButton';
 import { submitSocietyRequest } from './actions';
 import { displayPhone } from '@/lib/phone';
 
-export const metadata = { title: 'Society register karein' };
+export const metadata = { title: 'Society free register karein — development fund app', description: 'Apni housing society ko free register karein: ghar ka record, fund ka green / red status aur WhatsApp reminders.', alternates: { canonical: '/societies/register' } };
 
 export default async function RegisterSociety({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   const { profile } = await requireUser('/societies/register');

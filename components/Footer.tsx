@@ -1,37 +1,41 @@
 import Link from 'next/link';
 import { LogoMark } from './Logo';
+import { modules, moduleTheme } from '@/lib/nav';
+import { appName } from '@/lib/seo';
 
 export default function Footer() {
-  const name = process.env.NEXT_PUBLIC_APP_NAME || 'SocietyHub';
-  const cols = [
-    { title: 'Society', links: [['Society register karein', '/societies/register'], ['Apna ghar add karein', '/societies/join'], ['Society admin guide', '/guides/society-admin']] },
-    { title: 'Services', links: [['Electrician, plumber, masi', '/services'], ['Provider banein', '/provider/register'], ['Provider guide', '/guides/service-provider']] },
-    { title: 'Property', links: [['Ghar rent / sale', '/properties'], ['Apna ghar list karein', '/properties/new'], ['Listing guide', '/guides/ghar-rent-sale']] },
-    { title: 'Madad', links: [['Saari guides', '/guides'], ['App install karein', '/guides/app-install'], ['Privacy policy', '/privacy'], ['Account delete', '/account/delete']] },
-  ];
   return (
-    <footer className="mt-16 border-t border-line bg-white pb-24 md:pb-0">
-      <div className="container-app grid gap-10 py-12 md:grid-cols-[1.2fr_repeat(4,1fr)]">
-        <div>
+    <footer className="mt-16 border-t border-line bg-white pb-24 lg:pb-0">
+      <div className="container-app grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(4,1fr)]">
+        <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2.5">
-            <LogoMark className="h-8 w-8" />
-            <span className="font-display text-lg font-bold">{name}</span>
+            <LogoMark className="h-9 w-9" />
+            <span className="text-lg font-extrabold">{appName}</span>
           </div>
-          <p className="mt-3 max-w-xs text-sm text-ink-mute">Society ka fund, ghar ke kaam ke liye bharosemand log, aur ghar rent ya sale — ek jagah.</p>
+          <p className="mt-3 max-w-xs text-sm text-ink-mute">
+            Pakistan ki housing societies ke liye: fund ka hisaab, ghar ke kaam ke liye bharosemand log, aur ghar rent ya sale.
+          </p>
         </div>
-        {cols.map((c) => (
-          <div key={c.title}>
-            <h3 className="mb-3 text-sm">{c.title}</h3>
+        {modules.map((m) => (
+          <div key={m.id}>
+            <h2 className="mb-3 flex items-center gap-2 text-sm">
+              <span className={`h-2 w-2 rounded-full ${moduleTheme[m.id].dot}`} aria-hidden="true" />
+              {m.name}
+            </h2>
             <ul className="space-y-2 text-sm">
-              {c.links.map(([label, href]) => (
-                <li key={href}><Link href={href} className="text-ink-mute no-underline hover:text-ink">{label}</Link></li>
+              {m.links.map((l) => (
+                <li key={l.href}><Link href={l.href} className="text-ink-mute no-underline hover:text-ink hover:underline">{l.label}</Link></li>
               ))}
+              {m.id === 'help' && <li><Link href="/account/delete" className="text-ink-mute no-underline hover:text-ink hover:underline">Account delete</Link></li>}
             </ul>
           </div>
         ))}
       </div>
       <div className="border-t border-line">
-        <div className="container-app py-5 text-xs text-ink-mute">© {new Date().getFullYear()} {name}. Pakistan ki housing societies ke liye.</div>
+        <div className="container-app flex flex-wrap justify-between gap-2 py-5 text-xs text-ink-mute">
+          <span>© {new Date().getFullYear()} {appName}</span>
+          <span>Made for housing societies in Pakistan</span>
+        </div>
       </div>
     </footer>
   );

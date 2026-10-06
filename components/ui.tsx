@@ -5,14 +5,14 @@ import { dueStatusStyle } from '@/lib/format';
 export function Flash({ searchParams }: { searchParams?: { ok?: string; err?: string } }) {
   if (searchParams?.err)
     return (
-      <div role="alert" className="mb-5 flex items-start gap-3 rounded-xl border border-due/30 bg-due-soft px-4 py-3 text-sm text-due">
+      <div role="alert" className="mb-5 flex items-start gap-3 rounded-xl border border-due/30 bg-due-soft px-4 py-3 text-sm text-due-ink">
         <span className="mt-0.5 font-bold">!</span>
         <span>{searchParams.err}</span>
       </div>
     );
   if (searchParams?.ok)
     return (
-      <div role="status" className="mb-5 flex items-start gap-3 rounded-xl border border-paid/30 bg-paid-soft px-4 py-3 text-sm text-paid">
+      <div role="status" className="mb-5 flex items-start gap-3 rounded-xl border border-paid/30 bg-paid-soft px-4 py-3 text-sm text-paid-ink">
         <span className="mt-0.5 font-bold">✓</span>
         <span>{searchParams.ok}</span>
       </div>
@@ -41,7 +41,7 @@ export function PageHeader({ title, subtitle, action, back }: { title: string; s
 }
 
 export function Stat({ label, value, tone, hint }: { label: string; value: React.ReactNode; tone?: 'green' | 'red' | 'gray'; hint?: string }) {
-  const color = tone === 'green' ? 'text-paid' : tone === 'red' ? 'text-due' : 'text-ink';
+  const color = tone === 'green' ? 'text-paid-ink' : tone === 'red' ? 'text-due' : 'text-ink';
   return (
     <div className="rounded-2xl border border-line bg-white p-4">
       <div className="text-sm font-semibold text-ink-mute">{label}</div>
@@ -54,7 +54,7 @@ export function Stat({ label, value, tone, hint }: { label: string; value: React
 export function Stars({ value, count }: { value: number; count?: number }) {
   const full = Math.round(value);
   return (
-    <span className="inline-flex items-center text-sm text-amber-500" title={`${value} / 5`}>
+    <span className="inline-flex items-center text-sm text-amber-600" title={`${value} / 5`}>
       {'★'.repeat(full)}
       <span className="text-line">{'★'.repeat(5 - full)}</span>
       {count !== undefined && <span className="ml-1 text-xs text-ink-mute">({count})</span>}

@@ -142,7 +142,7 @@ export default async function Payments({
               </tbody>
             </table>
             {openDues.length === 0 ? (
-              <p className="text-sm text-paid">Sab dues clear hain.</p>
+              <p className="text-sm text-paid-ink">Sab dues clear hain.</p>
             ) : (
               <form action={recordPayment} className="grid gap-3 md:grid-cols-5">
                 <input type="hidden" name="sid" value={sid} />

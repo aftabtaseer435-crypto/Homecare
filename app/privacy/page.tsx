@@ -1,4 +1,4 @@
-export const metadata = { title: 'Privacy Policy' };
+export const metadata = { title: 'Privacy Policy', description: 'Hum kaun sa data lete hain, kaise use karte hain, aur account delete kaise karein.', alternates: { canonical: '/privacy' } };
 
 // NOTE: review this text with your own details (company name, contact email)
 // before submitting to Google Play.

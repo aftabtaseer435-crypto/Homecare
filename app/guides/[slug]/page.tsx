@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getGuide, guides } from '@/lib/guides';
+import { jsonLd } from '@/lib/seo';
+
+// Re-render hourly so the daily hadith bar stays current on these static pages.
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return guides.map((g) => ({ slug: g.slug }));
@@ -8,7 +12,7 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const g = getGuide(params.slug);
-  return g ? { title: g.title, description: g.summary } : {};
+  return g ? { title: `${g.title} — step by step (Roman Urdu)`, description: g.summary, alternates: { canonical: `/guides/${g.slug}` } } : {};
 }
 
 export default function GuidePage({ params }: { params: { slug: string } }) {
@@ -16,8 +20,20 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
   if (!g) notFound();
   const others = guides.filter((x) => x.slug !== g.slug).slice(0, 4);
 
+  const ld = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: g.title,
+      description: g.summary,
+      step: g.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.title, text: s.body, url: `#step-${i + 1}` })),
+    },
+    ...(g.faq ? [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: g.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }] : []),
+  ];
+
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_17rem]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
       <article>
         <Link href="/guides" className="text-sm font-semibold">Saari guides</Link>
         <h1 className="mt-3 text-4xl font-extrabold">{g.title}</h1>

@@ -73,7 +73,7 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
             Cash society office ya collector ko dein.
           </p>
           {open.length === 0 ? (
-            <p className="text-sm text-paid">Koi baqi payment nahi. Shukriya!</p>
+            <p className="text-sm text-paid-ink">Koi baqi payment nahi. Shukriya!</p>
           ) : (
             <form action={submitPaymentProof} className="space-y-3">
               <input type="hidden" name="house_id" value={house.id} />
@@ -129,7 +129,7 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
                   <td>{p.due?.plan?.name} {p.due?.period}</td>
                   <td>{rs(p.amount)}</td>
                   <td className="capitalize">{p.method}</td>
-                  <td>{p.status === 'verified' ? <span className="badge bg-paid-soft text-paid">Verified</span> : p.status === 'pending' ? <span className="badge bg-plate-soft text-plate-ink">Pending</span> : <span className="badge bg-due-soft text-due">Rejected</span>}</td>
+                  <td>{p.status === 'verified' ? <span className="badge bg-paid-soft text-paid-ink">Verified</span> : p.status === 'pending' ? <span className="badge bg-plate-soft text-plate-ink">Pending</span> : <span className="badge bg-due-soft text-due-ink">Rejected</span>}</td>
                   <td>{p.receipt_no ?? '—'}</td>
                 </tr>
               ))}

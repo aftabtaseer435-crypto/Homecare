@@ -46,7 +46,7 @@ export default async function Owners({
             <tbody>
               {pending.map((o) => (
                 <tr key={o.id}>
-                  <td>{o.owner_name}{(claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-due-soft text-due">Conflict: is ghar ke aur claims bhi hain</span>}</td>
+                  <td>{o.owner_name}{(claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-due-soft text-due-ink">Conflict: is ghar ke aur claims bhi hain</span>}</td>
                   <td>{displayPhone(o.owner_phone)}</td>
                   <td>{houseLabel(o.house)}</td>
                   <td>{fmtDate(o.created_at)}</td>
@@ -102,7 +102,7 @@ export default async function Owners({
                 <td>{o.owner_name}</td>
                 <td>{displayPhone(o.owner_phone)}</td>
                 <td>{houseLabel(o.house)}</td>
-                <td>{o.user_id ? <span className="badge bg-paid-soft text-paid">Linked</span> : <span className="badge bg-canvas text-ink-soft">Not yet</span>}</td>
+                <td>{o.user_id ? <span className="badge bg-paid-soft text-paid-ink">Linked</span> : <span className="badge bg-canvas text-ink-soft">Not yet</span>}</td>
                 <td>
                   {role === 'admin' && (
                     <form action={removeOwner}>

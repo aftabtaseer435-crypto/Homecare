@@ -4,7 +4,7 @@ import { Flash, PageHeader } from '@/components/ui';
 import ProviderForm from '../ProviderForm';
 import { registerProvider } from '../actions';
 
-export const metadata = { title: 'Provider register karein' };
+export const metadata = { title: 'Electrician, plumber, masi — free provider profile banayein', description: 'Apna kaam list karein aur apne area ki societies se seedha call aur WhatsApp par kaam lein. CNIC verification, rating, koi commission nahi.', alternates: { canonical: '/provider/register' } };
 
 export default async function ProviderRegister({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   const { supabase, user, profile } = await requireUser('/provider/register');

@@ -34,7 +34,7 @@ export default function ContactButtons({
         target="_blank"
         rel="noopener"
         onClick={() => track('whatsapp')}
-        className={`btn bg-[#1FAF54] hover:bg-[#178F44] ${cls}`}
+        className={`btn bg-wa hover:bg-wa-hover ${cls}`}
       >
         WhatsApp
       </a>

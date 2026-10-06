@@ -18,7 +18,7 @@ export default function SocietyBoard() {
             <div className="text-sm text-ink-mute">Development Fund · October</div>
           </div>
           <div className="rounded-xl bg-canvas px-3 py-2 text-right">
-            <div className="font-display text-xl font-bold leading-none text-paid">{paid}/24</div>
+            <div className="font-display text-xl font-bold leading-none text-paid-ink">{paid}/24</div>
             <div className="mt-1 text-[11px] font-semibold text-ink-mute">ghar jama</div>
           </div>
         </div>
@@ -41,7 +41,7 @@ export default function SocietyBoard() {
         <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold text-ink-soft">
           <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-paid" /> Jama</span>
           <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-due" /> Baqi</span>
-          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-orange-500" /> Aadha</span>
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm bg-part" /> Aadha</span>
         </div>
       </div>
 

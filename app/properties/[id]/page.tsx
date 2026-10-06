@@ -8,6 +8,28 @@ import { fmtDate, rs, storagePublicUrl } from '@/lib/format';
 import { displayPhone } from '@/lib/phone';
 import { deleteListing, setListingStatus, toggleSave } from '../actions';
 import { submitComplaint } from '@/app/providers/[id]/actions';
+import { createPublicClient } from '@/lib/supabase/public';
+import { jsonLd, siteUrl } from '@/lib/seo';
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { data: l } = await createPublicClient()
+    .from('property_listings')
+    .select('title, listing_type, city, area_text, price, bedrooms, plot_size, status, society:societies(name), listing_photos(path, sort)')
+    .eq('id', params.id)
+    .maybeSingle();
+  if (!l) return { title: 'Listing', robots: { index: false } };
+  const x = l as any;
+  const kind = x.listing_type === 'rent' ? 'for rent' : 'for sale';
+  const where = [x.society?.name, x.area_text, x.city].filter(Boolean).join(', ');
+  const photo = [...(x.listing_photos ?? [])].sort((a: any, b: any) => a.sort - b.sort)[0];
+  return {
+    title: `${x.title} ${kind} — ${where}`,
+    description: `${x.plot_size ? x.plot_size + ', ' : ''}${x.bedrooms ? x.bedrooms + ' bed, ' : ''}${rs(x.price)}${x.listing_type === 'rent' ? ' / mahina' : ''}. ${where}. Owner se seedha rabta.`,
+    alternates: { canonical: `/properties/${params.id}` },
+    robots: x.status === 'active' ? undefined : { index: false },
+    openGraph: photo ? { images: [storagePublicUrl(photo.path)!] } : undefined,
+  };
+}
 
 const PORTION: Record<string, string> = { full: 'Poora ghar', upper: 'Upper portion', lower: 'Lower portion', room: 'Room' };
 const FURN: Record<string, string> = { furnished: 'Furnished', semi: 'Semi furnished', unfurnished: 'Unfurnished' };
@@ -43,16 +65,35 @@ export default async function ListingPage({ params, searchParams }: { params: { 
     ['Available', listing.available_from ? fmtDate(listing.available_from) : null],
   ].filter(([, v]) => v !== null && v !== undefined && v !== '');
 
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'Offer',
+    url: `${siteUrl()}/properties/${listing.id}`,
+    price: Number(listing.price),
+    priceCurrency: 'PKR',
+    businessFunction: listing.listing_type === 'rent' ? 'http://purl.org/goodrelations/v1#LeaseOut' : 'http://purl.org/goodrelations/v1#Sell',
+    availability: listing.status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+    itemOffered: {
+      '@type': 'Accommodation',
+      name: listing.title,
+      numberOfBedrooms: listing.bedrooms ?? undefined,
+      numberOfBathroomsTotal: listing.bathrooms ?? undefined,
+      address: { '@type': 'PostalAddress', addressLocality: listing.city, streetAddress: listing.area_text ?? undefined, addressCountry: 'PK' },
+      image: photos.map((p: any) => storagePublicUrl(p.path)),
+    },
+  };
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
       <Flash searchParams={searchParams} />
       {listing.status !== 'active' && <div className="rounded-lg bg-plate-soft p-3 text-sm text-plate-ink">Status: {listing.status}</div>}
 
       {photos.length > 0 ? (
         <div className="grid gap-2 md:grid-cols-3">
-          <img src={storagePublicUrl(photos[0].path)!} alt="" className="h-72 w-full rounded-xl object-cover md:col-span-2 md:h-96" />
+          <img src={storagePublicUrl(photos[0].path)!} alt={`${listing.title} — photo 1`} className="h-72 w-full rounded-xl object-cover md:col-span-2 md:h-96" />
           <div className="grid grid-cols-3 gap-2 md:grid-cols-1">
-            {photos.slice(1, 4).map((p: any) => <img key={p.id} src={storagePublicUrl(p.path)!} alt="" className="h-24 w-full rounded-xl object-cover md:h-[7.6rem]" />)}
+            {photos.slice(1, 4).map((p: any, i: number) => <img key={p.id} src={storagePublicUrl(p.path)!} alt={`${listing.title} — photo ${i + 2}`} loading="lazy" className="h-24 w-full rounded-xl object-cover md:h-[7.6rem]" />)}
           </div>
         </div>
       ) : (
@@ -60,7 +101,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
       )}
       {photos.length > 4 && (
         <div className="flex gap-2 overflow-x-auto">
-          {photos.slice(4).map((p: any) => <img key={p.id} src={storagePublicUrl(p.path)!} alt="" className="h-24 w-32 shrink-0 rounded-lg object-cover" />)}
+          {photos.slice(4).map((p: any, i: number) => <img key={p.id} src={storagePublicUrl(p.path)!} alt={`${listing.title} — photo ${i + 5}`} loading="lazy" className="h-24 w-32 shrink-0 rounded-lg object-cover" />)}
         </div>
       )}
 
@@ -69,7 +110,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
           <div>
             <div className="flex flex-wrap gap-2">
               <span className={`badge ${listing.listing_type === 'rent' ? 'bg-brand-50 text-brand-700' : 'bg-plate-soft text-plate-ink'}`}>{listing.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
-              {listing.society_verified && <span className="badge bg-paid-soft text-paid">✓ Society verified owner</span>}
+              {listing.society_verified && <span className="badge bg-paid-soft text-paid-ink">✓ Society verified owner</span>}
             </div>
             <h1 className="mt-2">{listing.title}</h1>
             <p className="muted">{[listing.society?.name, listing.area_text, listing.city].filter(Boolean).join(' · ')}</p>

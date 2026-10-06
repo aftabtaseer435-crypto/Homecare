@@ -26,7 +26,7 @@ export default async function Messages({ params }: { params: { sid: string } }) 
               <td>{displayPhone(l.to_phone)}</td>
               <td>{label(l.kind, l.offset_days)}</td>
               <td>
-                <span className={`badge ${l.status === 'sent' || l.status === 'sent_manual' ? 'bg-paid-soft text-paid' : l.status === 'failed' ? 'bg-due-soft text-due' : 'bg-canvas text-ink-soft'}`}>{l.status}</span>
+                <span className={`badge ${l.status === 'sent' || l.status === 'sent_manual' ? 'bg-paid-soft text-paid-ink' : l.status === 'failed' ? 'bg-due-soft text-due' : 'bg-canvas text-ink-soft'}`}>{l.status}</span>
               </td>
               <td className="max-w-xs truncate text-xs text-due" title={l.error ?? ''}>{l.error}</td>
             </tr>

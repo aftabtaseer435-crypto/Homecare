@@ -3,7 +3,11 @@ import { createClient } from '@/lib/supabase/server';
 import { Empty, PageHeader } from '@/components/ui';
 import { rs, storagePublicUrl } from '@/lib/format';
 
-export const metadata = { title: 'Ghar rent ya sale — society verified listings' };
+export const metadata = {
+  title: 'Ghar rent aur sale — society verified listings',
+  description: 'Housing societies ke ghar, portion aur room rent ya sale ke liye. Society-verified owners, photos, rent aur advance. Owner se seedha call ya WhatsApp.',
+  alternates: { canonical: '/properties' },
+};
 
 type SP = { type?: string; city?: string; society?: string; min?: string; max?: string; beds?: string; portion?: string };
 
@@ -29,7 +33,7 @@ export default async function Properties({ searchParams }: { searchParams: SP })
 
   return (
     <div>
-      <PageHeader title="Ghar rent / sale" subtitle="Society-verified listings pehle. Owner se seedha baat." action={<Link href="/properties/new" className="btn">+ Apna ghar list karein</Link>} />
+      <PageHeader title="Ghar rent / sale" subtitle="Society-verified listings pehle. Owner se seedha baat." action={<Link href="/properties/new" className="btn bg-property hover:bg-property-ink">+ Apna ghar list karein</Link>} />
 
       <form className="card mb-6 grid gap-3 md:grid-cols-7">
         <select name="type" defaultValue={searchParams.type ?? ''} className="input">
@@ -45,7 +49,7 @@ export default async function Properties({ searchParams }: { searchParams: SP })
         <select name="beds" defaultValue={searchParams.beds ?? ''} className="input">
           <option value="">Bedrooms</option>{[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}+</option>)}
         </select>
-        <button className="btn">Search</button>
+        <button className="btn bg-property hover:bg-property-ink">Search</button>
       </form>
 
       {(listings ?? []).length === 0 ? (
@@ -57,7 +61,7 @@ export default async function Properties({ searchParams }: { searchParams: SP })
             return (
               <Link key={l.id} href={`/properties/${l.id}`} className="card overflow-hidden p-0 no-underline hover:border-brand-500">
                 <div className="relative aspect-[4/3] bg-canvas">
-                  {photo ? <img src={storagePublicUrl(photo.path)!} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-5xl">🏠</div>}
+                  {photo ? <img src={storagePublicUrl(photo.path)!} alt={l.title} loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-5xl">🏠</div>}
                   <span className={`badge absolute left-2 top-2 ${l.listing_type === 'rent' ? 'bg-ink text-white' : 'bg-plate text-plate-ink'}`}>{l.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
                   {l.society_verified && <span className="badge absolute right-2 top-2 bg-paid text-white">✓ Society verified</span>}
                 </div>
