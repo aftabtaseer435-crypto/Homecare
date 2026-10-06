@@ -8,3 +8,7 @@ out
 next-env.d.ts
 .vercel
 .DS_Store
+
+# Android signing key — never commit
+*.keystore
+*.jks

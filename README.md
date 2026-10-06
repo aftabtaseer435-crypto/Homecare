@@ -6,7 +6,7 @@ Housing society ke liye ek hi app:
 2. **Home Services** — electrician, plumber, masi, rickshaw, AC repair waghera. Provider apni profile banata hai (CNIC verification), consumer category choose kar ke seedha Call / WhatsApp karta hai, phir rating deta hai.
 3. **Property Rent / Sale** — owner ghar list karta hai (society-verified badge), buyer/tenant search, filter, call/WhatsApp, save.
 
-Stack: **Next.js 14 (App Router) + Supabase (Postgres, Auth, Storage) + Tailwind**, WhatsApp click-to-send (optional Meta Cloud API), Vercel par deploy. Mobile par PWA ki tarah install hota hai.
+Stack: **Next.js 14 (App Router) + Supabase (Postgres, Auth, Storage) + Tailwind**, WhatsApp click-to-send (optional Meta Cloud API), Vercel par deploy. Mobile par PWA ki tarah install hota hai, aur Play Store par Android app (TWA) ke tor par.
 
 ---
 
@@ -17,6 +17,7 @@ Stack: **Next.js 14 (App Router) + Supabase (Postgres, Auth, Storage) + Tailwind
 2. **SQL Editor** mein ye do files order se chalayein:
    - `supabase/migrations/0001_init.sql`
    - `supabase/migrations/0002_storage_seed.sql`
+   - `supabase/migrations/0003_account_delete.sql`
 3. **Authentication → Providers → Phone** enable karein aur ek SMS provider connect karein (Twilio / MessageBird / Vonage / Textlocal).
    Testing ke liye **Authentication → Phone → Test phone numbers** mein apna number + fixed OTP (jaise `923001234567=123456`) daal dein — SMS ka kharcha nahi hoga.
 4. **Project Settings → API** se `URL`, `anon key`, `service_role key` copy karein.
@@ -120,10 +121,14 @@ supabase/migrations/        schema, RLS security, triggers, functions, seed
 
 ---
 
-## 5. Aage kya (roadmap)
+## 5. Play Store (Android app)
+
+App TWA wrapper hai — isi website ko Play Store app bana deta hai. Poore steps: [`android/README.md`](android/README.md). Is ke liye already code mein: app icons, manifest, offline page, service worker, `/.well-known/assetlinks.json`, privacy policy (`/privacy`) aur account delete (`/account/delete`).
+
+## 6. Aage kya (roadmap)
 - JazzCash / Easypaisa online payment gateway (merchant account ke baad)
 - In-app booking (time slot, "on the way" status), provider commission
 - Call masking / in-app chat (number hide karne ke liye)
 - Featured listings, provider subscription plans, society premium plan
 - Expense ledger (fund kahan kharch hua), late fee auto-apply
-- Urdu UI toggle, native Android app (Flutter / Capacitor)
+- Urdu UI toggle, push notifications
