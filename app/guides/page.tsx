@@ -14,7 +14,7 @@ export default function Guides() {
   return (
     <div className="space-y-10">
       <div className="max-w-2xl">
-        <h1 className="text-4xl font-extrabold">Guides</h1>
+        <h1 className="text-4xl font-bold">Guides</h1>
         <p className="mt-3 text-lg text-ink-soft">Apna kirdar choose karein aur qadam ba qadam chalein. Har guide mein app ke asal buttons ke naam hain.</p>
       </div>
 

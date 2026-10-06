@@ -49,7 +49,7 @@ export default async function Hisaab({ params, searchParams }: { params: { sid: 
     <div className="space-y-8">
       <div>
         <Link href="/welfare" className="text-sm font-bold">Welfare</Link>
-        <h1 className="mt-2 text-3xl font-extrabold">Fund ka hisaab — {society?.name}</h1>
+        <h1 className="mt-2 text-3xl font-bold">Fund ka hisaab — {society?.name}</h1>
         <p className="mt-1 max-w-2xl text-ink-soft">Aap ne jo fund diya, woh kahan aur kitna laga — har kharche ki tafseel aur raseed ke sath. Yeh hisaab har verified makan malik dekh sakta hai.</p>
       </div>
 

@@ -46,7 +46,7 @@ function LoginForm() {
     <div className="mx-auto grid max-w-4xl items-center gap-10 py-4 md:grid-cols-2 md:py-10">
       <div className="hidden md:block">
         <LogoMark className="h-14 w-14" />
-        <h1 className="mt-6 text-4xl font-extrabold leading-tight">Apne mobile number se andar aayein.</h1>
+        <h1 className="mt-6 text-4xl font-bold leading-tight">Apne mobile number se andar aayein.</h1>
         <p className="mt-4 text-ink-soft">Koi password yaad nahi rakhna. SMS mein 6 digit code aata hai — wahi aap ki pehchan hai.</p>
         <ul className="mt-6 space-y-2 text-sm text-ink-soft">
           <li>Makan malik: apne ghar ka fund status</li>

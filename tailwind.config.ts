@@ -31,8 +31,8 @@ const config: Config = {
         wa: { DEFAULT: '#0F7A3D', hover: '#0B5F2F' },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['"Plus Jakarta Sans Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Inter Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Inter Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         urdu: ['"Noto Nastaliq Urdu Variable"', '"Jameel Noori Nastaleeq"', 'serif'],
       },
       boxShadow: {

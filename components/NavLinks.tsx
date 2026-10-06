@@ -17,7 +17,7 @@ export default function NavLinks({ superAdmin }: { superAdmin: boolean }) {
             key={m.id}
             href={m.home}
             aria-current={active ? 'page' : undefined}
-            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold no-underline hover:no-underline ${active ? 'bg-white text-ink shadow-sm ring-1 ring-line' : 'text-ink-soft hover:bg-white hover:text-ink'}`}
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline hover:no-underline ${active ? 'bg-canvas font-semibold text-ink' : 'font-medium text-ink-mute hover:bg-canvas hover:text-ink'}`}
           >
             <span className={`h-2 w-2 rounded-full ${moduleTheme[m.id].dot}`} aria-hidden="true" />
             {m.id === 'help' ? 'Guides' : m.name}
@@ -25,7 +25,7 @@ export default function NavLinks({ superAdmin }: { superAdmin: boolean }) {
         );
       })}
       {superAdmin && (
-        <Link href="/admin" className={`rounded-lg px-3 py-2 text-sm font-bold no-underline hover:no-underline ${path.startsWith('/admin') ? 'bg-ink text-white' : 'text-ink-soft hover:bg-white hover:text-ink'}`}>
+        <Link href="/admin" className={`rounded-lg px-3 py-2 text-sm font-medium no-underline hover:no-underline ${path.startsWith('/admin') ? 'bg-ink text-white' : 'text-ink-soft hover:bg-white hover:text-ink'}`}>
           Super Admin
         </Link>
       )}

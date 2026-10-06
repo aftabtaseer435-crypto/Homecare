@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/inter';
 import '@fontsource-variable/noto-nastaliq-urdu';
 import './globals.css';
 import HadithBar from '@/components/HadithBar';
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <HadithBar />
         <Header />
         <ModuleNav />
-        <main id="main" className="container-app pb-8 pt-6 md:pt-8">{children}</main>
+        <main id="main" className="container-app pb-12 pt-8 md:pb-16 md:pt-10">{children}</main>
         <Footer />
         <BottomNav />
       </body>

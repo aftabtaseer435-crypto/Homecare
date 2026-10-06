@@ -10,7 +10,7 @@ export default function HadithBar() {
   const ref = `${h.source}: ${h.number.toLocaleString('en-US', { useGrouping: false })}`;
   const line = (
     <span className="inline-flex items-center gap-3 px-8">
-      <span className="font-urdu text-[15px] leading-[2.5] md:text-base">
+      <span className="font-urdu text-[15px] leading-[2.7] md:text-base">
         رسول اللہ ﷺ نے فرمایا: {h.text}
       </span>
       <span className="whitespace-nowrap font-urdu text-[13px] text-plate">({ref})</span>
@@ -22,7 +22,7 @@ export default function HadithBar() {
         <span className="hidden shrink-0 rounded-md bg-plate px-2 py-0.5 font-urdu text-xs font-bold leading-[2] text-plate-ink sm:inline-block">
           آج کی حدیث
         </span>
-        <div className="group relative min-w-0 flex-1 overflow-hidden" tabIndex={0}>
+        <div className="group relative min-w-0 flex-1 overflow-hidden py-0.5" tabIndex={0}>
           <p className="sr-only">رسول اللہ ﷺ نے فرمایا: {h.text} ({ref})</p>
           {/* Moving copy (decorative duplicate for a seamless loop) */}
           <div className="hadith-track flex w-max whitespace-nowrap motion-safe:animate-[ticker_70s_linear_infinite] group-hover:[animation-play-state:paused] group-focus:[animation-play-state:paused]" aria-hidden="true">

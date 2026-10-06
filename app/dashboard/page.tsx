@@ -19,6 +19,13 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
       supabase.from('welfare_issues').select('id, ref_no, category, status').eq('reporter_id', user.id).order('created_at', { ascending: false }).limit(5),
       supabase.from('welfare_agents').select('society_id, society:societies(name)').eq('user_id', user.id).eq('active', true),
     ]);
+  // Super admin manages every society — show them all, not just memberships
+  const { data: allSocieties } = profile.is_super_admin
+    ? await supabase.from('societies').select('id, name, city').order('created_at', { ascending: false }).limit(50)
+    : { data: null };
+  const staffList: { id: string; name: string; city: string; role: string }[] = allSocieties
+    ? (allSocieties as any[]).map((s) => ({ ...s, role: 'super' }))
+    : ((staff ?? []) as any[]).map((m) => ({ ...m.society, role: m.role }));
   const agentSocieties = Array.from(new Map(((agentRows ?? []) as any[]).map((r) => [r.society_id, r.society?.name])).entries());
 
   const verifiedHouseIds = (myOwners ?? []).filter((o) => o.status === 'verified').map((o: any) => o.house.id);
@@ -39,22 +46,22 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
     <div className="space-y-10">
       <Flash searchParams={searchParams} />
       <div>
-        <h1 className="text-3xl font-extrabold">Assalam o Alaikum, {firstName}</h1>
+        <h1 className="text-3xl font-bold">Assalam o Alaikum, {firstName}</h1>
         <p className="mt-1 text-ink-mute">Aaj kya karna hai?</p>
       </div>
 
       {/* ===== Society Fund ===== */}
       <ModuleBlock tone="society" title="Society" action={<Link href="/societies/join" className="btn-outline btn-sm">Ghar add karein</Link>}>
       {/* Society admin panels first for admins — that's their daily job */}
-      {(staff ?? []).length > 0 && (
+      {staffList.length > 0 && (
         <section>
-          <h3 className="mb-3">Meri societies (admin panel)</h3>
+          <h3 className="mb-3">{profile.is_super_admin ? 'Tamam societies (Super Admin)' : 'Meri societies (admin panel)'}</h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {(staff ?? []).map((m: any) => (
-              <Link key={m.society.id} href={`/s/${m.society.id}`} className="group flex items-center gap-4 rounded-2xl bg-brand-800 p-5 text-white no-underline hover:bg-brand-900 hover:no-underline">
+            {staffList.map((m) => (
+              <Link key={m.id} href={`/s/${m.id}`} className="group flex items-center gap-4 rounded-2xl bg-brand-800 p-5 text-white no-underline hover:bg-brand-900 hover:no-underline">
                 <div className="flex-1">
-                  <div className="font-display text-lg font-bold">{m.society.name}</div>
-                  <div className="text-sm text-white/85">{m.society.city} · {m.role === 'admin' ? 'Admin' : 'Collector'}</div>
+                  <div className="font-display text-lg font-semibold">{m.name}</div>
+                  <div className="text-sm text-white/85">{m.city} · {m.role === 'super' ? 'Super Admin' : m.role === 'admin' ? 'Admin' : 'Collector'}</div>
                 </div>
                 <span className="rounded-lg bg-white/15 px-3 py-1.5 text-sm font-semibold group-hover:bg-white/25">Panel kholein</span>
               </Link>
@@ -151,7 +158,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
             {agentSocieties.map(([sid, name]) => <Link key={sid} href={`/w/${sid}`} className="btn btn-sm bg-plate text-plate-ink hover:bg-[#FFC933]">{name}</Link>)}
           </div>
         )}
-        {!(staff ?? []).length && !pendingReq && (
+        {!staffList.length && !pendingReq && (
           <p className="text-sm text-ink-mute">Committee member hain? <Link href="/societies/register">Apni society free register karein</Link>.</p>
         )}
       </ModuleBlock>

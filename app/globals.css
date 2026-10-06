@@ -4,11 +4,11 @@
 
 @layer base {
   html { -webkit-tap-highlight-color: transparent; scroll-padding-top: 6rem; }
-  body { @apply bg-canvas font-sans text-[15px] leading-relaxed text-ink antialiased; font-feature-settings: 'ss01', 'cv11'; }
-  h1, h2, h3 { @apply font-display tracking-tight text-ink; }
-  h1 { @apply text-[1.65rem] font-extrabold leading-tight md:text-[2rem]; }
-  h2 { @apply text-lg font-bold leading-snug; }
-  h3 { @apply text-base font-bold; }
+  body { @apply bg-canvas font-sans text-[15px] leading-relaxed text-ink antialiased; font-feature-settings: 'cv11', 'ss03'; }
+  h1, h2, h3 { @apply font-display text-ink; }
+  h1 { @apply text-[1.6rem] font-bold leading-tight tracking-[-0.02em] md:text-[2rem]; }
+  h2 { @apply text-lg font-semibold leading-snug tracking-[-0.01em]; }
+  h3 { @apply text-base font-semibold; }
   a { @apply text-brand-700 underline-offset-2 hover:underline; }
   :focus-visible { @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-canvas; }
   ::selection { @apply bg-plate-soft text-ink; }
@@ -21,38 +21,39 @@
   .container-app { @apply mx-auto w-full max-w-6xl px-4 md:px-6; }
 
   /* Surfaces */
-  .card { @apply rounded-2xl border border-line bg-white p-4 md:p-5; }
+  .card { @apply rounded-2xl border border-line bg-white p-5 md:p-6; }
   .panel { @apply rounded-2xl bg-white p-5 shadow-lift; }
   .well { @apply rounded-xl bg-canvas p-4; }
 
   /* Buttons — min 44px tap target */
-  .btn { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:bg-brand-700 hover:no-underline active:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-outline { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm font-bold text-ink no-underline transition-colors hover:border-ink/40 hover:bg-canvas hover:no-underline; }
-  .btn-ghost { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-ink-soft no-underline hover:bg-white hover:text-ink hover:no-underline; }
-  .btn-danger { @apply inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl bg-due px-3.5 py-2 text-sm font-bold text-white hover:bg-due-ink; }
-  .btn-wa { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-wa px-4 py-2.5 text-sm font-bold text-white no-underline hover:bg-wa-hover hover:no-underline; }
+  .btn { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-brand-700 hover:no-underline active:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-outline { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm font-semibold text-ink no-underline transition-colors hover:border-ink/40 hover:bg-canvas hover:no-underline; }
+  .btn-ghost { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink-soft no-underline hover:bg-white hover:text-ink hover:no-underline; }
+  .btn-danger { @apply inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl bg-due px-3.5 py-2 text-sm font-semibold text-white hover:bg-due-ink; }
+  .btn-wa { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-wa px-4 py-2.5 text-sm font-semibold text-white no-underline hover:bg-wa-hover hover:no-underline; }
   .btn-sm { @apply min-h-[36px] rounded-lg px-3 py-1.5 text-xs; }
 
   /* Forms — 16px on phones so iOS does not zoom */
   .input { @apply w-full rounded-xl border border-ink/20 bg-white px-3.5 py-2.5 text-base text-ink placeholder:text-ink-mute transition-colors focus:border-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-100 md:text-[15px]; }
   select.input { @apply pr-8; }
-  .label { @apply mb-1.5 block text-sm font-bold text-ink-soft; }
+  .label { @apply mb-1.5 block text-sm font-medium text-ink-soft; }
   .hint { @apply mt-1 text-xs text-ink-mute; }
 
   /* Data */
-  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold; }
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
   .table { @apply w-full text-left text-sm; }
-  .table th { @apply whitespace-nowrap border-b border-line bg-canvas px-3 py-2.5 text-xs font-bold text-ink-soft; }
+  .table th { @apply whitespace-nowrap border-b border-line bg-canvas px-3 py-2.5 text-xs font-semibold text-ink-soft; }
   .table td { @apply border-b border-line/80 px-3 py-3 align-top; }
   .table tbody tr:hover td { @apply bg-canvas/60; }
   @media (max-width: 767px) {
     .table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table td { min-width: 7rem; }
   }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.08em] text-ink-mute; }
   .muted { @apply text-sm text-ink-mute; }
 
   /* House number plate — the app's signature element */
-  .plate { @apply inline-flex shrink-0 whitespace-nowrap min-w-[2.25rem] items-center justify-center rounded-md bg-plate px-1.5 font-display text-xs font-extrabold text-plate-ink shadow-plate; }
+  .plate { @apply inline-flex shrink-0 whitespace-nowrap min-w-[2.25rem] items-center justify-center rounded-md bg-plate px-1.5 font-display text-xs font-bold tabular-nums text-plate-ink shadow-plate; }
   .plate-paid { @apply bg-paid text-white shadow-none; }
   .plate-due { @apply bg-due text-white shadow-none; }
   .plate-partial { @apply bg-part text-white shadow-none; }

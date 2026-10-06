@@ -19,7 +19,7 @@ export default async function AgentLayout({ children, params }: { children: Reac
       <aside className="space-y-4 md:sticky md:top-24 md:self-start">
         <div className="rounded-2xl bg-ink p-4 text-white">
           <div className="text-xs font-bold text-plate">Welfare agent</div>
-          <div className="mt-0.5 text-lg font-extrabold leading-snug">{society?.name}</div>
+          <div className="mt-0.5 text-lg font-bold leading-snug">{society?.name}</div>
           <div className="mt-1 text-sm text-white/85">{areas.map(areaLabel).join(' · ')}</div>
         </div>
         <SideNav items={items} label="Welfare agent" />

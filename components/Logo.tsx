@@ -15,7 +15,7 @@ export default function Logo({ name }: { name: string }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2.5 text-ink no-underline hover:no-underline" aria-label={`${name} home`}>
       <LogoMark />
-      <span className="text-lg font-extrabold tracking-tight sm:text-xl">{name}</span>
+      <span className="text-lg font-bold tracking-[-0.02em] sm:text-xl">{name}</span>
     </Link>
   );
 }

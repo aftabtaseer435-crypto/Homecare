@@ -36,7 +36,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
       <article>
         <Link href="/guides" className="text-sm font-semibold">Saari guides</Link>
-        <h1 className="mt-3 text-4xl font-extrabold">{g.title}</h1>
+        <h1 className="mt-3 text-4xl font-bold">{g.title}</h1>
         <p className="mt-3 max-w-2xl text-lg text-ink-soft">{g.summary}</p>
         <div className="mt-4 flex flex-wrap gap-3 text-sm text-ink-mute">
           <span>Kis ke liye: <b className="text-ink-soft">{g.who}</b></span>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import SocietyBoard from '@/components/landing/SocietyBoard';
 import { jsonLd } from '@/lib/seo';
+import { createClient } from '@/lib/supabase/server';
 
 export const metadata = {
   title: 'Society development fund app — green / red status aur WhatsApp reminders',
@@ -29,7 +30,16 @@ const features: [string, string][] = [
   ['Notices', 'Notice likhein aur society ke WhatsApp group mein share karein.'],
 ];
 
-export default function SocietyLanding() {
+export const revalidate = 300;
+
+export default async function SocietyLanding() {
+  const supabase = createClient();
+  const { data: societies } = await supabase
+    .from('societies')
+    .select('id, name, city, total_houses')
+    .eq('status', 'active')
+    .order('created_at', { ascending: true })
+    .limit(12);
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
@@ -39,45 +49,75 @@ export default function SocietyLanding() {
   return (
     <>
     <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
-    <div className="space-y-16">
-      <section className="grid items-center gap-10 lg:grid-cols-2">
+    <div className="space-y-16 md:space-y-24">
+      <section className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
         <div>
-          <span className="badge bg-society-soft px-3 py-1 text-sm text-society-ink">Society</span>
-          <h1 className="mt-3 text-4xl font-extrabold leading-tight md:text-5xl">Aap ka fund, aap ka haq: har rupay ka hisaab.</h1>
-          <p className="mt-4 max-w-lg text-lg text-ink-soft">
+          <p className="eyebrow">Society fund · Welfare · Hisaab</p>
+          <h1 className="mt-3 text-[2.1rem] leading-[1.15] md:text-5xl md:leading-[1.1]">Aap ka fund, aap ka haq — har rupay ka hisaab.</h1>
+          <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-ink-soft">
             Har ghar ek plate: green matlab jama, red matlab baqi. Jo fund deta hai woh dekhta hai paisa kahan laga, aur gali ka welfare agent har masle ka jawabdeh hai.
           </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link href="/societies/register" className="btn bg-society px-5 py-3 text-base">Society free register karein</Link>
-            <Link href="/societies/join" className="btn-outline px-5 py-3 text-base">Apna ghar add karein</Link>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/societies/register" className="btn bg-society px-5">Society free register karein</Link>
+            <Link href="/societies/join" className="btn-outline px-5">Apna ghar add karein</Link>
           </div>
         </div>
         <SocietyBoard />
       </section>
 
+      {(societies ?? []).length > 0 && (
+        <section aria-labelledby="live">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="eyebrow">Live</p>
+              <h2 id="live" className="mt-1 text-2xl md:text-3xl">App par societies</h2>
+            </div>
+            <Link href="/societies/join" className="text-sm font-medium">Apni society dhoondein →</Link>
+          </div>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {(societies ?? []).map((s) => (
+              <li key={s.id}>
+                <Link href={`/societies/join?society=${s.id}`} className="flex h-full items-center gap-4 rounded-2xl border border-line bg-white p-5 no-underline transition-colors hover:border-society hover:no-underline">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-society-soft text-base font-semibold text-society-ink" aria-hidden="true">
+                    {s.name.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase()}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold text-ink">{s.name}</span>
+                    <span className="block text-sm text-ink-mute">{s.city}{s.total_houses ? ` · ${s.total_houses.toLocaleString('en-US')} ghar` : ''}</span>
+                  </span>
+                  <span className="text-sm font-medium text-society-ink">Join →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section aria-labelledby="features">
-        <h2 id="features" className="text-2xl font-extrabold md:text-3xl">Is mein kya hai</h2>
+        <p className="eyebrow">Features</p>
+        <h2 id="features" className="mt-1 text-2xl md:text-3xl">Is mein kya hai</h2>
         <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {features.map(([t, d]) => (
-            <div key={t} className="bg-white p-5">
+            <div key={t} className="bg-white p-6">
               <h3>{t}</h3>
-              <p className="mt-1 text-sm text-ink-mute">{d}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-mute">{d}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="steps" className="rounded-3xl bg-white p-5 md:p-10">
-        <h2 id="steps" className="text-2xl font-extrabold md:text-3xl">Shuru kaise karein</h2>
-        <ol className="mt-6 grid gap-6 md:grid-cols-2">
+      <section aria-labelledby="steps" className="rounded-3xl border border-line bg-white p-6 md:p-12">
+        <p className="eyebrow">5 qadam</p>
+        <h2 id="steps" className="mt-1 text-2xl md:text-3xl">Shuru kaise karein</h2>
+        <ol className="mt-8 grid gap-x-10 gap-y-7 md:grid-cols-2">
           {steps.map(([t, d], i) => (
             <li key={t} className="flex gap-4">
-              <span className="plate h-9 w-9 shrink-0 text-sm">{i + 1}</span>
-              <div><h3>{t}</h3><p className="mt-1 text-sm text-ink-mute">{d}</p></div>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-society-soft text-sm font-semibold text-society-ink">{i + 1}</span>
+              <div><h3>{t}</h3><p className="mt-1 text-sm leading-relaxed text-ink-mute">{d}</p></div>
             </li>
           ))}
         </ol>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
           <Link href="/guides/society-admin" className="btn bg-society">Poori admin guide</Link>
           <Link href="/guides/makan-malik" className="btn-outline">Makan malik guide</Link>
         </div>

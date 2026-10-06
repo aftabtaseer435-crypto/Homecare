@@ -20,10 +20,10 @@ export const modules: {
     home: '/society',
     links: [
       { href: '/society', label: 'Overview' },
-      { href: '/welfare', label: 'Masla report karein', auth: true },
-      { href: '/hisaab', label: 'Fund ka hisaab', auth: true },
-      { href: '/societies/join', label: 'Apna ghar add karein', auth: true },
-      { href: '/societies/register', label: 'Society register karein', auth: true },
+      { href: '/welfare', label: 'Masla report', auth: true },
+      { href: '/hisaab', label: 'Fund hisaab', auth: true },
+      { href: '/societies/join', label: 'Apna ghar', auth: true },
+      { href: '/societies/register', label: 'Society register', auth: true },
       { href: '/guides/society-admin', label: 'Admin guide' },
     ],
     match: ['/society', '/societies', '/s/', '/my/houses', '/welfare', '/hisaab', '/w/'],
@@ -76,9 +76,9 @@ export function moduleFor(path: string) {
 }
 
 /** Tailwind classes per module (kept literal so Tailwind picks them up). */
-export const moduleTheme: Record<Module, { bg: string; soft: string; text: string; ring: string; dot: string }> = {
-  society: { bg: 'bg-society', soft: 'bg-society-soft', text: 'text-society-ink', ring: 'ring-society', dot: 'bg-society' },
-  services: { bg: 'bg-service', soft: 'bg-service-soft', text: 'text-service-ink', ring: 'ring-service', dot: 'bg-service' },
-  property: { bg: 'bg-property', soft: 'bg-property-soft', text: 'text-property-ink', ring: 'ring-property', dot: 'bg-property' },
-  help: { bg: 'bg-ink', soft: 'bg-white', text: 'text-ink', ring: 'ring-ink', dot: 'bg-plate' },
+export const moduleTheme: Record<Module, { bg: string; soft: string; text: string; ring: string; dot: string; border: string }> = {
+  society: { bg: 'bg-society', soft: 'bg-society-soft', text: 'text-society-ink', ring: 'ring-society', dot: 'bg-society', border: 'border-society' },
+  services: { bg: 'bg-service', soft: 'bg-service-soft', text: 'text-service-ink', ring: 'ring-service', dot: 'bg-service', border: 'border-service' },
+  property: { bg: 'bg-property', soft: 'bg-property-soft', text: 'text-property-ink', ring: 'ring-property', dot: 'bg-property', border: 'border-property' },
+  help: { bg: 'bg-ink', soft: 'bg-white', text: 'text-ink', ring: 'ring-ink', dot: 'bg-plate', border: 'border-ink' },
 };

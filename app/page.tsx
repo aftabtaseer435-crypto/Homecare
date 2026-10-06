@@ -46,7 +46,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
       {/* Hero — what the product is, and the three doors into it */}
       <section className="grid items-start gap-10 pt-2 lg:grid-cols-[1.15fr_1fr] lg:pt-6">
         <div>
-          <h1 className="max-w-xl text-[2.35rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+          <h1 className="max-w-xl text-[2.35rem] font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
             Society ka hisaab aur ghar ke kaam, ek app mein.
           </h1>
           <p className="mt-5 max-w-lg text-lg text-ink-soft">
@@ -98,7 +98,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
               ))}
             </ul>
             <div className="mt-5 flex items-center gap-4 rounded-xl border border-line p-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-service-soft text-lg font-extrabold text-service-ink">IE</div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-service-soft text-lg font-bold text-service-ink">IE</div>
               <div className="min-w-0 flex-1">
                 <div className="font-bold">Imran Electric Works</div>
                 <div className="text-xs text-ink-mute">Electrician, AC repair · 9 saal tajurba</div>
@@ -126,7 +126,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
               <span className="badge bg-paid text-white">✓ Society verified</span>
             </div>
             <div className="p-5">
-              <div className="text-2xl font-extrabold">Rs 45,000 <span className="text-sm font-medium text-ink-mute">/ mahina</span></div>
+              <div className="text-2xl font-bold">Rs 45,000 <span className="text-sm font-medium text-ink-mute">/ mahina</span></div>
               <div className="mt-1 font-bold">5 marla, upper portion, 3 bed</div>
               <div className="text-sm text-ink-mute">Block C, Gali 7</div>
             </div>
@@ -136,7 +136,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
 
       {/* How it works */}
       <section className="rounded-3xl bg-white p-5 md:p-10" aria-labelledby="how">
-        <h2 id="how" className="text-3xl font-extrabold md:text-4xl">Kaise chalta hai?</h2>
+        <h2 id="how" className="text-3xl font-bold md:text-4xl">Kaise chalta hai?</h2>
         <p className="mb-8 mt-2 text-ink-soft">Apna kirdar choose karein.</p>
         <HowItWorks />
       </section>
@@ -144,7 +144,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
       {/* FAQ */}
       <section className="grid gap-8 lg:grid-cols-[1fr_1.6fr]" aria-labelledby="faq">
         <div>
-          <h2 id="faq" className="text-3xl font-extrabold">Aksar pooche jane wale sawal</h2>
+          <h2 id="faq" className="text-3xl font-bold">Aksar pooche jane wale sawal</h2>
           <p className="mt-3 text-ink-soft">Aur sawal hain? <Link href="/guides">Guides</Link> mein har qadam likha hai.</p>
         </div>
         <div className="divide-y divide-line rounded-2xl border border-line bg-white">
@@ -163,7 +163,7 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
       {/* Final CTA */}
       <section className="relative overflow-hidden rounded-3xl bg-brand-900 px-6 py-12 text-white md:px-12">
         <div className="relative z-10 max-w-xl">
-          <h2 className="text-3xl font-extrabold text-white md:text-4xl">Apni society ko aaj hi shamil karein</h2>
+          <h2 className="text-3xl font-bold text-white md:text-4xl">Apni society ko aaj hi shamil karein</h2>
           <p className="mt-3 text-white/85">Registration free hai. Approve hote hi admin panel mil jata hai.</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link href="/societies/register" className="btn bg-plate text-plate-ink hover:bg-[#FFC933]">Society register karein</Link>
@@ -188,7 +188,7 @@ function ModuleDoor({ href, color, name, body }: { href: string; color: string; 
         <span className={`w-2 shrink-0 ${color}`} aria-hidden="true" />
         <span className="flex flex-1 items-center justify-between gap-4 p-5">
           <span>
-            <span className="block text-lg font-extrabold text-ink">{name}</span>
+            <span className="block text-lg font-bold text-ink">{name}</span>
             <span className="block text-sm text-ink-mute">{body}</span>
           </span>
           <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${color} text-white transition-transform group-hover:translate-x-0.5`} aria-hidden="true">
@@ -219,7 +219,7 @@ function ModuleSection({
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
         <div className={reverse ? 'lg:order-2' : ''}>
           <span className={`badge ${t.chip} px-3 py-1 text-sm`}>{eyebrow}</span>
-          <h2 id={`${id}-title`} className="mt-3 text-3xl font-extrabold leading-tight">{title}</h2>
+          <h2 id={`${id}-title`} className="mt-3 text-3xl font-bold leading-tight">{title}</h2>
           <p className="mt-3 text-[16px] text-ink-soft">{body}</p>
           <ul className="mt-5 space-y-2.5">
             {points.map((p) => (

@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2.5">
             <LogoMark className="h-9 w-9" />
-            <span className="text-lg font-extrabold">{appName}</span>
+            <span className="text-lg font-bold">{appName}</span>
           </div>
           <p className="mt-3 max-w-xs text-sm text-ink-mute">
             Pakistan ki housing societies ke liye: fund ka hisaab, ghar ke kaam ke liye bharosemand log, aur ghar rent ya sale.
