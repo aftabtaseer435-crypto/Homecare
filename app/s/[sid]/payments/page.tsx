@@ -3,14 +3,16 @@ import { Flash, StatusBadge } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fmtDate, houseLabel, rs } from '@/lib/format';
-import { recordPayment, reviewPayment } from '../actions';
+import { logManualMessage, recordPayment, reviewPayment } from '../actions';
+import WaButton from '@/components/WaButton';
+import { receiptText, waSend } from '@/lib/messages';
 
 export default async function Payments({
   params,
   searchParams,
 }: {
   params: { sid: string };
-  searchParams: { house?: string; block?: string; street?: string; house_no?: string; ok?: string; err?: string };
+  searchParams: { house?: string; block?: string; street?: string; house_no?: string; receipt?: string; ok?: string; err?: string };
 }) {
   const { supabase } = await requireSocietyStaff(params.sid);
   const sid = params.sid;
@@ -65,11 +67,52 @@ export default async function Payments({
     if (data?.signedUrl) proofUrls.set(p.id, data.signedUrl);
   }
 
+  // just-saved payment → offer the WhatsApp receipt from the admin's own WhatsApp
+  let receipt: { text: string; owners: { owner_name: string; owner_phone: string }[]; houseId: string; dueId: string; receiptNo: string } | null = null;
+  if (searchParams.receipt) {
+    const { data: p } = await supabase
+      .from('payments')
+      .select('id, amount, receipt_no, house_id, fund_due_id, house:houses(block, street, house_no), due:fund_dues(period, plan:fund_plans(name))')
+      .eq('id', searchParams.receipt)
+      .eq('society_id', sid)
+      .eq('status', 'verified')
+      .maybeSingle();
+    if (p) {
+      const pay = p as any;
+      const [{ data: soc }, { data: os }] = await Promise.all([
+        supabase.from('societies').select('name').eq('id', sid).single(),
+        supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', pay.house_id).eq('status', 'verified').eq('whatsapp_opt_in', true),
+      ]);
+      receipt = {
+        owners: os ?? [], houseId: pay.house_id, dueId: pay.fund_due_id, receiptNo: pay.receipt_no,
+        text: receiptText({ name: (os ?? [])[0]?.owner_name ?? '', society: soc?.name ?? '', amount: pay.amount, house: pay.house, fund: `${pay.due.plan.name} ${pay.due.period}`, receiptNo: pay.receipt_no }),
+      };
+    }
+  }
+
   const openDues = houseDues.filter((d: any) => d.status === 'unpaid' || d.status === 'partial');
 
   return (
     <div className="space-y-6">
       <Flash searchParams={searchParams} />
+
+      {receipt && (
+        <div className="card flex flex-wrap items-center gap-3 border-green-300 bg-green-50">
+          <div className="flex-1 text-sm">Receipt <b>{receipt.receiptNo}</b> — owner ko WhatsApp par bhejein:</div>
+          {receipt.owners.length === 0 ? (
+            <span className="muted">Is ghar ka owner number record mein nahi.</span>
+          ) : (
+            receipt.owners.map((o) => (
+              <WaButton
+                key={o.owner_phone}
+                label={`Receipt bhejein — ${o.owner_name}`}
+                href={waSend(o.owner_phone, receipt!.text.replace(/^Shukriya [^!]*!/, `Shukriya ${o.owner_name}!`))}
+                onSent={logManualMessage.bind(null, { sid, houseId: receipt!.houseId, dueId: receipt!.dueId, phone: o.owner_phone, kind: 'receipt' })}
+              />
+            ))
+          )}
+        </div>
+      )}
 
       {/* Record payment */}
       <section className="card space-y-4">

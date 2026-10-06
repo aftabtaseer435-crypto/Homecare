@@ -6,6 +6,7 @@ import { back, num, str } from '@/lib/actions';
 import { normalizePhone } from '@/lib/phone';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { broadcastNotice, sendReceipt } from '@/lib/notify';
+import { whatsappApiEnabled } from '@/lib/whatsapp';
 import { todayPK } from '@/lib/format';
 
 const sidOf = (fd: FormData) => str(fd, 'sid');
@@ -229,7 +230,7 @@ export async function recordPayment(fd: FormData) {
   if (error) back(path, 'err', error.message);
   await sendReceipt(pay!.id);
   revalidatePath(`/s/${sid}`);
-  back(`${path}?house=${due!.house_id}`, 'ok', `Payment save — receipt ${pay!.receipt_no}. WhatsApp receipt bhej di gayi.`);
+  back(`${path}?house=${due!.house_id}&receipt=${pay!.id}`, 'ok', `Payment save — receipt ${pay!.receipt_no}.`);
 }
 
 export async function reviewPayment(fd: FormData) {
@@ -241,7 +242,8 @@ export async function reviewPayment(fd: FormData) {
   if (error) back(`/s/${sid}/payments`, 'err', error.message);
   if (status === 'verified') await sendReceipt(id);
   revalidatePath(`/s/${sid}`);
-  back(`/s/${sid}/payments`, 'ok', status === 'verified' ? 'Payment verify ho gayi, receipt bhej di' : 'Payment reject ho gayi');
+  if (status === 'verified') back(`/s/${sid}/payments?receipt=${id}`, 'ok', 'Payment verify ho gayi');
+  back(`/s/${sid}/payments`, 'ok', 'Payment reject ho gayi');
 }
 
 // ---------------------------------------------------------------- NOTICES
@@ -251,11 +253,25 @@ export async function createNotice(fd: FormData) {
   const title = str(fd, 'title');
   const { error } = await supabase.from('notices').insert({ society_id: sid, title, body: str(fd, 'body'), created_by: user.id });
   if (error) back(`/s/${sid}/notices`, 'err', error.message);
+  if (!whatsappApiEnabled()) back(`/s/${sid}/notices`, 'ok', 'Notice post ho gaya. Ab "WhatsApp group mein share" dabayein.');
   if (fd.get('whatsapp') === 'on') {
     const r = await broadcastNotice(sid, title, str(fd, 'block') || null);
     back(`/s/${sid}/notices`, 'ok', `Notice post ho gaya. WhatsApp: ${r.sent} sent, ${r.failed} failed.`);
   }
   back(`/s/${sid}/notices`, 'ok', 'Notice post ho gaya');
+}
+
+// ---------------------------------------------------------------- MANUAL WHATSAPP
+/** Records that the admin opened WhatsApp for this reminder / receipt (manual mode). */
+export async function logManualMessage(input: {
+  sid: string; houseId: string; dueId?: string | null; phone: string; kind: 'reminder' | 'receipt' | 'notice'; offset?: number | null;
+}) {
+  await requireSocietyStaff(input.sid);
+  const admin = createAdminClient();
+  await admin.from('messages_log').insert({
+    society_id: input.sid, house_id: input.houseId, fund_due_id: input.dueId ?? null, to_phone: input.phone,
+    channel: 'whatsapp_manual', kind: input.kind, offset_days: input.offset ?? null, status: 'sent_manual',
+  });
 }
 
 // ---------------------------------------------------------------- TEAM

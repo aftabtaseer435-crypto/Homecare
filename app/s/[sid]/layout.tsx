@@ -7,6 +7,7 @@ export default async function SocietyAdminLayout({ children, params }: { childre
   const base = `/s/${params.sid}`;
   const tabs = [
     { href: base, label: 'Overview' },
+    { href: `${base}/reminders`, label: 'WhatsApp reminders' },
     { href: `${base}/payments`, label: 'Payments' },
     { href: `${base}/defaulters`, label: 'Defaulters' },
     { href: `${base}/owners`, label: 'Owners' },
@@ -18,7 +19,7 @@ export default async function SocietyAdminLayout({ children, params }: { childre
           { href: `${base}/team`, label: 'Team' },
         ]
       : []),
-    { href: `${base}/messages`, label: 'WhatsApp log' },
+    { href: `${base}/messages`, label: 'Message log' },
   ];
   return (
     <div>

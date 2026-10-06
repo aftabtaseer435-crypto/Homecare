@@ -2,11 +2,11 @@
 
 Housing society ke liye ek hi app:
 
-1. **Society + Development Fund** — society free register, ghar/owners ka record, har ghar ka fund status (green = jama, red = baqi), payment entry, receipts, defaulters list, notices, aur due date se 3 din pehle automatic WhatsApp reminder.
+1. **Society + Development Fund** — society free register, ghar/owners ka record, har ghar ka fund status (green = jama, red = baqi), payment entry, receipts, defaulters list, notices, aur due date se 3 din pehle WhatsApp reminder (admin ke apne WhatsApp se, ek click — koi Meta verification nahi).
 2. **Home Services** — electrician, plumber, masi, rickshaw, AC repair waghera. Provider apni profile banata hai (CNIC verification), consumer category choose kar ke seedha Call / WhatsApp karta hai, phir rating deta hai.
 3. **Property Rent / Sale** — owner ghar list karta hai (society-verified badge), buyer/tenant search, filter, call/WhatsApp, save.
 
-Stack: **Next.js 14 (App Router) + Supabase (Postgres, Auth, Storage) + Tailwind + Meta WhatsApp Cloud API**, Vercel par deploy. Mobile par PWA ki tarah install hota hai.
+Stack: **Next.js 14 (App Router) + Supabase (Postgres, Auth, Storage) + Tailwind**, WhatsApp click-to-send (optional Meta Cloud API), Vercel par deploy. Mobile par PWA ki tarah install hota hai.
 
 ---
 
@@ -38,41 +38,28 @@ Ab header mein **Super Admin** link aayega.
 ### d) Vercel deploy
 1. Repo ko Vercel par import karein.
 2. `.env.example` ke saare variables Vercel → Settings → Environment Variables mein daalein (`CRON_SECRET` lambi random string).
-3. `vercel.json` mein daily cron already hai: roz **05:00 UTC = 10:00 AM Pakistan** par `/api/cron/daily` chalta hai (naye dues + reminders).
+3. `vercel.json` mein daily cron already hai: roz **05:00 UTC = 10:00 AM Pakistan** par `/api/cron/daily` naye period ke dues banata hai.
 4. Supabase → Authentication → URL Configuration mein apna domain daal dein.
 
 ---
 
-## 2. WhatsApp setup (Meta Cloud API)
+## 2. WhatsApp — koi verification nahi chahiye
 
-Jab tak `WHATSAPP_TOKEN` aur `WHATSAPP_PHONE_NUMBER_ID` khali hain, system **dry-run** mein chalta hai: messages `messages_log` mein `dry_run` status ke sath save hote hain lekin bheje nahi jate. Is se poora flow bina WhatsApp ke test ho jata hai.
+Default mode **manual** hai: Meta / WhatsApp Business verification, templates ya per-message kharcha — kuch nahi chahiye.
 
-Live karne ke liye:
-1. [Meta Business](https://business.facebook.com) account + business verification.
-2. developers.facebook.com → App banayein → WhatsApp product add karein → ek naya number (jo kisi WhatsApp par na ho) add karein.
-3. Permanent access token (System User) banayein → `WHATSAPP_TOKEN`; number ka ID → `WHATSAPP_PHONE_NUMBER_ID`.
-4. **WhatsApp Manager → Message templates** mein ye 4 templates (category: **Utility**) banayein aur approve karwayein. Naam `.env` mein badal bhi sakte hain, lekin `{{n}}` variables ki tarteeb yahi rakhein:
+- **WhatsApp reminders** tab (`/s/<id>/reminders`): app khud list banati hai ke kin gharon ka fund agle 3 din mein due hai ya overdue hai. Har owner ke saamne **WhatsApp** button — dabane se admin ke apne WhatsApp mein Roman Urdu message pehle se likha hua khulta hai (naam, ghar, amount, due date, status link). Bas **Send**. Button grey ho jata hai aur Message log mein record hota hai, taake pata rahe kis ko bhej diya.
+- **Receipt:** payment save / verify karte hi "Receipt bhejein" button aata hai.
+- **Notice:** har notice ke neeche "WhatsApp group mein share" — society ke group mein ek click.
 
-**fund_reminder**
-```
-Assalam o Alaikum {{1}}, {{2}} ka {{3}} — {{4}} ({{5}}) ki due date {{6}} hai. Abhi tak jama nahi hua, meharbani kar ke waqt par jama karwa dein. Shukriya.
-```
-**fund_overdue**
-```
-Assalam o Alaikum {{1}}, {{2}} ka {{3}} — {{4}} ({{5}}) ki due date {{6}} guzar chuki hai. Meharbani kar ke jald jama karwayein.
-```
-**payment_receipt**
-```
-Shukriya {{1}}! {{2}} jama ho gaye — {{3}}, {{4}}, {{5}}. Receipt no: {{6}}.
-```
-**society_notice**
-```
-Assalam o Alaikum {{1}}, {{2}} ki taraf se naya notice: {{3}}. Detail app mein dekhein.
-```
+Tip: 2000 ghar mein se reminder sirf unhi ko jata hai jin ka fund baqi hai — gali ka filter laga kar collector apne hisse ke messages bhej sakta hai.
 
-Reminder schedule har society ka admin **Fund plans** page se badal sakta hai (default: `-3, 0, 3, 7` = 3 din pehle, due wale din, 3 aur 7 din baad). Payment verify hote hi reminders khud band.
+### (Optional, baad mein) Fully automatic WhatsApp
+Agar kabhi chahein ke reminders bina button dabaye khud jayein, to Meta WhatsApp Cloud API ki keys `.env` mein daal dein (`WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`). Code already tayyar hai — daily cron khud bhejna shuru kar dega. Is ke liye Meta Business verification aur in templates ki approval (category: Utility) lagegi:
 
-> Meta har template message ka charge leta hai — current Pakistan rate Meta ki pricing page par check karein. Sirf un owners ko message jata hai jinhone opt-in kiya ho.
+- `fund_reminder`: `Assalam o Alaikum {{1}}, {{2}} ka {{3}} — {{4}} ({{5}}) ki due date {{6}} hai. Abhi tak jama nahi hua, meharbani kar ke waqt par jama karwa dein. Shukriya.`
+- `fund_overdue`: `Assalam o Alaikum {{1}}, {{2}} ka {{3}} — {{4}} ({{5}}) ki due date {{6}} guzar chuki hai. Meharbani kar ke jald jama karwayein.`
+- `payment_receipt`: `Shukriya {{1}}! {{2}} jama ho gaye — {{3}}, {{4}}, {{5}}. Receipt no: {{6}}.`
+- `society_notice`: `Assalam o Alaikum {{1}}, {{2}} ki taraf se naya notice: {{3}}. Detail app mein dekhein.`
 
 ---
 
@@ -85,8 +72,9 @@ Reminder schedule har society ka admin **Fund plans** page se badal sakta hai (d
 4. Admin `/s/<id>/funds` par fund plan banata hai (amount, monthly/quarterly/yearly/one-time, due tareekh). Dues foran ban jate hain; aage har period ke roz cron se.
 5. Owners `/societies/join` par society → gali → ghar choose kar ke claim karte hain; admin `/s/<id>/owners` par approve karta hai. Admin khud bhi owner add kar sakta hai — woh owner jab isi number se login karega, ghar khud link ho jayega.
 6. **Overview** page par poori society grid mein: har ghar green (paid) / red (not paid) / orange (partial) / grey (exempt).
-7. Payment: collector `/s/<id>/payments` par cash entry karta hai → receipt number + WhatsApp receipt. Ya owner `/my/houses/<id>` par JazzCash/Easypaisa screenshot upload karta hai → admin verify.
-8. Defaulters list + CSV/Excel download, notices (WhatsApp broadcast optional), team (admin / collector), WhatsApp log.
+7. Reminders: `/s/<id>/reminders` par har due/overdue owner ke liye WhatsApp button (manual, verification ke baghair).
+8. Payment: collector `/s/<id>/payments` par cash entry karta hai → receipt number + "Receipt bhejein" WhatsApp button. Ya owner `/my/houses/<id>` par JazzCash/Easypaisa screenshot upload karta hai → admin verify.
+9. Defaulters list + CSV/Excel download, notices (WhatsApp broadcast optional), team (admin / collector), WhatsApp log.
 
 ### Services
 1. Provider `/provider/register`: naam, number, kaam (multiple), area, societies, rates, photo, CNIC front/back.

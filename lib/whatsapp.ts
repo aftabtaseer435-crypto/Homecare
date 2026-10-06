@@ -1,5 +1,11 @@
 import 'server-only';
 
+/** True only when Meta Cloud API keys are set. Otherwise the app runs in
+ *  manual mode: admins send reminders from their own WhatsApp via wa.me links. */
+export function whatsappApiEnabled() {
+  return Boolean(process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID);
+}
+
 export type SendResult = { ok: boolean; id?: string; error?: string; dryRun?: boolean };
 
 /**

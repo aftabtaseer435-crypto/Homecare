@@ -1,6 +1,6 @@
 import 'server-only';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { sendTemplate, templates } from '@/lib/whatsapp';
+import { sendTemplate, templates, whatsappApiEnabled } from '@/lib/whatsapp';
 import { fmtDate, houseLabel, rs, todayPK, daysBetween } from '@/lib/format';
 
 type Owner = { owner_name: string; owner_phone: string; whatsapp_opt_in: boolean; user_id: string | null };
@@ -29,6 +29,7 @@ async function recipients(admin: ReturnType<typeof createAdminClient>, houseIds:
 
 /** WhatsApp receipt after a payment is verified. Never throws. */
 export async function sendReceipt(paymentId: string) {
+  if (!whatsappApiEnabled()) return; // manual mode: admin taps the receipt WhatsApp button
   try {
     const admin = createAdminClient();
     const { data: p } = await admin
@@ -56,6 +57,7 @@ export async function sendReceipt(paymentId: string) {
 
 /** Broadcast a notice to all verified owners of a society (or one block). */
 export async function broadcastNotice(societyId: string, title: string, block?: string | null) {
+  if (!whatsappApiEnabled()) return { sent: 0, failed: 0 };
   const admin = createAdminClient();
   const { data: society } = await admin.from('societies').select('name').eq('id', societyId).single();
   const houseIds: string[] = [];
@@ -101,6 +103,9 @@ export async function runDailyJob(today = todayPK()) {
     const { data } = await admin.rpc('generate_dues', { p_plan: p.id, p_ref: today });
     summary.duesCreated += Number(data ?? 0);
   }
+
+  // Manual mode: reminders are sent by admins from /s/<id>/reminders
+  if (!whatsappApiEnabled()) return summary;
 
   const { data: societies } = await admin.from('societies').select('id, name, reminder_offsets').eq('status', 'active');
   for (const s of societies ?? []) {

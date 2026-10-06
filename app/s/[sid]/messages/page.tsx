@@ -15,8 +15,8 @@ export default async function Messages({ params }: { params: { sid: string } }) 
 
   return (
     <div className="card">
-      <h2 className="mb-1">WhatsApp log (last 200)</h2>
-      <p className="muted mb-4">&quot;dry_run&quot; ka matlab WhatsApp API abhi connect nahi — message log hua lekin bheja nahi gaya.</p>
+      <h2 className="mb-1">Message log (last 200)</h2>
+      <p className="muted mb-4">&quot;sent_manual&quot; = admin ne apne WhatsApp se button daba kar bheja. &quot;sent&quot; = automatic (sirf jab Meta API connect ho).</p>
       <table className="table">
         <thead><tr><th>Time</th><th>To</th><th>Type</th><th>Status</th><th>Error</th></tr></thead>
         <tbody>
@@ -26,7 +26,7 @@ export default async function Messages({ params }: { params: { sid: string } }) 
               <td>{displayPhone(l.to_phone)}</td>
               <td>{label(l.kind, l.offset_days)}</td>
               <td>
-                <span className={`badge ${l.status === 'sent' ? 'bg-green-100 text-green-800' : l.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>{l.status}</span>
+                <span className={`badge ${l.status === 'sent' || l.status === 'sent_manual' ? 'bg-green-100 text-green-800' : l.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>{l.status}</span>
               </td>
               <td className="max-w-xs truncate text-xs text-red-600" title={l.error ?? ''}>{l.error}</td>
             </tr>
