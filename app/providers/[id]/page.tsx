@@ -1,3 +1,4 @@
+import HoursBadge from '@/components/HoursBadge';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
@@ -32,7 +33,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
   const supabase = createClient();
   const { data: p } = await supabase
     .from('providers')
-    .select('id, user_id, display_name, phone, whatsapp, photo_path, bio, city, area_note, experience_years, rate_note, rating_avg, rating_count, status, available, created_at, provider_categories(category:service_categories(name, slug, icon)), provider_societies(society:societies(name))')
+    .select('id, user_id, display_name, phone, whatsapp, photo_path, bio, city, area_note, experience_years, rate_note, rating_avg, rating_count, status, available, created_at, day_start, day_end, night_start, night_end, provider_categories(category:service_categories(name, slug, icon)), provider_societies(society:societies(name))')
     .eq('id', params.id)
     .single();
   if (!p) notFound();
@@ -89,6 +90,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
             {prov.city}{prov.area_note ? ` · ${prov.area_note}` : ''}
             {prov.experience_years ? ` · ${prov.experience_years} saal tajurba` : ''}
           </div>
+          <HoursBadge h={prov} available={prov.available} />
           {prov.rate_note && <div className="text-sm"><b>Rates:</b> {prov.rate_note}</div>}
           <div className="text-sm text-ink-soft">{displayPhone(prov.phone)}</div>
           <div className="pt-2">

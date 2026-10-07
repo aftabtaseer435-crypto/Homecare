@@ -32,7 +32,7 @@ export const modules: {
     id: 'services',
     name: 'Home Services',
     short: 'Services',
-    blurb: 'Electrician, plumber, masi, rickshaw — verified log',
+    blurb: 'Electrician, plumber, masi — aur chicken, sabzi, rashan, dawai ghar tak',
     home: '/services',
     links: [
       { href: '/services', label: 'Service dhoondein' },

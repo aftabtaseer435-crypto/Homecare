@@ -25,6 +25,19 @@ function fields(fd: FormData) {
     rate_note: str(fd, 'rate_note') || null,
     area_note: str(fd, 'area_note') || null,
     bio: str(fd, 'bio') || null,
+    ...hours(fd),
+  };
+}
+
+const t = (v: string) => (/^\d{2}:\d{2}$/.test(v) ? v : null);
+/** Din / raat ke auqaat — unticked shift = null */
+function hours(fd: FormData) {
+  const day = fd.get('day_on') === 'on', night = fd.get('night_on') === 'on';
+  return {
+    day_start: day ? t(str(fd, 'day_start')) : null,
+    day_end: day ? t(str(fd, 'day_end')) : null,
+    night_start: night ? t(str(fd, 'night_start')) : null,
+    night_end: night ? t(str(fd, 'night_end')) : null,
   };
 }
 
@@ -35,6 +48,7 @@ export async function registerProvider(fd: FormData) {
   const f = fields(fd);
   if (!f.phone) back('/provider/register', 'err', 'Mobile number sahi nahi');
   if (fd.getAll('categories').length === 0) back('/provider/register', 'err', 'Kam az kam ek kaam choose karein');
+  if (!f.day_start && !f.night_start) back('/provider/register', 'err', 'Batayein kab service dete hain — din, raat ya dono');
 
   let photo_path: string | null = null, cnic_front_path: string | null = null, cnic_back_path: string | null = null;
   try {

@@ -1,7 +1,11 @@
+import ServiceThumb from '@/components/ServiceThumb';
+import HoursBadge from '@/components/HoursBadge';
+import { hasNight, hoursLabel, isOpenNow } from '@/lib/hours';
+import { DELIVERY_GROUP, serviceImage } from '@/lib/serviceImages';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Empty, PageHeader, Stars } from '@/components/ui';
+import { Empty, Stars } from '@/components/ui';
 import ContactButtons from '@/components/ContactButtons';
 import { storagePublicUrl } from '@/lib/format';
 import { createPublicClient } from '@/lib/supabase/public';
@@ -22,10 +26,10 @@ export default async function CategoryProviders({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { society?: string; city?: string };
+  searchParams: { society?: string; city?: string; time?: string };
 }) {
   const supabase = createClient();
-  const { data: cat } = await supabase.from('service_categories').select('id, name, name_ur, icon').eq('slug', params.slug).single();
+  const { data: cat } = await supabase.from('service_categories').select('id, slug, name, name_ur, icon, grp').eq('slug', params.slug).single();
   if (!cat) notFound();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -43,7 +47,7 @@ export default async function CategoryProviders({
 
   let q = supabase
     .from('providers')
-    .select('id, display_name, phone, whatsapp, photo_path, city, area_note, experience_years, rate_note, rating_avg, rating_count, available, provider_categories!inner(category_id), provider_societies(society_id)')
+    .select('id, display_name, phone, whatsapp, photo_path, city, area_note, experience_years, rate_note, rating_avg, rating_count, available, day_start, day_end, night_start, night_end, provider_categories!inner(category_id), provider_societies(society_id)')
     .eq('status', 'verified')
     .eq('provider_categories.category_id', cat.id)
     .order('available', { ascending: false })
@@ -54,6 +58,12 @@ export default async function CategoryProviders({
   const { data: providers } = await q;
 
   let list = (providers ?? []) as any[];
+  const time = searchParams.time ?? '';
+  if (time === 'night') list = list.filter((p) => hasNight(p));
+  if (time === 'open') list = list.filter((p) => p.available && isOpenNow(p));
+  // open right now first
+  list.sort((a, b) => Number(b.available && isOpenNow(b)) - Number(a.available && isOpenNow(a)));
+  const isDelivery = cat.grp === DELIVERY_GROUP;
   if (societyId) {
     // providers serving this society first, then the rest of the city
     list = [
@@ -72,7 +82,14 @@ export default async function CategoryProviders({
   return (
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
-      <PageHeader title={`${cat.icon ?? ''} ${cat.name}`} subtitle={cat.name_ur ?? undefined} action={<Link href="/services" className="btn-outline">← Saari services</Link>} />
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <ServiceThumb src={serviceImage(cat.slug, 160)} icon={cat.icon} className="h-16 w-16" text="text-3xl" />
+        <div className="min-w-0 flex-1">
+          <h1>{cat.name}</h1>
+          {cat.name_ur && <p className="text-ink-mute"><span dir="rtl">{cat.name_ur}</span></p>}
+        </div>
+        <Link href="/services" className="btn-outline">← Saari services</Link>
+      </div>
 
       <form className="mb-5 flex flex-wrap items-end gap-2">
         {mySocieties.length > 0 && (
@@ -84,6 +101,14 @@ export default async function CategoryProviders({
             </select>
           </div>
         )}
+        <div>
+          <label className="label">Waqt</label>
+          <select name="time" defaultValue={time} className="input">
+            <option value="">Koi bhi waqt</option>
+            <option value="open">Abhi khule hue</option>
+            <option value="night">Raat ko service</option>
+          </select>
+        </div>
         <div>
           <label className="label">City</label>
           <input name="city" defaultValue={city} className="input" placeholder="Multan" />
@@ -101,7 +126,7 @@ export default async function CategoryProviders({
                 {p.photo_path ? (
                   <img src={storagePublicUrl(p.photo_path)!} alt={p.display_name} loading="lazy" className="h-20 w-20 rounded-xl object-cover" />
                 ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-brand-50 text-3xl">{cat.icon}</div>
+                  <ServiceThumb src={serviceImage(cat.slug, 160)} icon={cat.icon} className="h-20 w-20" text="text-3xl" />
                 )}
               </Link>
               <div className="min-w-0 flex-1 space-y-1">
@@ -110,12 +135,14 @@ export default async function CategoryProviders({
                   <span className="badge bg-paid-soft text-paid-ink">✓ Verified</span>
                   {societyId && p.provider_societies.some((s: any) => s.society_id === societyId) && <span className="badge bg-brand-50 text-brand-700">Aap ki society</span>}
                   {!p.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
+                  <HoursBadge h={p} available={p.available} showLabel={false} />
                   <Stars value={Number(p.rating_avg)} count={p.rating_count} />
                 </div>
                 <div className="muted">{p.city}{p.area_note ? ` · ${p.area_note}` : ''}{p.experience_years ? ` · ${p.experience_years} saal tajurba` : ''}</div>
+                {hoursLabel(p) && <div className="text-xs text-ink-mute">🕒 {hoursLabel(p)}</div>}
                 {p.rate_note && <div className="text-sm">{p.rate_note}</div>}
                 <div className="pt-2">
-                  <ContactButtons phone={p.phone} whatsapp={p.whatsapp} providerId={p.id} compact message={`Assalam o Alaikum, mujhe ${cat.name} ka kaam karwana hai.`} />
+                  <ContactButtons phone={p.phone} whatsapp={p.whatsapp} providerId={p.id} compact message={isDelivery ? `Assalam o Alaikum, Housing Welfare se aap ka number mila. Mujhe ghar par ${cat.name} mangwana hai: ` : `Assalam o Alaikum, mujhe ${cat.name} ka kaam karwana hai.`} />
                 </div>
               </div>
             </div>

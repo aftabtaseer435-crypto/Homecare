@@ -28,17 +28,46 @@ export default function ProviderForm({
       <div><label className="label">Call number *</label><input name="phone" defaultValue={displayPhone(initial?.phone ?? defaultPhone)} className="input" required /></div>
       <div><label className="label">WhatsApp number (agar alag hai)</label><input name="whatsapp" defaultValue={displayPhone(initial?.whatsapp)} className="input" /></div>
       <div><label className="label">Tajurba (saal)</label><input name="experience_years" type="number" min="0" defaultValue={initial?.experience_years ?? ''} className="input" /></div>
-      <div><label className="label">Rates</label><input name="rate_note" defaultValue={initial?.rate_note ?? ''} className="input" placeholder="Visit Rs 500, baqi kaam dekh kar" /></div>
+      <div><label className="label">Rates / delivery charges</label><input name="rate_note" defaultValue={initial?.rate_note ?? ''} className="input" placeholder="Visit Rs 500 — ya delivery Rs 100, 1 ghante mein" /></div>
       <div className="md:col-span-2"><label className="label">Area (kahan kahan jate hain)</label><input name="area_note" defaultValue={initial?.area_note ?? ''} className="input" placeholder="Bosan Road, Gulgasht, 10 km tak" /></div>
+      <fieldset className="md:col-span-2 rounded-xl border border-line p-4">
+        <legend className="label px-1">Kab service dete hain? * (din, raat ya dono)</legend>
+        <p className="hint mb-3">Customer ko aap ke auqaat aur &quot;Abhi khula hai&quot; nazar aayega. Raat ki service ho to zaroor batayein — raat ko saman mangwane wale isi se dhoondte hain.</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-lg bg-canvas p-3">
+            <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="day_on" defaultChecked={isEdit ? !!initial?.day_start : true} /> Din ki service</label>
+            <div className="mt-2 flex items-center gap-2 text-sm">
+              <input type="time" name="day_start" aria-label="Din: kab se" defaultValue={initial?.day_start?.slice(0, 5) ?? '09:00'} className="input py-2" />
+              <span className="text-ink-mute">se</span>
+              <input type="time" name="day_end" aria-label="Din: kab tak" defaultValue={initial?.day_end?.slice(0, 5) ?? '18:00'} className="input py-2" />
+            </div>
+          </div>
+          <div className="rounded-lg bg-canvas p-3">
+            <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="night_on" defaultChecked={!!initial?.night_start} /> Raat ki service</label>
+            <div className="mt-2 flex items-center gap-2 text-sm">
+              <input type="time" name="night_start" aria-label="Raat: kab se" defaultValue={initial?.night_start?.slice(0, 5) ?? '20:00'} className="input py-2" />
+              <span className="text-ink-mute">se</span>
+              <input type="time" name="night_end" aria-label="Raat: kab tak" defaultValue={initial?.night_end?.slice(0, 5) ?? '02:00'} className="input py-2" />
+            </div>
+          </div>
+        </div>
+      </fieldset>
       <div className="md:col-span-2"><label className="label">Apne baare mein</label><textarea name="bio" rows={3} defaultValue={initial?.bio ?? ''} className="input" /></div>
 
       <div className="md:col-span-2">
         <label className="label">Kaun sa kaam karte hain? * (ek se zyada choose kar sakte hain)</label>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-          {categories.map((c) => (
-            <label key={c.id} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm">
-              <input type="checkbox" name="categories" value={c.id} defaultChecked={selCats.has(c.id)} /> {c.icon} {c.name}
-            </label>
+        <div className="space-y-4">
+          {Array.from(new Set(categories.map((c) => c.grp))).map((g) => (
+            <div key={g}>
+              <div className="mb-2 text-xs font-semibold text-ink-mute">{g}</div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                {categories.filter((c) => c.grp === g).map((c) => (
+                  <label key={c.id} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm has-[:checked]:border-service has-[:checked]:bg-service-soft">
+                    <input type="checkbox" name="categories" value={c.id} defaultChecked={selCats.has(c.id)} /> {c.icon} {c.name}
+                  </label>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
