@@ -39,7 +39,7 @@ export default async function Services() {
       <PageHeader
         title="Kya chahiye?"
         subtitle="Ghar ka kaam ho ya rozmarra ka saman — apne area ke verified log aur dukanein, rating aur auqaat ke sath. Seedha call ya WhatsApp."
-        action={<Link href="/my/orders" className="btn-outline">Meri orders</Link>}
+        action={<Link href="/my/orders" className="btn-outline">Mere orders</Link>}
       />
       <div className="space-y-8">
         {Array.from(groups.entries()).map(([grp, list]) => (

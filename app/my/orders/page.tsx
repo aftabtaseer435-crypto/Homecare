@@ -9,14 +9,14 @@ import { ago } from '@/lib/format';
 import { orderStatus } from '@/lib/orders';
 import { serviceImage } from '@/lib/serviceImages';
 
-export const metadata = { title: 'Meri orders' };
+export const metadata = { title: 'Mere orders' };
 
 export default async function MyOrders({ searchParams }: { searchParams: { tab?: string; ok?: string; err?: string } }) {
   const { supabase, user } = await requireUser('/my/orders');
   const [{ data: orders }, { data: contacts }] = await Promise.all([
     supabase
       .from('service_orders')
-      .select('id, ref_no, details, status, amount, when_note, created_at, done_at, provider:providers(id, display_name, phone, whatsapp), category:service_categories(slug, name, icon)')
+      .select('id, ref_no, details, status, amount, when_note, created_at, done_at, provider_name, provider:providers(id, display_name, phone, whatsapp), category:service_categories(slug, name, icon)')
       .eq('customer_id', user.id)
       .order('created_at', { ascending: false })
       .limit(200),
@@ -49,7 +49,7 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="eyebrow">Kharidar dashboard</p>
-          <h1 className="mt-1">Meri orders</h1>
+          <h1 className="mt-1">Mere orders</h1>
           <p className="muted mt-1">Jo kuch mangwaya ya karwaya — sab ki history, kharch aur status.</p>
         </div>
         <Link href="/services/find" className="btn bg-service hover:bg-service-ink">+ Naya order</Link>
@@ -107,7 +107,7 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
                 <ServiceThumb src={o.category ? serviceImage(o.category.slug) : null} icon={o.category?.icon ?? '🛍️'} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link href={`/my/orders/${o.id}`} className="font-semibold text-ink">{o.provider?.display_name ?? 'Provider'}</Link>
+                    <Link href={`/my/orders/${o.id}`} className="font-semibold text-ink">{o.provider?.display_name ?? o.provider_name ?? 'Provider'}</Link>
                     <span className={`badge ${orderStatus[o.status].cls}`}>{orderStatus[o.status].label}</span>
                   </div>
                   <p className="mt-1 line-clamp-2 text-sm text-ink-soft">{o.details}</p>

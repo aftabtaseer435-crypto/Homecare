@@ -7,7 +7,7 @@ import OrderActions from '@/components/OrderActions';
 import HoursBadge from '@/components/HoursBadge';
 import AlertSetup from '@/components/AlertSetup';
 import ProviderForm from '../ProviderForm';
-import { setAvailability, updateProvider } from '../actions';
+import { deleteProviderProfile, setAvailability, updateProvider } from '../actions';
 import { ago, fmtDate, rs } from '@/lib/format';
 import { displayPhone } from '@/lib/phone';
 import { monthName, orderStatus } from '@/lib/orders';
@@ -15,7 +15,7 @@ import { monthName, orderStatus } from '@/lib/orders';
 export const metadata = { title: 'Provider dashboard' };
 
 const statusText: Record<string, string> = {
-  pending: 'Verification pending — admin CNIC check kar raha hai. Verify hote hi aap list mein aa jayenge.',
+  pending: 'Review mein — aap list mein "Naya" badge ke sath nazar aa rahe hain. Admin / chairman check kar ke verify karega.',
   verified: 'Verified — customers aap ko dekh aur order bhej sakte hain',
   suspended: 'Suspended — admin se rabta karein',
   rejected: 'Rejected — admin se rabta karein',
@@ -184,7 +184,30 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
       )}
 
       {tab === 'profile' && (
-        <ProviderForm action={updateProvider} categories={cats as any[]} societies={socs as any[]} initial={prov} isEdit />
+        <div className="space-y-6">
+          <div className="flex items-start gap-3 rounded-2xl border border-service/20 bg-service-soft p-4 text-sm text-service-ink">
+            <span className="text-xl" aria-hidden="true">✏️</span>
+            <div>
+              <div className="font-semibold">Har cheez edit kar sakte hain — naam, number, photo, kaam, societies, auqaat, rates.</div>
+              <div className="mt-0.5">Save karte hi profile admin / chairman ke paas review ke liye jayegi. Tab tak list mein &quot;Naya&quot; badge lagega, orders aate rahenge. Sirf &quot;Abhi busy hoon&quot; button se review nahi hota.</div>
+            </div>
+          </div>
+          <ProviderForm action={updateProvider} categories={cats as any[]} societies={socs as any[]} initial={prov} isEdit />
+
+          <section className="rounded-2xl border border-due/30 bg-white p-5">
+            <h2 className="text-base text-due-ink">Profile delete karein</h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              Aap ki provider / dukaan profile, photo aur CNIC hamesha ke liye hat jayenge aur list mein nazar nahi aayenge. Jari orders cancel ho jayenge. Customers ki purani orders ki history unke paas rahegi. Aap ka login account aur kharidari ki history mojood rahegi.
+            </p>
+            <form action={deleteProviderProfile} className="mt-4 flex flex-wrap items-end gap-2">
+              <div>
+                <label className="label" htmlFor="confirm">Tasdeeq ke liye DELETE likhein</label>
+                <input id="confirm" name="confirm" className="input w-44" autoComplete="off" required />
+              </div>
+              <SubmitButton className="btn-danger" confirm="Kya aap waqai apni provider profile hamesha ke liye delete karna chahte hain?">Profile delete karein</SubmitButton>
+            </form>
+          </section>
+        </div>
       )}
     </div>
   );

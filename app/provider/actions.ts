@@ -6,6 +6,7 @@ import { back, num, str } from '@/lib/actions';
 import { normalizePhone } from '@/lib/phone';
 import { uploadFile } from '@/lib/upload';
 import { pushToUsers, recipientsFrom } from '@/lib/push';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 async function saveLinks(supabase: ReturnType<typeof createClient>, providerId: string, fd: FormData) {
   const cats = fd.getAll('categories').map(String);
@@ -100,11 +101,28 @@ export async function updateProvider(fd: FormData) {
   } catch (e) {
     back('/provider/dashboard?tab=profile', 'err', (e as Error).message);
   }
-  const { error } = await supabase.from('providers').update({ ...f, phone: f.phone!, ...(photo_path ? { photo_path } : {}) }).eq('id', prov!.id);
+  const { error } = await supabase
+    .from('providers')
+    .update({ ...f, phone: f.phone!, ...(photo_path ? { photo_path } : {}), review_requested_at: new Date().toISOString() })
+    .eq('id', prov!.id);
   if (error) back('/provider/dashboard?tab=profile', 'err', error.message);
   await saveLinks(supabase, prov!.id, fd);
+
+  // edited profile → back to review: tell the chairman / admins
+  const to = await recipientsFrom('provider_alert_recipients', { p_provider: prov!.id });
+  const socs = fd.getAll('societies').map(String);
+  await Promise.race([
+    pushToUsers(to.filter((id) => id !== user!.id), {
+      title: `✏️ Profile badli: ${f.display_name}`,
+      body: 'Provider ne apni profile edit ki hai — dobara check kar ke verify karein',
+      url: socs[0] ? `/s/${socs[0]}/providers` : '/admin/providers?status=pending',
+      tag: `provider-${prov!.id}`,
+      kind: 'update',
+    }),
+    new Promise((r) => setTimeout(r, 2500)),
+  ]);
   revalidatePath(`/providers/${prov!.id}`);
-  back('/provider/dashboard?tab=profile', 'ok', 'Profile update ho gayi');
+  back('/provider/dashboard?tab=profile', 'ok', 'Profile save ho gayi aur review ke liye admin ke paas chali gayi. Verify hone tak "Naya" badge lagega — customers aap ko dekh aur order kar sakte hain.');
 }
 
 export async function setAvailability(fd: FormData) {
@@ -113,4 +131,25 @@ export async function setAvailability(fd: FormData) {
   if (!user) back('/login', 'err', 'Pehle login karein');
   await supabase.from('providers').update({ available: str(fd, 'available') === 'true' }).eq('user_id', user!.id);
   back('/provider/dashboard', 'ok', 'Status update ho gaya');
+}
+
+/** Provider deletes own profile for good. Customers keep their order history. */
+export async function deleteProviderProfile(fd: FormData) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) back('/login', 'err', 'Pehle login karein');
+  if (str(fd, 'confirm').toUpperCase() !== 'DELETE') back('/provider/dashboard?tab=profile', 'err', 'Delete karne ke liye DELETE likhein');
+  const { data: prov } = await supabase.from('providers').select('id, photo_path, cnic_front_path, cnic_back_path').eq('user_id', user!.id).maybeSingle();
+  if (!prov) back('/services', 'ok', 'Profile pehle hi delete ho chuki hai');
+  const { data, error } = await supabase.from('providers').delete().eq('id', prov!.id).select('id');
+  if (error || !data?.length) back('/provider/dashboard?tab=profile', 'err', error?.message ?? 'Profile delete nahi hui');
+  // remove photo + CNIC images
+  try {
+    const admin = createAdminClient();
+    if (prov!.photo_path) await admin.storage.from('public-media').remove([prov!.photo_path]);
+    const docs = [prov!.cnic_front_path, prov!.cnic_back_path].filter(Boolean) as string[];
+    if (docs.length) await admin.storage.from('private-docs').remove(docs);
+  } catch { /* files are best-effort */ }
+  revalidatePath('/services', 'layout');
+  back('/services', 'ok', 'Aap ki provider profile delete ho gayi. Aap ka account aur kharidari ki history mojood hai.');
 }

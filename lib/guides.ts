@@ -214,7 +214,7 @@ export const guides: Guide[] = [
       { title: 'Services → "Mujhe kuch chahiye"', body: 'Neeche menu se Services, phir pehla option. Category chunein.', link: ['Kuch mangwayein', '/services/find'] },
       { title: 'Filter', body: '"Abhi khule hue" ya "Raat ko service" chunein. Apni society wale pehle aate hain; rating aur auqaat sab nazar aata hai.' },
       { title: 'Order bhejein', body: '"Order" dabayein, likhein kya chahiye aur kab. Pata khud bhar jata hai. Agle page par ek click se order WhatsApp par bhi chala jata hai.' },
-      { title: 'Mil gaya?', body: '"Meri orders" mein "Mil gaya ✓" dabayein aur kitne paise diye likhein — mahine ka kharch khud jud jata hai.', link: ['Meri orders', '/my/orders'] },
+      { title: 'Mil gaya?', body: '"Mere orders" mein "Mil gaya ✓" dabayein aur kitne paise diye likhein — mahine ka kharch khud jud jata hai.', link: ['Mere orders', '/my/orders'] },
       { title: 'Review dein', body: 'Order mukammal hone ya call ke baad provider ki profile par stars dein. Masla ho to "Shikayat" karein — admin check karta hai.' },
     ],
   },

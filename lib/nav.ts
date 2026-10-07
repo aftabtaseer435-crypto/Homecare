@@ -37,7 +37,7 @@ export const modules: {
     links: [
       { href: '/services', label: 'Shuru' },
       { href: '/services/find', label: 'Kuch mangwayein' },
-      { href: '/my/orders', label: 'Meri orders', auth: true },
+      { href: '/my/orders', label: 'Mere orders', auth: true },
       { href: '/provider', label: 'Provider / dukaan', auth: true },
       { href: '/guides/service-provider', label: 'Provider guide' },
     ],

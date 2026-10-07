@@ -70,6 +70,16 @@ export default async function ProviderProfile({ params, searchParams }: { params
     <div className="mx-auto max-w-3xl space-y-6">
       {ld && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />}
       <Flash searchParams={searchParams} />
+      {user && prov.user_id === user.id && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-brand-200 bg-brand-50 p-4">
+          <div className="min-w-0 flex-1 text-sm">
+            <div className="font-semibold text-ink">Ye aap ki profile hai — customers ko aise nazar aati hai</div>
+            <div className="text-ink-soft">{prov.status === 'verified' ? 'Verified ✓' : prov.status === 'pending' ? 'Review mein — "Naya" badge ke sath list mein hai' : `Status: ${prov.status}`}</div>
+          </div>
+          <Link href="/provider/dashboard" className="btn btn-sm">Seller dashboard</Link>
+          <Link href="/provider/dashboard?tab=profile" className="btn-outline btn-sm">Profile edit</Link>
+        </div>
+      )}
       {(prov.status === 'verified' || prov.status === 'pending') && prov.user_id !== user?.id && <LogView providerId={prov.id} />}
       {(prov.status === 'suspended' || prov.status === 'rejected') && (
         <div className="rounded-lg bg-due-soft p-3 text-sm text-due-ink">Yeh profile band hai (status: {prov.status}) aur list mein nazar nahi aati. Admin se rabta karein.</div>

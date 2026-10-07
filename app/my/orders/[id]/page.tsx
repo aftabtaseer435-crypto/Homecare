@@ -42,7 +42,7 @@ export default async function OrderDetail({ params, searchParams }: { params: { 
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
-      <Link href="/my/orders" className="text-sm font-medium">← Meri orders</Link>
+      <Link href="/my/orders" className="text-sm font-medium">← Mere orders</Link>
       <Flash searchParams={searchParams} />
       {searchParams.sent && o.status === 'new' && <AutoWhatsApp href={waHref} onceKey={`order-wa-${o.id}`} />}
 
@@ -51,7 +51,7 @@ export default async function OrderDetail({ params, searchParams }: { params: { 
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="eyebrow">{o.ref_no}{o.category ? ` · ${o.category.name}` : ''}</p>
-            <h1 className="mt-1 text-xl">{o.provider?.display_name}</h1>
+            <h1 className="mt-1 text-xl">{o.provider?.display_name ?? o.provider_name ?? 'Provider'}</h1>
           </div>
           <span className={`badge ${orderStatus[o.status].cls}`}>{orderStatus[o.status].label}</span>
         </div>

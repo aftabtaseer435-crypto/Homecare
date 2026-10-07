@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 import { modules, moduleTheme } from '@/lib/nav';
 
 /** Hamburger button + slide-in drawer with every section, grouped by module. */
-export default function MobileMenu({ loggedIn, name, superAdmin, agent = false }: { loggedIn: boolean; name?: string | null; superAdmin: boolean; agent?: boolean }) {
+export default function MobileMenu({ loggedIn, name, superAdmin, agent = false, seller = false }: { loggedIn: boolean; name?: string | null; superAdmin: boolean; agent?: boolean; seller?: boolean }) {
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -86,6 +86,12 @@ export default function MobileMenu({ loggedIn, name, superAdmin, agent = false }
                   </div>
                 );
               })}
+              {loggedIn && (
+                <Link href="/my/orders" className="flex min-h-[44px] items-center rounded-xl px-4 font-semibold text-ink no-underline">Mere orders</Link>
+              )}
+              {seller && (
+                <Link href="/provider/dashboard" className="flex min-h-[44px] items-center rounded-xl px-4 font-semibold text-ink no-underline">Seller dashboard</Link>
+              )}
               {agent && (
                 <Link href="/w" className="flex min-h-[44px] items-center rounded-xl px-4 font-semibold text-ink no-underline">Welfare agent panel</Link>
               )}

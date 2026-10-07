@@ -174,7 +174,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
       <ModuleBlock tone="services" title="Home Services">
         <div className="grid gap-3 sm:grid-cols-3">
           <Action href="/services/find" title="Kuch mangwayein / kaam karwayein" body="Chicken, sabzi, rashan, dawai — ya electrician, plumber, masi" />
-          <Action href="/my/orders" title={`Meri orders${activeOrders ? ` (${activeOrders} jari)` : ''}`} body="Har order ka status, history aur mahine ka kharch" />
+          <Action href="/my/orders" title={`Mere orders${activeOrders ? ` (${activeOrders} jari)` : ''}`} body="Har order ka status, history aur mahine ka kharch" />
           <Action href={provider ? '/provider/dashboard' : '/provider/register'} title={provider ? `Mera provider dashboard${newOrders ? ` — ${newOrders} naye order` : ''}` : 'Provider / dukaan banein'} body={provider ? `${provider.display_name} (${provider.status})` : 'Apna kaam ya dukaan list karein, free'} />
         </div>
       </ModuleBlock>
