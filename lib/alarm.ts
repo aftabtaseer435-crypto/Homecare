@@ -156,3 +156,46 @@ export function speak(text: string) {
     /* ignore */
   }
 }
+
+/** Pick the best installed voice: Urdu → Hindi (same spoken language) → English. */
+function pickVoice(): { voice: SpeechSynthesisVoice | null; lang: 'ur' | 'hi' | 'en' } {
+  const vs = window.speechSynthesis?.getVoices() ?? [];
+  const ur = vs.find((v) => v.lang.toLowerCase().startsWith('ur'));
+  if (ur) return { voice: ur, lang: 'ur' };
+  const hi = vs.find((v) => v.lang.toLowerCase().startsWith('hi'));
+  if (hi) return { voice: hi, lang: 'hi' };
+  return { voice: vs.find((v) => v.lang.toLowerCase().startsWith('en')) ?? null, lang: 'en' };
+}
+
+/** Speaks "Naya order aaya hai — <name> ki taraf se" in Urdu (or Hindi voice, same words). */
+export function speakOrder(name?: string | null) {
+  try {
+    const s = window.speechSynthesis;
+    if (!s) return;
+    let said = false;
+    const go = () => {
+      if (said) return;
+      said = true;
+      const { voice, lang } = pickVoice();
+      const who = name?.trim();
+      const text =
+        lang === 'ur' ? `نیا آرڈر آیا ہے${who ? `، ${who} کی طرف سے` : ''}`
+        : lang === 'hi' ? `नया ऑर्डर आया है${who ? `, ${who} की तरफ़ से` : ''}`
+        : `New order received${who ? ` from ${who}` : ''}`;
+      s.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) u.voice = voice;
+      u.lang = voice?.lang ?? (lang === 'ur' ? 'ur-PK' : lang === 'hi' ? 'hi-IN' : 'en-IN');
+      u.rate = 0.95;
+      u.volume = 1;
+      s.speak(u);
+    };
+    if (s.getVoices().length) go();
+    else {
+      s.addEventListener('voiceschanged', go, { once: true });
+      setTimeout(go, 700); // some phones never fire voiceschanged
+    }
+  } catch {
+    /* ignore */
+  }
+}

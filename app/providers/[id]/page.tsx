@@ -1,4 +1,5 @@
 import LogView from '@/components/LogView';
+import { IconBag, IconVerified } from '@/components/Icons';
 import HoursBadge from '@/components/HoursBadge';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -7,8 +8,8 @@ import { Flash, RatingLine, Stars } from '@/components/ui';
 import ContactButtons from '@/components/ContactButtons';
 import SubmitButton from '@/components/SubmitButton';
 import { fmtDate, storagePublicUrl } from '@/lib/format';
-import { displayPhone } from '@/lib/phone';
-import { submitComplaint, submitReview } from './actions';
+import { submitComplaint } from './actions';
+import ReviewForm from '@/components/ReviewForm';
 import { createPublicClient } from '@/lib/supabase/public';
 import { jsonLd, siteUrl } from '@/lib/seo';
 
@@ -80,7 +81,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
           <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-brand-50 text-5xl">{prov.provider_categories[0]?.category?.icon ?? '🛠️'}</div>
         )}
         <div className="flex-1 space-y-2">
-          <h1>{prov.display_name}</h1>
+          <h1 className="flex items-center gap-2">{prov.display_name}{prov.status === 'verified' && <IconVerified className="h-6 w-6 text-service" />}</h1>
           <RatingLine avg={Number(prov.rating_avg)} count={prov.rating_count} />
           <div className="flex flex-wrap gap-2">
             {prov.status === 'verified' ? <span className="badge bg-paid-soft text-paid-ink">✓ CNIC Verified</span> : prov.status === 'pending' ? <span className="badge bg-plate-soft text-plate-ink">Naya — verification jari</span> : null}
@@ -97,11 +98,13 @@ export default async function ProviderProfile({ params, searchParams }: { params
           </div>
           <HoursBadge h={prov} available={prov.available} />
           {prov.rate_note && <div className="text-sm"><b>Rates:</b> {prov.rate_note}</div>}
-          <div className="flex flex-wrap gap-2 pt-2">
+          <div className="grid max-w-md gap-2 pt-2">
             {(prov.status === 'verified' || prov.status === 'pending') && prov.user_id !== user?.id && (
-              <Link href={`/providers/${prov.id}/order`} className="btn bg-service hover:bg-service-ink">🛍️ Order bhejein</Link>
+              <Link href={`/providers/${prov.id}/order`} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-service text-sm font-semibold text-white no-underline hover:bg-service-ink hover:no-underline">
+                <IconBag className="h-4 w-4" /> Order / kaam bhejein
+              </Link>
             )}
-            <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number Housing Welfare se mila. Mujhe kaam karwana hai." />
+            <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number Housing Welfare se mila." />
           </div>
         </div>
       </div>
@@ -125,17 +128,9 @@ export default async function ProviderProfile({ params, searchParams }: { params
       <div id="reviews" className="card scroll-mt-24">
         <h2 className="mb-3">Reviews ({prov.rating_count})</h2>
         {user && contacted && (
-          <form action={submitReview} className="mb-5 space-y-2 rounded-lg bg-canvas p-3">
-            <input type="hidden" name="provider_id" value={prov.id} />
-            <div className="flex items-center gap-3 text-sm">
-              <span>Aap ka review:</span>
-              <select name="stars" defaultValue={myReview?.stars ?? 5} className="input w-28">
-                {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{'★'.repeat(n)}</option>)}
-              </select>
-            </div>
-            <textarea name="comment" rows={2} defaultValue={myReview?.comment ?? ''} className="input" placeholder="Kaam kaisa raha?" />
-            <SubmitButton className="btn bg-service hover:bg-service-ink btn-sm">{myReview ? 'Review update' : 'Review dein'}</SubmitButton>
-          </form>
+          <div className="mb-5 rounded-xl bg-canvas p-4">
+            <ReviewForm providerId={prov.id} providerName={prov.display_name} next={`/providers/${prov.id}`} initialStars={myReview?.stars ?? 0} initialComment={myReview?.comment ?? ''} />
+          </div>
         )}
         {user && !contacted && <p className="muted mb-4">Call, WhatsApp ya order mukammal hone ke baad aap review de sakte hain.</p>}
         {(reviews ?? []).length === 0 ? (

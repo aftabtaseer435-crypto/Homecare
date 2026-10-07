@@ -5,6 +5,7 @@ import { Flash } from '@/components/ui';
 import OrderActions from '@/components/OrderActions';
 import AutoWhatsApp from '@/components/AutoWhatsApp';
 import ContactButtons from '@/components/ContactButtons';
+import ReviewForm from '@/components/ReviewForm';
 import { fmtPK, rs } from '@/lib/format';
 import { orderStatus, orderWhatsAppText } from '@/lib/orders';
 
@@ -20,6 +21,9 @@ export default async function OrderDetail({ params, searchParams }: { params: { 
   if (!data) notFound();
   const o = data as any;
   if (o.customer_id !== user.id) notFound();
+  const { data: myReview } = o.status === 'done' && o.provider
+    ? await supabase.from('reviews').select('stars, comment').eq('provider_id', o.provider.id).eq('user_id', user.id).maybeSingle()
+    : { data: null };
   const waText = orderWhatsAppText({ ...o, category: o.category?.name });
   const waHref = `https://wa.me/${o.provider?.whatsapp || o.provider?.phone}?text=${encodeURIComponent(waText)}`;
   const steps = [
@@ -28,12 +32,21 @@ export default async function OrderDetail({ params, searchParams }: { params: { 
     ['Mukammal', o.done_at],
   ] as const;
 
+  const review = myReview as { stars: number; comment: string | null } | null;
+  const reviewBox = o.status === 'done' && o.provider ? (
+    <section id="review" className={`card scroll-mt-24 ${review ? '' : 'border-amber-300 ring-2 ring-amber-100'}`}>
+      {review && <p className="mb-3 text-sm text-ink-mute">Aap ka review: <span className="text-amber-500">{'★'.repeat(review.stars)}</span> — badalna ho to dobara chunein.</p>}
+      <ReviewForm providerId={o.provider.id} providerName={o.provider.display_name} next={`/my/orders/${o.id}`} initialStars={review?.stars ?? 0} initialComment={review?.comment ?? ''} />
+    </section>
+  ) : null;
+
   return (
     <div className="mx-auto max-w-xl space-y-5">
       <Link href="/my/orders" className="text-sm font-medium">← Meri orders</Link>
       <Flash searchParams={searchParams} />
       {searchParams.sent && o.status === 'new' && <AutoWhatsApp href={waHref} onceKey={`order-wa-${o.id}`} />}
 
+      {!myReview && reviewBox}
       <div className="card space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -66,10 +79,8 @@ export default async function OrderDetail({ params, searchParams }: { params: { 
         )}
         {o.provider && <ContactButtons phone={o.provider.phone} whatsapp={o.provider.whatsapp} providerId={o.provider.id} compact />}
         <div className="border-t border-line pt-4"><OrderActions o={o} side="customer" next={`/my/orders/${o.id}`} /></div>
-        {o.status === 'done' && o.provider && (
-          <Link href={`/providers/${o.provider.id}#reviews`} className="btn-outline w-full">Review dein ★</Link>
-        )}
       </div>
+      {myReview && reviewBox}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { audioReady, chime, speak, startAlarm, stopAlarm, unlockAudio } from '@/lib/alarm';
+import { audioReady, chime, speakOrder, startAlarm, stopAlarm, unlockAudio } from '@/lib/alarm';
 import { orderAction } from '@/app/orders/actions';
 
 type NewOrder = { id: string; ref_no: string; customer_name: string | null; details: string; when_note: string | null; address: string | null; created_at: string; category?: { name: string } | null };
@@ -22,7 +22,7 @@ const short = (t: string, n = 90) => (t.length > n ? t.slice(0, n - 1) + '…' :
  */
 export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
   const [queue, setQueue] = useState<NewOrder[]>([]);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ text: string; href: string } | null>(null);
   const [needTap, setNeedTap] = useState(false);
   const spoken = useRef<Set<string>>(new Set());
   const title = useRef<string>('');
@@ -50,8 +50,8 @@ export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
       if (ups.length) {
         const u = ups[0];
         const who = u.provider?.display_name ?? 'Provider';
-        const text = u.status === 'accepted' ? `${who} ne order ${u.ref_no} qubool kar liya` : u.status === 'done' ? `Order ${u.ref_no} mukammal${u.amount != null ? ` — Rs ${u.amount}` : ''}` : `${who} ne order ${u.ref_no} cancel kar diya`;
-        setToast(text);
+        const text = u.status === 'accepted' ? `${who} ne order ${u.ref_no} qubool kar liya` : u.status === 'done' ? `Order ${u.ref_no} mukammal${u.amount != null ? ` — Rs ${u.amount}` : ''}. Review dein ★` : `${who} ne order ${u.ref_no} cancel kar diya`;
+        setToast({ text, href: u.status === 'done' ? `/my/orders/${u.id}#review` : `/my/orders/${u.id}` });
         chime();
         if (document.hidden) localNotify(`Order update`, text, `/my/orders/${u.id}`, `upd-${u.id}`);
         setTimeout(() => setToast(null), 9000);
@@ -85,7 +85,7 @@ export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
     startAlarm();
     if (!spoken.current.has(current.id)) {
       spoken.current.add(current.id);
-      setTimeout(() => speak(`New order received from ${current.customer_name ?? 'a customer'}`), 1800);
+      setTimeout(() => speakOrder(current.customer_name), 1800);
       if (document.hidden) localNotify(`🔔 Naya order ${current.ref_no}`, `${current.customer_name ?? ''}: ${short(current.details, 70)}`, '/provider/dashboard', `order-${current.id}`, true);
     }
     if (!title.current) title.current = document.title;
@@ -141,8 +141,8 @@ export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
       )}
       {toast && (
         <div className="fixed inset-x-4 top-20 z-[65] mx-auto max-w-md rounded-2xl bg-ink px-4 py-3 text-sm font-medium text-white shadow-2xl sm:inset-x-auto sm:right-6" role="status">
-          🔔 {toast}
-          <Link href="/my/orders" className="ml-2 text-plate underline">Dekhein</Link>
+          🔔 {toast.text}
+          <Link href={toast.href} className="ml-2 text-plate underline">Dekhein</Link>
         </div>
       )}
     </>

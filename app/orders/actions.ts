@@ -45,7 +45,7 @@ export async function orderAction(fd: FormData) {
     const byCustomer = ord.customer_id === user.id;
     const msg: Record<string, string> = {
       accept: `${ord.provider?.display_name} ne aap ka order qubool kar liya`,
-      done: `${ord.provider?.display_name}: order mukammal${ord.amount != null ? ` — bill Rs ${ord.amount}` : ''}`,
+      done: `${ord.provider?.display_name}: order mukammal${ord.amount != null ? ` — bill Rs ${ord.amount}` : ''} · review dein ★`,
       received: `${ord.customer_name ?? 'Customer'} ne order mil jane ki tasdeeq ki`,
       cancel: byCustomer ? `${ord.customer_name ?? 'Customer'} ne order cancel kar diya` : `${ord.provider?.display_name} ne order cancel kar diya`,
     };
@@ -61,6 +61,7 @@ export async function orderAction(fd: FormData) {
     }
   }
   revalidatePath(next);
+  if (action === 'received') back(`/my/orders/${id}`, 'ok', 'Shukriya! Ab neeche stars de kar review karein.');
   back(next, 'ok', done[action] ?? 'Ho gaya');
 }
 

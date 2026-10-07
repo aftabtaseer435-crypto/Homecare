@@ -30,6 +30,13 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
       .limit(30),
   ]);
   const list = (orders ?? []) as any[];
+  const doneProviders = Array.from(new Set(list.filter((o) => o.status === 'done' && o.provider).map((o) => o.provider.id)));
+  const { data: reviewed } = doneProviders.length
+    ? await supabase.from('reviews').select('provider_id').eq('user_id', user.id).in('provider_id', doneProviders)
+    : { data: [] as any[] };
+  const reviewedSet = new Set(((reviewed ?? []) as any[]).map((r) => r.provider_id));
+  const needReview = list.filter((o) => o.status === 'done' && o.provider && !reviewedSet.has(o.provider.id));
+  const needReviewOnce = Array.from(new Map(needReview.map((o) => [o.provider.id, o])).values());
   const monthStart = new Date(Date.now() + 5 * 3600_000).toISOString().slice(0, 7);
   const thisMonth = list.filter((o) => new Date(Date.parse(o.created_at) + 5 * 3600_000).toISOString().slice(0, 7) === monthStart);
   const spent = thisMonth.filter((o) => o.status === 'done').reduce((s, o) => s + Number(o.amount ?? 0), 0);
@@ -49,6 +56,17 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
       </div>
       <Flash searchParams={searchParams} />
       {active.length > 0 && <AlertSetup vapidKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} who="customer" />}
+
+      {needReviewOnce.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4">
+          <span className="text-2xl" aria-hidden="true">⭐</span>
+          <div className="min-w-0 flex-1 text-sm">
+            <div className="font-semibold text-ink">{needReviewOnce.length} order ka review baqi hai</div>
+            <div className="text-ink-soft">Aap ka review doosre ghar walon ko sahi dukaan chunne mein madad karta hai.</div>
+          </div>
+          <Link href={`/my/orders/${needReviewOnce[0].id}#review`} className="btn btn-sm">Review dein</Link>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Is mahine orders" value={thisMonth.length} />
@@ -100,7 +118,9 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
                 {o.status === 'done' || o.status === 'cancelled' ? (
                   <div className="flex gap-2">
                     {o.provider && <Link href={`/providers/${o.provider.id}/order${o.category ? `?cat=${o.category.slug}` : ''}`} className="btn-outline btn-sm">Dobara order</Link>}
-                    {o.status === 'done' && o.provider && <Link href={`/providers/${o.provider.id}#reviews`} className="btn-ghost btn-sm">Review</Link>}
+                    {o.status === 'done' && o.provider && (reviewedSet.has(o.provider.id)
+                      ? <span className="inline-flex items-center px-2 text-xs text-ink-mute">★ Review diya</span>
+                      : <Link href={`/my/orders/${o.id}#review`} className="btn btn-sm">★ Review dein</Link>)}
                   </div>
                 ) : (
                   <Link href={`/my/orders/${o.id}`} className="btn-outline btn-sm">Dekhein</Link>

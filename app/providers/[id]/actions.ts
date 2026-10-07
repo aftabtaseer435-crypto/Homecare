@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { back, num, str } from '@/lib/actions';
 
@@ -18,15 +19,17 @@ export async function submitReview(fd: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const provider_id = str(fd, 'provider_id');
-  const path = `/providers/${provider_id}`;
+  const n = str(fd, 'next');
+  const path = n.startsWith('/') && !n.startsWith('//') ? n.split('?')[0].split('#')[0] : `/providers/${provider_id}`;
   if (!user) back(`/login?next=${path}`, 'err', 'Review ke liye login karein');
   const stars = num(fd, 'stars');
-  if (!stars || stars < 1 || stars > 5) back(path, 'err', 'Stars choose karein');
+  if (!stars || stars < 1 || stars > 5) back(path, 'err', 'Stars chunein');
   const { error } = await supabase
     .from('reviews')
-    .upsert({ provider_id, user_id: user!.id, stars, comment: str(fd, 'comment') || null }, { onConflict: 'provider_id,user_id' });
-  if (error) back(path, 'err', 'Review sirf woh de sakta hai jis ne is provider ko call / WhatsApp kiya ho.');
-  back(path, 'ok', 'Shukriya! Review save ho gaya.');
+    .upsert({ provider_id, user_id: user!.id, stars, comment: str(fd, 'comment').slice(0, 500) || null }, { onConflict: 'provider_id,user_id' });
+  if (error) back(path, 'err', 'Review sirf woh de sakta hai jis ne is provider se order liya ya call / WhatsApp kiya ho.');
+  revalidatePath(`/providers/${provider_id}`);
+  back(path, 'ok', 'Shukriya! Aap ka review save ho gaya.');
 }
 
 export async function submitComplaint(fd: FormData) {

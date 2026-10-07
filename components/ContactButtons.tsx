@@ -1,10 +1,12 @@
 'use client';
 
 import { logContact } from '@/app/providers/[id]/actions';
+import { IconPhone, IconWhatsApp } from './Icons';
 
 /**
- * Call / WhatsApp buttons. Each click is logged (for provider leads,
- * review eligibility and later billing) then opens the dialer / WhatsApp.
+ * "Call now" / "WhatsApp now" — the number itself is never shown.
+ * Each tap is logged (provider's monthly calls / WhatsApp, review eligibility).
+ * `bare` returns just the two buttons so a parent grid can size them equally.
  */
 export default function ContactButtons({
   phone,
@@ -13,6 +15,7 @@ export default function ContactButtons({
   listingId,
   message,
   compact,
+  bare,
 }: {
   phone: string;
   whatsapp?: string | null;
@@ -20,24 +23,29 @@ export default function ContactButtons({
   listingId?: string;
   message?: string;
   compact?: boolean;
+  bare?: boolean;
 }) {
   const wa = whatsapp || phone;
-  const cls = compact ? 'btn-sm' : '';
+  const size = compact ? 'h-10 text-[13px]' : 'h-11 text-sm';
   const track = (kind: 'call' | 'whatsapp') => {
     logContact({ providerId, listingId, kind }).catch(() => {});
   };
-  return (
-    <div className="flex flex-wrap gap-2">
-      <a href={`tel:+${phone}`} onClick={() => track('call')} className={`btn ${cls}`}>📞 Call now</a>
+  const buttons = (
+    <>
+      <a href={`tel:+${phone}`} onClick={() => track('call')} className={`inline-flex ${size} items-center justify-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3 font-semibold text-brand-800 no-underline transition-colors hover:bg-brand-100 hover:no-underline`}>
+        <IconPhone className="h-4 w-4" /> Call now
+      </a>
       <a
         href={`https://wa.me/${wa}${message ? `?text=${encodeURIComponent(message)}` : ''}`}
         target="_blank"
         rel="noopener"
         onClick={() => track('whatsapp')}
-        className={`btn bg-wa hover:bg-wa-hover ${cls}`}
+        className={`inline-flex ${size} items-center justify-center gap-1.5 rounded-xl bg-wa px-3 font-semibold text-white no-underline transition-colors hover:bg-wa-hover hover:no-underline`}
       >
-        WhatsApp now
+        <IconWhatsApp className="h-4 w-4" /> WhatsApp now
       </a>
-    </div>
+    </>
   );
+  if (bare) return buttons;
+  return <div className="grid grid-cols-2 gap-2">{buttons}</div>;
 }

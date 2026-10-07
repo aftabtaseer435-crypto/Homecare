@@ -1,13 +1,11 @@
+import ProviderCard from '@/components/ProviderCard';
 import ServiceThumb from '@/components/ServiceThumb';
-import HoursBadge from '@/components/HoursBadge';
-import { hasNight, hoursLabel, isOpenNow } from '@/lib/hours';
+import { hasNight, isOpenNow } from '@/lib/hours';
 import { DELIVERY_GROUP, serviceImage } from '@/lib/serviceImages';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Empty, RatingLine } from '@/components/ui';
-import ContactButtons from '@/components/ContactButtons';
-import { storagePublicUrl } from '@/lib/format';
+import { Empty } from '@/components/ui';
 import { createPublicClient } from '@/lib/supabase/public';
 import { jsonLd, siteUrl } from '@/lib/seo';
 
@@ -93,7 +91,7 @@ export default async function CategoryProviders({
         <Link href="/services" className="btn-outline">← Saari services</Link>
       </div>
 
-      <form className="mb-5 flex flex-wrap items-end gap-2">
+      <form className="mb-5 grid grid-cols-2 items-end gap-2 sm:flex sm:flex-wrap [&_select]:w-full [&_input]:w-full">
         {mySocieties.length > 0 && (
           <div>
             <label className="label">Meri society</label>
@@ -121,34 +119,9 @@ export default async function CategoryProviders({
       {list.length === 0 ? (
         <Empty href="/provider/register" cta="Provider register karein">Is category mein abhi koi verified provider nahi.</Empty>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((p) => (
-            <div key={p.id} className="card flex gap-4">
-              <Link href={`/providers/${p.id}`} className="shrink-0">
-                {p.photo_path ? (
-                  <img src={storagePublicUrl(p.photo_path)!} alt={p.display_name} loading="lazy" className="h-20 w-20 rounded-xl object-cover" />
-                ) : (
-                  <ServiceThumb src={serviceImage(cat.slug, 160)} icon={cat.icon} className="h-20 w-20" text="text-3xl" />
-                )}
-              </Link>
-              <div className="min-w-0 flex-1 space-y-1">
-                <Link href={`/providers/${p.id}`} className="text-base font-semibold text-ink">{p.display_name}</Link>
-                <RatingLine avg={Number(p.rating_avg)} count={p.rating_count} />
-                <div className="flex flex-wrap items-center gap-2">
-                  {p.status === 'verified' ? <span className="badge bg-paid-soft text-paid-ink">✓ Verified</span> : <span className="badge bg-plate-soft text-plate-ink">Naya</span>}
-                  {societyId && p.provider_societies.some((s: any) => s.society_id === societyId) && <span className="badge bg-brand-50 text-brand-700">Aap ki society</span>}
-                  {!p.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
-                  <HoursBadge h={p} available={p.available} showLabel={false} />
-                </div>
-                <div className="muted">{p.city}{p.area_note ? ` · ${p.area_note}` : ''}{p.experience_years ? ` · ${p.experience_years} saal tajurba` : ''}</div>
-                {hoursLabel(p) && <div className="text-xs text-ink-mute">🕒 {hoursLabel(p)}</div>}
-                {p.rate_note && <div className="text-sm">{p.rate_note}</div>}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <Link href={`/providers/${p.id}/order?cat=${cat.slug}`} className="btn btn-sm bg-service hover:bg-service-ink">{isDelivery ? '🛍️ Order' : '🛠️ Kaam bhejein'}</Link>
-                  <ContactButtons phone={p.phone} whatsapp={p.whatsapp} providerId={p.id} compact message={isDelivery ? `Assalam o Alaikum, Housing Welfare se aap ka number mila. Mujhe ghar par ${cat.name} mangwana hai: ` : `Assalam o Alaikum, mujhe ${cat.name} ka kaam karwana hai.`} />
-                </div>
-              </div>
-            </div>
+            <ProviderCard key={p.id} p={p} cat={cat} isDelivery={isDelivery} mySociety={!!societyId && p.provider_societies.some((s: any) => s.society_id === societyId)} />
           ))}
         </div>
       )}

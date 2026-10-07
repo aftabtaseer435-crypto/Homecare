@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { chime, speak, startAlarm, stopAlarm, unlockAudio } from '@/lib/alarm';
+import { chime, speakOrder, startAlarm, stopAlarm, unlockAudio } from '@/lib/alarm';
 
 const b64ToUint8 = (b64: string) => {
   const pad = '='.repeat((4 - (b64.length % 4)) % 4);
@@ -60,7 +60,7 @@ export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: s
     await unlockAudio();
     if (who === 'provider') {
       startAlarm();
-      speak('New order received. Alerts are working.');
+      speakOrder();
       setTimeout(stopAlarm, 3500);
     } else chime();
   };
