@@ -141,7 +141,8 @@ export default async function CategoryProviders({
                 <div className="muted">{p.city}{p.area_note ? ` · ${p.area_note}` : ''}{p.experience_years ? ` · ${p.experience_years} saal tajurba` : ''}</div>
                 {hoursLabel(p) && <div className="text-xs text-ink-mute">🕒 {hoursLabel(p)}</div>}
                 {p.rate_note && <div className="text-sm">{p.rate_note}</div>}
-                <div className="pt-2">
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Link href={`/providers/${p.id}/order?cat=${cat.slug}`} className="btn btn-sm bg-service hover:bg-service-ink">{isDelivery ? '🛍️ Order' : '🛠️ Kaam bhejein'}</Link>
                   <ContactButtons phone={p.phone} whatsapp={p.whatsapp} providerId={p.id} compact message={isDelivery ? `Assalam o Alaikum, Housing Welfare se aap ka number mila. Mujhe ghar par ${cat.name} mangwana hai: ` : `Assalam o Alaikum, mujhe ${cat.name} ka kaam karwana hai.`} />
                 </div>
               </div>

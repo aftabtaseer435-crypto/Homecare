@@ -1,3 +1,4 @@
+import LogView from '@/components/LogView';
 import HoursBadge from '@/components/HoursBadge';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -43,7 +44,10 @@ export default async function ProviderProfile({ params, searchParams }: { params
   const [{ data: reviews }, contacted] = await Promise.all([
     supabase.from('reviews').select('id, stars, comment, created_at, user_id').eq('provider_id', params.id).order('created_at', { ascending: false }).limit(50),
     user
-      ? supabase.from('contact_events').select('id', { count: 'exact', head: true }).eq('provider_id', params.id).eq('user_id', user.id).in('kind', ['call', 'whatsapp']).then((r) => (r.count ?? 0) > 0)
+      ? Promise.all([
+          supabase.from('contact_events').select('id', { count: 'exact', head: true }).eq('provider_id', params.id).eq('user_id', user.id).in('kind', ['call', 'whatsapp']),
+          supabase.from('service_orders').select('id', { count: 'exact', head: true }).eq('provider_id', params.id).eq('customer_id', user.id).eq('status', 'done'),
+        ]).then(([a, b]) => (a.count ?? 0) + (b.count ?? 0) > 0)
       : Promise.resolve(false),
   ]);
   const myReview = (reviews ?? []).find((r) => r.user_id === user?.id);
@@ -65,6 +69,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
     <div className="mx-auto max-w-3xl space-y-6">
       {ld && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />}
       <Flash searchParams={searchParams} />
+      {prov.status === 'verified' && prov.user_id !== user?.id && <LogView providerId={prov.id} />}
       {prov.status !== 'verified' && (
         <div className="rounded-lg bg-plate-soft p-3 text-sm text-plate-ink">Yeh profile abhi public nahi (status: {prov.status}). Admin verify karega.</div>
       )}
@@ -93,7 +98,10 @@ export default async function ProviderProfile({ params, searchParams }: { params
           <HoursBadge h={prov} available={prov.available} />
           {prov.rate_note && <div className="text-sm"><b>Rates:</b> {prov.rate_note}</div>}
           <div className="text-sm text-ink-soft">{displayPhone(prov.phone)}</div>
-          <div className="pt-2">
+          <div className="flex flex-wrap gap-2 pt-2">
+            {prov.status === 'verified' && prov.user_id !== user?.id && (
+              <Link href={`/providers/${prov.id}/order`} className="btn bg-service hover:bg-service-ink">🛍️ Order bhejein</Link>
+            )}
             <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number Housing Welfare se mila. Mujhe kaam karwana hai." />
           </div>
         </div>
@@ -115,7 +123,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
         </div>
       )}
 
-      <div className="card">
+      <div id="reviews" className="card scroll-mt-24">
         <h2 className="mb-3">Reviews ({prov.rating_count})</h2>
         {user && contacted && (
           <form action={submitReview} className="mb-5 space-y-2 rounded-lg bg-canvas p-3">
@@ -130,7 +138,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
             <SubmitButton className="btn bg-service hover:bg-service-ink btn-sm">{myReview ? 'Review update' : 'Review dein'}</SubmitButton>
           </form>
         )}
-        {user && !contacted && <p className="muted mb-4">Call ya WhatsApp karne ke baad aap review de sakte hain.</p>}
+        {user && !contacted && <p className="muted mb-4">Call, WhatsApp ya order mukammal hone ke baad aap review de sakte hain.</p>}
         {(reviews ?? []).length === 0 ? (
           <p className="muted">Abhi koi review nahi.</p>
         ) : (

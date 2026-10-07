@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { str } from '@/lib/actions';
+import { safePath, str } from '@/lib/actions';
 
 export async function saveName(fd: FormData) {
   const supabase = createClient();
@@ -14,5 +14,5 @@ export async function saveName(fd: FormData) {
     .from('profiles')
     .update({ full_name, whatsapp_opt_in: fd.get('whatsapp_opt_in') === 'on' })
     .eq('id', user.id);
-  redirect(next.startsWith('/') ? next : '/dashboard');
+  redirect(safePath(next));
 }

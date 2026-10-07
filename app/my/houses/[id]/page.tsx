@@ -11,14 +11,15 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
 
   const { data: house } = await supabase
     .from('houses')
-    .select('id, block, street, house_no, society:societies(id, name)')
+    .select('id, block, street, house_no, society_id, society:societies(id, name)')
     .eq('id', params.id)
     .single();
   if (!house) notFound();
   const { data: owns } = await supabase.rpc('owns_house', { hid: params.id });
   if (!owns) notFound();
 
-  const [{ data: dues }, { data: payments }, { data: notices }] = await Promise.all([
+  const society = ((house as any).society ?? { id: (house as any).society_id, name: 'Society' }) as { id: string; name: string };
+  const [{ data: dues }, { data: payments }] = await Promise.all([
     supabase
       .from('fund_dues')
       .select('id, period, amount_due, paid_amount, due_date, status, plan:fund_plans(name)')
@@ -29,12 +30,6 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
       .select('id, amount, method, status, receipt_no, paid_at, due:fund_dues(period, plan:fund_plans(name))')
       .eq('house_id', params.id)
       .order('paid_at', { ascending: false }),
-    supabase
-      .from('notices')
-      .select('id, title, body, created_at')
-      .eq('society_id', (house as any).society.id)
-      .order('created_at', { ascending: false })
-      .limit(5),
   ]);
 
   if (!dues) notFound();
@@ -42,9 +37,9 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
 
   return (
     <div className="space-y-6">
-      <PageHeader title={(house as any).society.name} subtitle={houseLabel(house as any)} />
+      <PageHeader title={society.name} subtitle={houseLabel(house as any)} />
       <Flash searchParams={searchParams} />
-      <NoticeBoard societyIds={[(house as any).society.id ?? (house as any).society_id]} next={`/my/houses/${params.id}`} />
+      <NoticeBoard societyIds={[society.id]} next={`/my/houses/${params.id}`} />
 
       <section className="grid gap-4 md:grid-cols-2">
         <div className="card">
@@ -140,20 +135,6 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
         )}
       </section>
 
-      {(notices ?? []).length > 0 && (
-        <section className="card">
-          <h2 className="mb-3">Society notices</h2>
-          <ul className="space-y-3">
-            {(notices ?? []).map((n) => (
-              <li key={n.id}>
-                <div className="font-semibold">{n.title}</div>
-                <div className="whitespace-pre-line text-sm text-ink-soft">{n.body}</div>
-                <div className="muted">{fmtDate(n.created_at)}</div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
     </div>
   );
 }

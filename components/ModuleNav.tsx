@@ -18,7 +18,7 @@ export default function ModuleNav() {
     <div className="border-b border-line bg-white">
       <nav aria-label={m.name} className="container-app flex gap-6 overflow-x-auto [scrollbar-width:none]">
         {m.links.map((l) => {
-          const active = path === l.href;
+          const active = path === l.href || (l.href !== m.home && path.startsWith(l.href + '/'));
           return (
             <Link
               key={l.href}

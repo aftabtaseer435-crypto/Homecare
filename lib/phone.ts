@@ -21,8 +21,3 @@ export function displayPhone(p: string | null | undefined): string {
   if (p.startsWith('92') && p.length === 12) return `0${p.slice(2, 5)}-${p.slice(5)}`;
   return '+' + p;
 }
-
-export function waLink(phone: string, text?: string) {
-  const q = text ? `?text=${encodeURIComponent(text)}` : '';
-  return `https://wa.me/${phone}${q}`;
-}

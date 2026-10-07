@@ -76,18 +76,19 @@ export async function updateProvider(fd: FormData) {
   const { data: prov } = await supabase.from('providers').select('id').eq('user_id', user!.id).single();
   if (!prov) back('/provider/register', 'err', 'Pehle register karein');
   const f = fields(fd);
-  if (!f.phone) back('/provider/dashboard', 'err', 'Mobile number sahi nahi');
+  if (!f.phone) back('/provider/dashboard?tab=profile', 'err', 'Mobile number sahi nahi');
+  if (!f.day_start && !f.night_start) back('/provider/dashboard?tab=profile', 'err', 'Batayein kab service dete hain — din, raat ya dono');
   let photo_path: string | null = null;
   try {
     photo_path = await uploadFile(supabase, 'public-media', user!.id, 'provider', fd.get('photo'));
   } catch (e) {
-    back('/provider/dashboard', 'err', (e as Error).message);
+    back('/provider/dashboard?tab=profile', 'err', (e as Error).message);
   }
   const { error } = await supabase.from('providers').update({ ...f, phone: f.phone!, ...(photo_path ? { photo_path } : {}) }).eq('id', prov!.id);
-  if (error) back('/provider/dashboard', 'err', error.message);
+  if (error) back('/provider/dashboard?tab=profile', 'err', error.message);
   await saveLinks(supabase, prov!.id, fd);
   revalidatePath(`/providers/${prov!.id}`);
-  back('/provider/dashboard', 'ok', 'Profile update ho gayi');
+  back('/provider/dashboard?tab=profile', 'ok', 'Profile update ho gayi');
 }
 
 export async function setAvailability(fd: FormData) {

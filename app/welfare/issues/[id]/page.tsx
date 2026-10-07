@@ -61,7 +61,10 @@ export default async function IssuePage({ params, searchParams }: { params: { id
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       {searchParams.new && toAgent && isReporter && <AutoWhatsApp href={toAgent} onceKey={`wa-${i.id}`} />}
-      <Link href={canWork && !isReporter ? `/w/${i.society_id}` : '/welfare'} className="text-sm font-bold">{canWork && !isReporter ? 'Agent panel' : 'Welfare'}</Link>
+      {(() => {
+        const back = isReporter ? ['/welfare', 'Welfare'] : isAgent ? [`/w/${i.society_id}`, 'Agent panel'] : isAdmin ? [`/s/${i.society_id}/welfare`, 'Welfare admin'] : ['/welfare', 'Welfare'];
+        return <Link href={back[0]} className="text-sm font-bold">← {back[1]}</Link>;
+      })()}
       <Flash searchParams={searchParams} />
 
       {searchParams.new && (

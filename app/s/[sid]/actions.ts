@@ -277,7 +277,7 @@ export async function createNotice(fd: FormData) {
   if (error) back(path, 'err', error.message);
   revalidatePath(path);
   if (whatsappApiEnabled() && fd.get('whatsapp') === 'on') {
-    const r = await broadcastNotice(sid, title, str(fd, 'block') || null);
+    const r = await broadcastNotice(sid, title, null);
     back(path, 'ok', `Notice post ho gaya. WhatsApp: ${r.sent} sent, ${r.failed} failed.`);
   }
   back(path, 'ok', 'Notice post ho gaya — har registered malik aur kirayedar ko app mein nazar aayega. Ab "WhatsApp group mein share" bhi kar dein.');

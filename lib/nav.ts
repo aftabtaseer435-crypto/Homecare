@@ -35,12 +35,13 @@ export const modules: {
     blurb: 'Electrician, plumber, masi — aur chicken, sabzi, rashan, dawai ghar tak',
     home: '/services',
     links: [
-      { href: '/services', label: 'Service dhoondein' },
-      { href: '/provider/register', label: 'Provider banein', auth: true },
-      { href: '/provider/dashboard', label: 'Provider dashboard', auth: true },
+      { href: '/services', label: 'Shuru' },
+      { href: '/services/find', label: 'Kuch mangwayein' },
+      { href: '/my/orders', label: 'Meri orders', auth: true },
+      { href: '/provider', label: 'Provider / dukaan', auth: true },
       { href: '/guides/service-provider', label: 'Provider guide' },
     ],
-    match: ['/services', '/providers', '/provider'],
+    match: ['/services', '/providers', '/provider', '/my/orders'],
   },
   {
     id: 'property',

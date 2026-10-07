@@ -1,51 +1,87 @@
-import ServiceThumb from '@/components/ServiceThumb';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
-import { PageHeader } from '@/components/ui';
-import { DELIVERY_GROUP, serviceImage } from '@/lib/serviceImages';
+import { getSession } from '@/lib/auth';
+import ServiceThumb from '@/components/ServiceThumb';
+import { serviceImage, DELIVERY_GROUP } from '@/lib/serviceImages';
 
 export const metadata = {
-  title: 'Electrician, plumber, masi, sabzi, dawai ghar tak — verified home services',
-  description: 'Apni society aur area ke CNIC-verified electrician, plumber, masi, AC repair, rickshaw aur mistri. Rating dekhein aur seedha call ya WhatsApp karein. Koi commission nahi.',
+  title: 'Home services — saman mangwayein ya apni service bechein',
+  description:
+    'Chicken, sabzi, rashan, dawai ghar tak, aur verified electrician, plumber, masi. Kharidna hai to order bhejein; kaam karte ya dukaan chalate hain to free provider profile banayein.',
   alternates: { canonical: '/services' },
 };
 
-export default async function Services() {
-  const supabase = createClient();
-  const { data: cats } = await supabase.from('service_categories').select('id, slug, name, name_ur, grp, icon, sort').eq('active', true).order('sort');
-
-  const groups = new Map<string, NonNullable<typeof cats>>();
-  for (const c of cats ?? []) {
-    if (!groups.has(c.grp)) groups.set(c.grp, []);
-    groups.get(c.grp)!.push(c);
-  }
+export default async function ServicesChooser() {
+  const { supabase, user } = await getSession();
+  const [{ data: daily }, prov, active] = await Promise.all([
+    supabase.from('service_categories').select('slug, name, icon').eq('active', true).eq('grp', DELIVERY_GROUP).order('sort').limit(6),
+    user ? supabase.from('providers').select('id, status').eq('user_id', user.id).maybeSingle().then((r) => r.data) : Promise.resolve(null),
+    user
+      ? supabase.from('service_orders').select('id', { count: 'exact', head: true }).eq('customer_id', user.id).in('status', ['new', 'accepted']).then((r) => r.count ?? 0)
+      : Promise.resolve(0),
+  ]);
+  const newForMe = prov
+    ? await supabase.from('service_orders').select('id', { count: 'exact', head: true }).eq('provider_id', prov.id).eq('status', 'new').then((r) => r.count ?? 0)
+    : 0;
 
   return (
-    <div>
-      <PageHeader
-        title="Kis kaam ke liye banda chahiye?"
-        subtitle="Ghar ka kaam ho ya rozmarra ka saman — apne area ke verified log aur dukanein, rating aur auqaat ke sath. Seedha call ya WhatsApp."
-        action={<Link href="/provider/register" className="btn-outline">Provider ban kar register karein</Link>}
-      />
-      <div className="space-y-8">
-        {Array.from(groups.entries()).map(([grp, list]) => (
-          <section key={grp}>
-            <h2 className="mb-1">{grp}</h2>
-            {grp === DELIVERY_GROUP ? (
-              <p className="mb-3 text-sm text-ink-mute">Chicken, sabzi, rashan, dawai, bakery — din ho ya raat, qareeb ki dukaan se ghar tak. &quot;Abhi khule hue&quot; filter se raat ko bhi dhoondein.</p>
-            ) : <div className="mb-3" />}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-              {list.map((c) => (
-                <Link key={c.id} href={`/services/${c.slug}`} className="group flex flex-col items-start gap-3 rounded-2xl border border-line bg-white p-4 no-underline hover:border-brand-500 hover:no-underline">
-                  <ServiceThumb src={serviceImage(c.slug)} icon={c.icon} />
-                  <span><span className="block font-semibold text-ink">{c.name}</span>
-                  {c.name_ur && <span className="block text-sm text-ink-mute"><span dir="rtl">{c.name_ur}</span></span>}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ))}
+    <div className="space-y-12">
+      <div className="max-w-2xl">
+        <p className="eyebrow">Home services</p>
+        <h1 className="mt-1 text-[1.9rem] md:text-[2.4rem]">Aap kya karna chahte hain?</h1>
+        <p className="mt-2 text-ink-mute">Ek chunein — dono ke alag dashboard aur poori history hai.</p>
       </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <Link href="/services/find" className="group flex flex-col rounded-3xl border border-line bg-white p-6 no-underline transition-shadow hover:border-service hover:shadow-lift hover:no-underline md:p-8">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-service-soft text-3xl" aria-hidden="true">🛍️</span>
+          <h2 className="mt-5 text-2xl text-ink">Mujhe kuch chahiye</h2>
+          <p className="mt-2 flex-1 text-ink-soft">Saman mangwana ho ya kaam karwana: chicken, sabzi, rashan, dawai — ya electrician, plumber, masi. Order bhejein, status dekhein, kharch ka hisaab rakhein.</p>
+          <span className="btn mt-6 self-start bg-service group-hover:bg-service-ink">Kharidna / mangwana hai →</span>
+        </Link>
+
+        <Link href="/provider" className="group flex flex-col rounded-3xl border border-line bg-white p-6 no-underline transition-shadow hover:border-brand-500 hover:shadow-lift hover:no-underline md:p-8">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-3xl" aria-hidden="true">🧰</span>
+          <h2 className="mt-5 text-2xl text-ink">Main kaam karta / bechta hoon</h2>
+          <p className="mt-2 flex-1 text-ink-soft">Electrician, plumber, masi, rickshaw — ya chicken, sabzi, kiryana, dawai ki dukaan. Free profile banayein, orders aur calls paayein, mahine ka hisaab dekhein.</p>
+          <span className="btn mt-6 self-start group-hover:bg-brand-700">{prov ? 'Mera provider dashboard →' : 'Provider / dukaan register karein →'}</span>
+        </Link>
+      </div>
+
+      {user && (active > 0 || prov) && (
+        <div className="flex flex-wrap gap-3 text-sm">
+          {active > 0 && <Link href="/my/orders" className="badge bg-service-soft px-3 py-1.5 text-service-ink no-underline">Aap ki {active} order jari hain →</Link>}
+          {prov && newForMe > 0 && <Link href="/provider/dashboard" className="badge bg-plate-soft px-3 py-1.5 text-plate-ink no-underline">{newForMe} naye order aap ke liye →</Link>}
+        </div>
+      )}
+
+      {(daily ?? []).length > 0 && (
+        <section>
+          <h2 className="mb-1">Ya seedha mangwayein</h2>
+          <p className="mb-4 text-sm text-ink-mute">Rozmarra ka saman, qareeb ki dukaan se ghar tak — raat ko bhi.</p>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+            {(daily ?? []).map((c) => (
+              <Link key={c.slug} href={`/services/${c.slug}`} className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-white p-3 text-center text-sm font-medium text-ink no-underline hover:border-service hover:no-underline">
+                <ServiceThumb src={serviceImage(c.slug)} icon={c.icon} />
+                {c.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {[
+          ['1', 'Chunein', 'Category kholein — jo abhi khule hain woh upar, auqaat aur rating ke sath.'],
+          ['2', 'Order bhejein', 'Likhein kya chahiye. Order history mein jata hai aur ek click se WhatsApp par bhi.'],
+          ['3', 'Mil gaya? Mark karein', 'Raqam darj karein, review dein. Mahine ka kharch khud jud jata hai.'],
+        ].map(([n, t, d]) => (
+          <div key={n} className="rounded-2xl border border-line bg-white p-5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-service-soft text-sm font-semibold text-service-ink">{n}</span>
+            <h3 className="mt-3">{t}</h3>
+            <p className="mt-1 text-sm text-ink-mute">{d}</p>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

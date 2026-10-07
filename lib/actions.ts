@@ -17,3 +17,8 @@ export function num(fd: FormData, key: string): number | null {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 }
+
+/** Only same-site relative paths ("/x"), never "//evil.com" or "/\evil.com". */
+export function safePath(p: string | null | undefined, fallback = '/dashboard') {
+  return p && p.startsWith('/') && !p.startsWith('//') && !p.startsWith('/\\') ? p : fallback;
+}

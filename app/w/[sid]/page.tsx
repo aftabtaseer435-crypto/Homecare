@@ -30,7 +30,15 @@ export default async function AgentIssues({ params, searchParams }: { params: { 
   const list = tab === 'overdue' ? overdue : tab === 'done' ? all.filter((i) => !openStatuses.includes(i.status)) : tab === 'all' ? all : open;
   // most urgent first: overdue, then by due time
   if (tab === 'open' || tab === 'overdue') list.sort((a, b) => Date.parse(a.due_at ?? a.created_at) - Date.parse(b.due_at ?? b.created_at));
-  const mine = ((stats ?? []) as any[]).find((s) => s.user_id === user.id);
+  // one row per area — combine all of this agent's areas
+  const rows = ((stats ?? []) as any[]).filter((s) => s.user_id === user.id);
+  const resolved = rows.reduce((a, r) => a + Number(r.resolved ?? 0), 0);
+  const wAvg = (k: string) => {
+    const w = rows.filter((r) => r[k] != null && Number(r.resolved) > 0);
+    const n = w.reduce((a, r) => a + Number(r.resolved), 0);
+    return n ? Math.round((w.reduce((a, r) => a + Number(r[k]) * Number(r.resolved), 0) / n) * 10) / 10 : null;
+  };
+  const mine = rows.length ? { resolved, avg_hours: wAvg('avg_hours'), avg_rating: wAvg('avg_rating') } : null;
 
   const tabs = [
     ['open', `Khule (${open.length})`],

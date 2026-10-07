@@ -1,3 +1,4 @@
+import { safePath } from '@/lib/actions';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { saveName } from './actions';
@@ -6,7 +7,7 @@ import { displayPhone } from '@/lib/phone';
 
 export default async function Onboarding({ searchParams }: { searchParams: { next?: string } }) {
   const { user, profile } = await getSession();
-  const next = searchParams.next && searchParams.next.startsWith('/') ? searchParams.next : '/dashboard';
+  const next = safePath(searchParams.next);
   if (!user) redirect('/login');
   if (profile?.full_name) redirect(next);
 

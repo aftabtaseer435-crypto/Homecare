@@ -27,6 +27,10 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
   const staffList: { id: string; name: string; city: string; role: string }[] = allSocieties
     ? (allSocieties as any[]).map((s) => ({ ...s, role: 'super' }))
     : ((staff ?? []) as any[]).map((m) => ({ ...m.society, role: m.role }));
+  const [activeOrders, newOrders] = await Promise.all([
+    supabase.from('service_orders').select('id', { count: 'exact', head: true }).eq('customer_id', user.id).in('status', ['new', 'accepted']).then((r) => r.count ?? 0),
+    provider ? supabase.from('service_orders').select('id', { count: 'exact', head: true }).eq('provider_id', provider.id).eq('status', 'new').then((r) => r.count ?? 0) : Promise.resolve(0),
+  ]);
   const agentSocieties = Array.from(new Map(((agentRows ?? []) as any[]).map((r) => [r.society_id, r.society?.name])).entries());
 
   const verifiedHouseIds = (myOwners ?? []).filter((o) => o.status === 'verified').map((o: any) => o.house.id);
@@ -168,9 +172,10 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
 
       {/* ===== Home Services ===== */}
       <ModuleBlock tone="services" title="Home Services">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Action href="/services" title="Service dhoondein" body="Electrician, plumber, masi, rickshaw — apne area ke verified log" />
-          <Action href={provider ? '/provider/dashboard' : '/provider/register'} title={provider ? 'Mera provider dashboard' : 'Provider banein'} body={provider ? `${provider.display_name} (${provider.status})` : 'Apna kaam list karein, free'} />
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Action href="/services/find" title="Kuch mangwayein / kaam karwayein" body="Chicken, sabzi, rashan, dawai — ya electrician, plumber, masi" />
+          <Action href="/my/orders" title={`Meri orders${activeOrders ? ` (${activeOrders} jari)` : ''}`} body="Har order ka status, history aur mahine ka kharch" />
+          <Action href={provider ? '/provider/dashboard' : '/provider/register'} title={provider ? `Mera provider dashboard${newOrders ? ` — ${newOrders} naye order` : ''}` : 'Provider / dukaan banein'} body={provider ? `${provider.display_name} (${provider.status})` : 'Apna kaam ya dukaan list karein, free'} />
         </div>
       </ModuleBlock>
 

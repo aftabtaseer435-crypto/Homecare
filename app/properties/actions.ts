@@ -61,8 +61,8 @@ export async function setListingStatus(fd: FormData) {
   const id = str(fd, 'listing_id');
   const status = str(fd, 'status');
   if (!['active', 'rented', 'sold', 'hidden'].includes(status)) back(`/properties/${id}`, 'err', 'Invalid status');
-  const { error } = await supabase.from('property_listings').update({ status }).eq('id', id);
-  if (error) back(`/properties/${id}`, 'err', error.message);
+  const { data, error } = await supabase.from('property_listings').update({ status }).eq('id', id).select('id');
+  if (error || !data?.length) back(`/properties/${id}`, 'err', error?.message ?? 'Sirf listing ka malik status badal sakta hai');
   revalidatePath('/properties');
   back(`/properties/${id}`, 'ok', 'Status update ho gaya');
 }
@@ -70,8 +70,8 @@ export async function setListingStatus(fd: FormData) {
 export async function deleteListing(fd: FormData) {
   const supabase = createClient();
   const id = str(fd, 'listing_id');
-  const { error } = await supabase.from('property_listings').delete().eq('id', id);
-  if (error) back(`/properties/${id}`, 'err', error.message);
+  const { data, error } = await supabase.from('property_listings').delete().eq('id', id).select('id');
+  if (error || !data?.length) back(`/properties/${id}`, 'err', error?.message ?? 'Sirf listing ka malik delete kar sakta hai');
   revalidatePath('/properties');
   back('/my/listings', 'ok', 'Listing delete ho gayi');
 }
