@@ -47,3 +47,20 @@ export async function pushToUser(userId: string, payload: PushPayload) {
     return 0;
   }
 }
+
+/** Same message to several users (deduplicated). */
+export async function pushToUsers(userIds: (string | null | undefined)[], payload: PushPayload) {
+  const ids = Array.from(new Set(userIds.filter(Boolean))) as string[];
+  const n = await Promise.all(ids.map((id) => pushToUser(id, payload)));
+  return n.reduce((a, b) => a + b, 0);
+}
+
+/** Recipients from a security-definer SQL function (service role). */
+export async function recipientsFrom(fn: 'provider_alert_recipients' | 'society_admin_ids', args: Record<string, string>) {
+  try {
+    const { data } = await createAdminClient().rpc(fn, args);
+    return ((data ?? []) as { user_id: string }[]).map((r) => r.user_id);
+  } catch {
+    return [];
+  }
+}

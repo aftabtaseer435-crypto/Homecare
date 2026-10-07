@@ -85,7 +85,42 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
         {(agentRows ?? []).length === 0 ? (
           <p className="muted">Abhi koi agent nahi.</p>
         ) : (
-          <table className="table">
+          <>
+          {/* phones: one card per agent */}
+          <ul className="space-y-2 md:hidden">
+            {agentRowsSorted.map((a) => {
+              const st = statMap.get(a.id);
+              return (
+                <li key={a.id} className="rounded-xl border border-line p-3">
+                  <details className="group">
+                    <summary className="flex cursor-pointer list-none items-center gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold">{a.block ? `Block ${a.block}, ` : ''}{a.street ? `Gali ${a.street}` : 'poora block'} <span className="font-normal text-ink-mute">· {a.name}</span></div>
+                        <div className="mt-0.5 text-xs text-ink-mute">
+                          Khule {st?.open ?? 0} · <span className={st?.overdue ? 'font-semibold text-due-ink' : ''}>Late {st?.overdue ?? 0}</span> · Hal {st?.resolved ?? 0}{st?.avg_rating ? ` · ${st.avg_rating}★` : ''}
+                        </div>
+                      </div>
+                      {a.user_id ? <span className="badge bg-paid-soft text-paid-ink">Active</span> : <span className="badge bg-plate-soft text-plate-ink">Login baqi</span>}
+                      <span className="text-xs text-brand-700 group-open:hidden">Edit</span>
+                    </summary>
+                    <form action={updateAgent} className="mt-3 grid gap-2">
+                      <input type="hidden" name="sid" value={sid} />
+                      <input type="hidden" name="agent_row" value={a.id} />
+                      <input name="name" defaultValue={a.name ?? ''} className="input" aria-label="Naam" required />
+                      <input name="phone" defaultValue={displayPhone(a.phone)} className="input" aria-label="Mobile" required />
+                      <SubmitButton className="btn btn-sm">Save</SubmitButton>
+                    </form>
+                    <form action={removeAgent} className="mt-2">
+                      <input type="hidden" name="sid" value={sid} />
+                      <input type="hidden" name="agent_row" value={a.id} />
+                      <SubmitButton className="text-xs font-bold text-due-ink" confirm="Is area se agent hatayein?">Agent hatayein</SubmitButton>
+                    </form>
+                  </details>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="hidden md:block"><table className="table">
             <thead><tr><th>Area</th><th>Agent (naam / mobile)</th><th>App</th><th>Khule</th><th>Late</th><th>Hal</th><th>Avg</th><th>Rating</th><th>Check 30d</th><th></th></tr></thead>
             <tbody>
               {agentRowsSorted.map((a) => {
@@ -120,7 +155,8 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
+          </>
         )}
         {uncovered.length > 0 && (
           <p className="mt-4 text-sm text-due-ink">

@@ -15,8 +15,8 @@ export default async function AgentLayout({ children, params }: { children: Reac
     { href: `/hisaab/${params.sid}`, label: 'Fund ka hisaab' },
   ];
   return (
-    <div className="grid gap-6 md:grid-cols-[13rem_1fr] md:gap-8">
-      <aside className="space-y-4 md:sticky md:top-24 md:self-start">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-8">
+      <aside className="min-w-0 space-y-3 md:sticky md:top-24 md:space-y-4 md:self-start">
         <div className="rounded-2xl border border-line bg-white p-4">
           <div className="eyebrow">Welfare agent</div>
           <div className="mt-0.5 text-lg font-bold leading-snug">{society?.name}</div>

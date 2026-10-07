@@ -93,9 +93,9 @@ export default async function HubEditor({ params, searchParams }: { params: { si
 
       <section id="projects" className="space-y-4">
         <h2>Development kaam ({(projects ?? []).length})</h2>
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {((projects ?? []) as any[]).map((p) => (
-            <details key={p.id} className="card group">
+            <details key={p.id} className="card group min-w-0">
               <summary className="flex cursor-pointer list-none items-center gap-4">
                 <img src={projectImage(p)} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />
                 <div className="min-w-0 flex-1">

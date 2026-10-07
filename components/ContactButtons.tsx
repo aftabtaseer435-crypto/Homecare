@@ -28,7 +28,7 @@ export default function ContactButtons({
   };
   return (
     <div className="flex flex-wrap gap-2">
-      <a href={`tel:+${phone}`} onClick={() => track('call')} className={`btn ${cls}`}>📞 Call</a>
+      <a href={`tel:+${phone}`} onClick={() => track('call')} className={`btn ${cls}`}>📞 Call now</a>
       <a
         href={`https://wa.me/${wa}${message ? `?text=${encodeURIComponent(message)}` : ''}`}
         target="_blank"
@@ -36,7 +36,7 @@ export default function ContactButtons({
         onClick={() => track('whatsapp')}
         className={`btn bg-wa hover:bg-wa-hover ${cls}`}
       >
-        WhatsApp
+        WhatsApp now
       </a>
     </div>
   );

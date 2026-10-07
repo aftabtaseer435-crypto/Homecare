@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireSocietyStaff } from '@/lib/auth';
 import { Empty, Flash, Stat } from '@/components/ui';
+import AlertSetup from '@/components/AlertSetup';
 import { dueStatusStyle, fmtDate, rs } from '@/lib/format';
 import { getDues, getHouses, getPeriods, getPlans, groupHouses } from '@/lib/societyData';
 
@@ -11,15 +12,56 @@ export default async function SocietyOverview({
   params: { sid: string };
   searchParams: { plan?: string; period?: string; ok?: string; err?: string };
 }) {
-  const { supabase } = await requireSocietyStaff(params.sid);
+  const { supabase, role } = await requireSocietyStaff(params.sid);
   const base = `/s/${params.sid}`;
-  const plans = await getPlans(supabase, params.sid);
-  const houses = await getHouses(supabase, params.sid);
+  const [plans, houses, todo] = await Promise.all([
+    getPlans(supabase, params.sid),
+    getHouses(supabase, params.sid),
+    Promise.all([
+      supabase.from('house_owners').select('id, house:houses!inner(society_id)', { count: 'exact', head: true }).eq('status', 'pending').eq('house.society_id', params.sid),
+      supabase.from('payments').select('id', { count: 'exact', head: true }).eq('society_id', params.sid).eq('status', 'pending'),
+      supabase.from('providers').select('id, provider_societies!inner(society_id)', { count: 'exact', head: true }).eq('status', 'pending').eq('provider_societies.society_id', params.sid),
+      supabase.from('welfare_issues').select('id', { count: 'exact', head: true }).eq('society_id', params.sid).in('status', ['open', 'acknowledged', 'in_progress', 'reopened']),
+      supabase.from('fund_expenses').select('id', { count: 'exact', head: true }).eq('society_id', params.sid).eq('status', 'pending'),
+    ]).then((r) => r.map((x) => x.count ?? 0)),
+  ]);
+  const [pendingOwners, pendingPayments, pendingProviders, openIssues, pendingExpenses] = todo;
+  const tasks = [
+    { n: pendingOwners, label: 'ghar ki requests approve karni hain', href: `${base}/owners` },
+    { n: pendingProviders, label: 'naye provider / dukanein verify karni hain', href: `${base}/providers`, admin: true },
+    { n: pendingPayments, label: 'payments verify karni hain', href: `${base}/payments` },
+    { n: openIssues, label: 'welfare masle khule hain', href: `${base}/welfare`, admin: true },
+    { n: pendingExpenses, label: 'kharche manzoori ke liye', href: `${base}/kharcha`, admin: true },
+  ].filter((t) => t.n > 0 && (!t.admin || role === 'admin'));
+  const header = (
+    <>
+      <Flash searchParams={searchParams} />
+      {role === 'admin' && <AlertSetup vapidKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} who="admin" />}
+      <section className="rounded-2xl border border-line bg-white p-4 md:p-5">
+        <h2 className="text-base">Aaj ke kaam</h2>
+        {tasks.length === 0 ? (
+          <p className="mt-1 text-sm text-ink-mute">Sab saaf hai — koi kaam baqi nahi. ✓</p>
+        ) : (
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {tasks.map((t) => (
+              <li key={t.href}>
+                <Link href={t.href} className="flex items-center gap-3 rounded-xl bg-plate-soft px-3 py-2.5 text-sm text-plate-ink no-underline hover:no-underline">
+                  <span className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-plate px-2 font-bold">{t.n}</span>
+                  <span className="flex-1">{t.label}</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </>
+  );
 
   if (houses.length === 0)
-    return <Empty href={`${base}/houses`} cta="Ghar add karein">Pehla qadam: society ke blocks, galiyan aur ghar add karein.</Empty>;
+    return <div className="space-y-6">{header}<Empty href={`${base}/houses`} cta="Ghar add karein">Pehla qadam: society ke blocks, galiyan aur ghar add karein.</Empty></div>;
   if (plans.length === 0)
-    return <Empty href={`${base}/funds`} cta="Fund plan banayein">{houses.length} ghar add ho gaye. Ab development fund plan banayein (amount, due date).</Empty>;
+    return <div className="space-y-6">{header}<Empty href={`${base}/funds`} cta="Fund plan banayein">{houses.length} ghar add ho gaye. Ab development fund plan banayein (amount, due date).</Empty></div>;
 
   const plan = plans.find((p) => p.id === searchParams.plan) ?? plans.find((p) => p.active) ?? plans[0];
   const periods = await getPeriods(supabase, plan.id);
@@ -31,16 +73,12 @@ export default async function SocietyOverview({
   const unpaid = dues.filter((d) => d.status === 'unpaid' || d.status === 'partial').length;
   const collected = dues.reduce((s, d) => s + Number(d.paid_amount), 0);
   const target = dues.filter((d) => d.status !== 'exempt').reduce((s, d) => s + Number(d.amount_due), 0);
-  const [{ count: pendingOwners }, { count: pendingPayments }] = await Promise.all([
-    supabase.from('house_owners').select('id, house:houses!inner(society_id)', { count: 'exact', head: true }).eq('status', 'pending').eq('house.society_id', params.sid),
-    supabase.from('payments').select('id', { count: 'exact', head: true }).eq('society_id', params.sid).eq('status', 'pending'),
-  ]);
 
   const groups = groupHouses(houses);
 
   return (
     <div className="space-y-6">
-      <Flash searchParams={searchParams} />
+      {header}
 
       <form className="flex flex-wrap items-end gap-3">
         <div>
@@ -69,12 +107,6 @@ export default async function SocietyOverview({
             <Stat label="Target" value={rs(target)} />
           </div>
 
-          {(pendingOwners || pendingPayments) ? (
-            <div className="flex flex-wrap gap-3 text-sm">
-              {!!pendingOwners && <Link href={`${base}/owners`} className="badge bg-plate-soft px-3 py-1.5 text-plate-ink no-underline">{pendingOwners} owner approval pending</Link>}
-              {!!pendingPayments && <Link href={`${base}/payments`} className="badge bg-plate-soft px-3 py-1.5 text-plate-ink no-underline">{pendingPayments} payment verify karni hain</Link>}
-            </div>
-          ) : null}
 
           <div className="card">
             <div className="mb-5 flex flex-wrap items-center gap-4 text-xs font-semibold text-ink-soft">

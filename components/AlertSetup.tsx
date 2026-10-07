@@ -15,7 +15,7 @@ type State = 'checking' | 'on' | 'off' | 'blocked' | 'unsupported';
  * "Order alerts" switch: asks notification permission, subscribes this phone
  * to push (so it rings even when the app is closed) and plays a test alarm.
  */
-export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: string | null; who?: 'provider' | 'customer' }) {
+export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: string | null; who?: 'provider' | 'customer' | 'admin' }) {
   const [state, setState] = useState<State>('checking');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: s
   };
 
   if (state === 'checking') return null;
-  const title = who === 'provider' ? 'Order alert (zor ki awaz)' : 'Order updates ka alert';
+  const title = who === 'provider' ? 'Order alert (zor ki awaz)' : who === 'admin' ? 'Admin alerts' : 'Order updates ka alert';
 
   return (
     <div className={`flex flex-wrap items-center gap-3 rounded-2xl border p-4 ${state === 'on' ? 'border-paid/30 bg-paid-soft' : 'border-plate bg-plate-soft'}`}>
@@ -74,8 +74,8 @@ export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: s
       <div className="min-w-0 flex-1 text-sm">
         <div className="font-semibold text-ink">{title}: {state === 'on' ? 'ON' : 'OFF'}</div>
         <div className="text-ink-soft">
-          {state === 'on' && (who === 'provider' ? 'Naya order aate hi is phone par zor ki awaz aur notification aayegi — app band ho tab bhi.' : 'Order qubool / mukammal hone par is phone par alert aayega.')}
-          {state === 'off' && (who === 'provider' ? 'Zaroor on karein — warna order aane ka pata sirf app khulne par chalega.' : 'On karein taake order ka status foran pata chale.')}
+          {state === 'on' && (who === 'provider' ? 'Naya order aate hi is phone par zor ki awaz aur notification aayegi — app band ho tab bhi.' : who === 'admin' ? 'Naya provider / dukaan ya nayi ghar request aate hi is phone par notification aayegi.' : 'Order qubool / mukammal hone par is phone par alert aayega.')}
+          {state === 'off' && (who === 'provider' ? 'Zaroor on karein — warna order aane ka pata sirf app khulne par chalega.' : who === 'admin' ? 'On karein — naye provider aur ghar ki requests ka foran pata chalega.' : 'On karein taake order ka status foran pata chale.')}
           {state === 'blocked' && 'Notifications block hain. Phone Settings → Apps → Chrome / Housing Welfare → Notifications → Allow karein, phir page refresh.'}
           {state === 'unsupported' && 'Is browser mein notifications nahi. Chrome mein kholein ya Play Store app install karein. App khula ho to awaz phir bhi aayegi.'}
         </div>

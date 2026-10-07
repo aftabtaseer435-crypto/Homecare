@@ -3,7 +3,7 @@ import HoursBadge from '@/components/HoursBadge';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Flash, Stars } from '@/components/ui';
+import { Flash, RatingLine, Stars } from '@/components/ui';
 import ContactButtons from '@/components/ContactButtons';
 import SubmitButton from '@/components/SubmitButton';
 import { fmtDate, storagePublicUrl } from '@/lib/format';
@@ -69,9 +69,9 @@ export default async function ProviderProfile({ params, searchParams }: { params
     <div className="mx-auto max-w-3xl space-y-6">
       {ld && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />}
       <Flash searchParams={searchParams} />
-      {prov.status === 'verified' && prov.user_id !== user?.id && <LogView providerId={prov.id} />}
-      {prov.status !== 'verified' && (
-        <div className="rounded-lg bg-plate-soft p-3 text-sm text-plate-ink">Yeh profile abhi public nahi (status: {prov.status}). Admin verify karega.</div>
+      {(prov.status === 'verified' || prov.status === 'pending') && prov.user_id !== user?.id && <LogView providerId={prov.id} />}
+      {(prov.status === 'suspended' || prov.status === 'rejected') && (
+        <div className="rounded-lg bg-due-soft p-3 text-sm text-due-ink">Yeh profile band hai (status: {prov.status}) aur list mein nazar nahi aati. Admin se rabta karein.</div>
       )}
       <div className="card flex flex-col gap-5 sm:flex-row">
         {prov.photo_path ? (
@@ -81,10 +81,10 @@ export default async function ProviderProfile({ params, searchParams }: { params
         )}
         <div className="flex-1 space-y-2">
           <h1>{prov.display_name}</h1>
+          <RatingLine avg={Number(prov.rating_avg)} count={prov.rating_count} />
           <div className="flex flex-wrap gap-2">
-            {prov.status === 'verified' && <span className="badge bg-paid-soft text-paid-ink">✓ CNIC Verified</span>}
+            {prov.status === 'verified' ? <span className="badge bg-paid-soft text-paid-ink">✓ CNIC Verified</span> : prov.status === 'pending' ? <span className="badge bg-plate-soft text-plate-ink">Naya — verification jari</span> : null}
             {!prov.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
-            <Stars value={Number(prov.rating_avg)} count={prov.rating_count} />
           </div>
           <div className="flex flex-wrap gap-2">
             {prov.provider_categories.map((c: any) => (
@@ -97,9 +97,8 @@ export default async function ProviderProfile({ params, searchParams }: { params
           </div>
           <HoursBadge h={prov} available={prov.available} />
           {prov.rate_note && <div className="text-sm"><b>Rates:</b> {prov.rate_note}</div>}
-          <div className="text-sm text-ink-soft">{displayPhone(prov.phone)}</div>
           <div className="flex flex-wrap gap-2 pt-2">
-            {prov.status === 'verified' && prov.user_id !== user?.id && (
+            {(prov.status === 'verified' || prov.status === 'pending') && prov.user_id !== user?.id && (
               <Link href={`/providers/${prov.id}/order`} className="btn bg-service hover:bg-service-ink">🛍️ Order bhejein</Link>
             )}
             <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number Housing Welfare se mila. Mujhe kaam karwana hai." />

@@ -5,7 +5,7 @@ import { DELIVERY_GROUP, serviceImage } from '@/lib/serviceImages';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Empty, Stars } from '@/components/ui';
+import { Empty, RatingLine } from '@/components/ui';
 import ContactButtons from '@/components/ContactButtons';
 import { storagePublicUrl } from '@/lib/format';
 import { createPublicClient } from '@/lib/supabase/public';
@@ -47,8 +47,8 @@ export default async function CategoryProviders({
 
   let q = supabase
     .from('providers')
-    .select('id, display_name, phone, whatsapp, photo_path, city, area_note, experience_years, rate_note, rating_avg, rating_count, available, day_start, day_end, night_start, night_end, provider_categories!inner(category_id), provider_societies(society_id)')
-    .eq('status', 'verified')
+    .select('id, display_name, phone, whatsapp, photo_path, city, area_note, experience_years, rate_note, rating_avg, rating_count, available, status, day_start, day_end, night_start, night_end, provider_categories!inner(category_id), provider_societies(society_id)')
+    .in('status', ['verified', 'pending'])
     .eq('provider_categories.category_id', cat.id)
     .order('available', { ascending: false })
     .order('rating_avg', { ascending: false })
@@ -61,8 +61,10 @@ export default async function CategoryProviders({
   const time = searchParams.time ?? '';
   if (time === 'night') list = list.filter((p) => hasNight(p));
   if (time === 'open') list = list.filter((p) => p.available && isOpenNow(p));
-  // open right now first
-  list.sort((a, b) => Number(b.available && isOpenNow(b)) - Number(a.available && isOpenNow(a)));
+  // open right now first, then verified before new
+  list.sort((a, b) =>
+    Number(b.available && isOpenNow(b)) - Number(a.available && isOpenNow(a)) ||
+    Number(b.status === 'verified') - Number(a.status === 'verified'));
   const isDelivery = cat.grp === DELIVERY_GROUP;
   if (societyId) {
     // providers serving this society first, then the rest of the city
@@ -131,12 +133,12 @@ export default async function CategoryProviders({
               </Link>
               <div className="min-w-0 flex-1 space-y-1">
                 <Link href={`/providers/${p.id}`} className="text-base font-semibold text-ink">{p.display_name}</Link>
+                <RatingLine avg={Number(p.rating_avg)} count={p.rating_count} />
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="badge bg-paid-soft text-paid-ink">✓ Verified</span>
+                  {p.status === 'verified' ? <span className="badge bg-paid-soft text-paid-ink">✓ Verified</span> : <span className="badge bg-plate-soft text-plate-ink">Naya</span>}
                   {societyId && p.provider_societies.some((s: any) => s.society_id === societyId) && <span className="badge bg-brand-50 text-brand-700">Aap ki society</span>}
                   {!p.available && <span className="badge bg-canvas text-ink-soft">Abhi busy</span>}
                   <HoursBadge h={p} available={p.available} showLabel={false} />
-                  <Stars value={Number(p.rating_avg)} count={p.rating_count} />
                 </div>
                 <div className="muted">{p.city}{p.area_note ? ` · ${p.area_note}` : ''}{p.experience_years ? ` · ${p.experience_years} saal tajurba` : ''}</div>
                 {hoursLabel(p) && <div className="text-xs text-ink-mute">🕒 {hoursLabel(p)}</div>}

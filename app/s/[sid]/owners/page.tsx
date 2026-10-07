@@ -41,33 +41,34 @@ export default async function Owners({
         {pending.length === 0 ? (
           <p className="muted">Koi pending request nahi.</p>
         ) : (
-          <table className="table">
-            <thead><tr><th>Owner</th><th>Mobile</th><th>Ghar</th><th>Date</th><th></th></tr></thead>
-            <tbody>
-              {pending.map((o) => (
-                <tr key={o.id}>
-                  <td>{o.owner_name}{o.relation === 'tenant' ? <span className="badge ml-2 bg-service-soft text-service-ink">Kirayedar</span> : <span className="badge ml-2 bg-brand-50 text-brand-800">Malik</span>}{o.relation === 'owner' && (claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-due-soft text-due-ink">Conflict: is ghar ke aur claims bhi hain</span>}</td>
-                  <td>{displayPhone(o.owner_phone)}</td>
-                  <td>{houseLabel(o.house)}</td>
-                  <td>{fmtDate(o.created_at)}</td>
-                  <td className="flex gap-2">
-                    <form action={setOwnerStatus}>
-                      <input type="hidden" name="sid" value={params.sid} />
-                      <input type="hidden" name="owner_id" value={o.id} />
-                      <input type="hidden" name="status" value="verified" />
-                      <SubmitButton className="btn btn-sm">Approve</SubmitButton>
-                    </form>
-                    <form action={setOwnerStatus}>
-                      <input type="hidden" name="sid" value={params.sid} />
-                      <input type="hidden" name="owner_id" value={o.id} />
-                      <input type="hidden" name="status" value="rejected" />
-                      <SubmitButton className="btn-outline btn-sm">Reject</SubmitButton>
-                    </form>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className="divide-y divide-line">
+            {pending.map((o) => (
+              <li key={o.id} className="flex flex-wrap items-center gap-3 py-3">
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold">
+                    {o.owner_name}
+                    {o.relation === 'tenant' ? <span className="badge ml-2 bg-service-soft text-service-ink">Kirayedar</span> : <span className="badge ml-2 bg-brand-50 text-brand-800">Malik</span>}
+                  </div>
+                  <div className="text-sm text-ink-mute">{houseLabel(o.house)} · {displayPhone(o.owner_phone)} · {fmtDate(o.created_at)}</div>
+                  {o.relation === 'owner' && (claimCount.get(o.house.id) ?? 0) > 1 && <div className="mt-1 text-xs font-semibold text-due-ink">Is ghar ke aur claims bhi hain — tasdeeq kar ke approve karein</div>}
+                </div>
+                <div className="flex gap-2">
+                  <form action={setOwnerStatus}>
+                    <input type="hidden" name="sid" value={params.sid} />
+                    <input type="hidden" name="owner_id" value={o.id} />
+                    <input type="hidden" name="status" value="verified" />
+                    <SubmitButton className="btn btn-sm">Approve</SubmitButton>
+                  </form>
+                  <form action={setOwnerStatus}>
+                    <input type="hidden" name="sid" value={params.sid} />
+                    <input type="hidden" name="owner_id" value={o.id} />
+                    <input type="hidden" name="status" value="rejected" />
+                    <SubmitButton className="btn-outline btn-sm">Reject</SubmitButton>
+                  </form>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

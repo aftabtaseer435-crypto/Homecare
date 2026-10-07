@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { back, num, str } from '@/lib/actions';
 import { normalizePhone } from '@/lib/phone';
 import { uploadFile } from '@/lib/upload';
+import { pushToUsers, recipientsFrom } from '@/lib/push';
 
 async function saveLinks(supabase: ReturnType<typeof createClient>, providerId: string, fd: FormData) {
   const cats = fd.getAll('categories').map(String);
@@ -66,7 +67,22 @@ export async function registerProvider(fd: FormData) {
     .single();
   if (error) back('/provider/register', 'err', error.code === '23505' ? 'Aap ki provider profile pehle se bani hui hai.' : error.message);
   await saveLinks(supabase, p!.id, fd);
-  back('/provider/dashboard', 'ok', 'Profile ban gayi! Admin CNIC verify karega, phir aap list mein nazar aayenge.');
+
+  // tell the chairman / society admins (and super admin) right away
+  const socs = fd.getAll('societies').map(String);
+  const { data: cats } = await supabase.from('service_categories').select('name').in('id', fd.getAll('categories').map(String));
+  const to = await recipientsFrom('provider_alert_recipients', { p_provider: p!.id });
+  await Promise.race([
+    pushToUsers(to.filter((id) => id !== user!.id), {
+      title: `🧰 Naya provider: ${f.display_name}`,
+      body: `${(cats ?? []).map((c) => c.name).join(', ')} · ${f.city} — verify karein`,
+      url: socs[0] ? `/s/${socs[0]}/providers` : '/admin/providers?status=pending',
+      tag: `provider-${p!.id}`,
+      kind: 'update',
+    }),
+    new Promise((r) => setTimeout(r, 2500)),
+  ]);
+  back('/provider/dashboard', 'ok', 'Profile ban gayi aur list mein nazar aa rahi hai (Naya badge ke sath). CNIC verify hone par "Verified" lag jayega.');
 }
 
 export async function updateProvider(fd: FormData) {

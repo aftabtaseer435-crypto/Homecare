@@ -83,3 +83,16 @@ export function Section({ title, action, children, className = '' }: { title: st
     </section>
   );
 }
+
+/** "★★★★☆ 4.5 · 12 reviews" — or "Abhi koi review nahi" */
+export function RatingLine({ avg, count }: { avg: number; count: number }) {
+  if (!count) return <div className="text-xs text-ink-mute">☆☆☆☆☆ Abhi koi review nahi</div>;
+  const full = Math.round(avg);
+  return (
+    <div className="flex items-center gap-1.5 text-sm" title={`${avg.toFixed(1)} / 5`}>
+      <span className="text-amber-500">{'★'.repeat(full)}<span className="text-line">{'★'.repeat(5 - full)}</span></span>
+      <b className="text-ink">{avg.toFixed(1)}</b>
+      <span className="text-ink-mute">· {count} review{count === 1 ? '' : 's'}</span>
+    </div>
+  );
+}

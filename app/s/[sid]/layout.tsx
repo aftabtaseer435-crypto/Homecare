@@ -22,6 +22,7 @@ export default async function SocietyAdminLayout({ children, params }: { childre
           { href: `${base}/houses`, label: 'Ghar' },
           { href: `${base}/funds`, label: 'Fund plans' },
           { href: `${base}/notices`, label: 'Notices' },
+          { href: `${base}/providers`, label: 'Providers / dukanein' },
           { href: `${base}/hub`, label: 'Society page' },
           { href: `${base}/team`, label: 'Team' },
         ]
@@ -29,8 +30,8 @@ export default async function SocietyAdminLayout({ children, params }: { childre
     { href: `${base}/messages`, label: 'Message log' },
   ];
   return (
-    <div className="grid gap-6 md:grid-cols-[13rem_1fr] md:gap-8">
-      <aside className="space-y-4 md:sticky md:top-24 md:self-start">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-8">
+      <aside className="min-w-0 space-y-3 md:sticky md:top-24 md:space-y-4 md:self-start">
         <div className="rounded-2xl border border-line bg-white p-4">
           <div className="eyebrow">{role === 'admin' ? 'Society admin' : 'Collector'}</div>
           <div className="mt-0.5 font-display text-lg font-bold leading-snug">{society?.name}</div>

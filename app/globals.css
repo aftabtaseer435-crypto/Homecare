@@ -46,7 +46,8 @@
   .table td { @apply border-b border-line/80 px-3 py-3 align-top; }
   .table tbody tr:hover td { @apply bg-canvas/60; }
   @media (max-width: 767px) {
-    .table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* !important: Tailwind's own `table` utility (display: table) would win otherwise */
+    .table { display: block !important; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table td { min-width: 7rem; }
   }
   .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.08em] text-ink-mute; }

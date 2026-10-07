@@ -21,7 +21,7 @@ export default async function OrderPage({ params, searchParams }: { params: { id
       .maybeSingle(),
     supabase.from('house_owners').select('house:houses(block, street, house_no, society:societies(name, city))').eq('user_id', user.id).eq('status', 'verified'),
   ]);
-  if (!p || p.status !== 'verified') notFound();
+  if (!p || !['verified', 'pending'].includes(p.status)) notFound();
   const prov = p as any;
   const cats = (prov.provider_categories ?? []).map((c: any) => c.category).filter(Boolean);
   const selected = cats.find((c: any) => c.slug === searchParams.cat) ?? cats[0];
