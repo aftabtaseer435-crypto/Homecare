@@ -13,6 +13,7 @@ export default function ContactButtons({
   whatsapp,
   providerId,
   listingId,
+  wantId,
   message,
   compact,
   bare,
@@ -21,6 +22,7 @@ export default function ContactButtons({
   whatsapp?: string | null;
   providerId?: string;
   listingId?: string;
+  wantId?: string;
   message?: string;
   compact?: boolean;
   bare?: boolean;
@@ -28,7 +30,7 @@ export default function ContactButtons({
   const wa = whatsapp || phone;
   const size = compact ? 'h-10 text-[13px]' : 'h-11 text-sm';
   const track = (kind: 'call' | 'whatsapp') => {
-    logContact({ providerId, listingId, kind }).catch(() => {});
+    logContact({ providerId, listingId, wantId, kind }).catch(() => {});
   };
   const buttons = (
     <>

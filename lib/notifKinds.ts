@@ -7,6 +7,7 @@ export const notifKind: Record<string, { cls: string; label: string }> = {
   society: { cls: 'bg-brand-50 text-brand-700', label: 'Society' },
   provider: { cls: 'bg-service-soft text-service-ink', label: 'Provider' },
   payment: { cls: 'bg-paid-soft text-paid-ink', label: 'Payment' },
+  property: { cls: 'bg-property-soft text-property-ink', label: 'Property' },
   info: { cls: 'bg-canvas text-ink-soft', label: 'Update' },
 };
 export const kindOf = (k: string) => notifKind[k] ?? notifKind.info;

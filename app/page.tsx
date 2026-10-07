@@ -115,11 +115,11 @@ export default function Home({ searchParams }: { searchParams: { ok?: string } }
         id="property"
         tone="property"
         eyebrow="Rent / Sale"
-        title="Ghar rent ya sale — society verified"
-        body="Owner khud listing banata hai. Agar ghar society mein uske naam verified hai to listing par badge lagta hai, taake kiraydar ko pata ho asal malik se baat ho rahi hai."
-        points={['Photos, kamre, rent, advance', 'Society, city aur budget filter', 'Seedha owner se call / WhatsApp']}
+        title="Ghar khareedein, bechein ya kiraye par — society verified"
+        body="Bechna aur kiraye par dena do alag nizam hain, har ek ki apni poori maloomat aur apni list. Ghar society mein malik ke naam verified ho to listing par badge lagta hai."
+        points={['Sale: demand, kaghzat, qabza, qistein', 'Rent: kiraya, advance, portion, family / bachelor', 'Demands, seller profile, number chupa']}
         primary={['Ghar dekhein', '/properties']}
-        secondary={['Apna ghar list karein', '/properties/new']}
+        secondary={['Bechein / kiraye par dein', '/properties/new']}
         visual={
           <div className="panel overflow-hidden p-0">
             <div className="flex h-40 items-end bg-gradient-to-br from-property-soft to-[#DCCDFB] p-4">

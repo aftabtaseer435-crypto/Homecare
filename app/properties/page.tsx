@@ -1,82 +1,82 @@
-import { House } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowRight, BadgeCheck, HandCoins, KeyRound, Megaphone, PhoneOff, Search, Tag } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { Empty, PageHeader } from '@/components/ui';
-import { rs, storagePublicUrl } from '@/lib/format';
+import ListingCard from '@/components/property/ListingCard';
+import { Flash } from '@/components/ui';
+import { CARD_SELECT } from '@/lib/property';
 
 export const metadata = {
-  title: 'Ghar rent aur sale — society verified listings',
-  description: 'Housing societies ke ghar, portion aur room rent ya sale ke liye. Society-verified owners, photos, rent aur advance. Owner se seedha call ya WhatsApp.',
+  title: 'Ghar khareedein, bechein ya kiraye par lein / dein',
+  description: 'Housing societies ke ghar, plot, portion aur flat — khareedna, bechna, kiraye par lena aur dena alag alag. Society-verified owners, poori maloomat, seedha call ya WhatsApp.',
   alternates: { canonical: '/properties' },
 };
 
-type SP = { type?: string; city?: string; society?: string; min?: string; max?: string; beds?: string; portion?: string };
+const doors = [
+  { href: '/properties/sale', title: 'Ghar khareedna hai', text: 'Bikne wale ghar, plot aur flat dekhein', icon: Search, tone: 'bg-property text-white' },
+  { href: '/properties/new?type=sale', title: 'Ghar bechna hai', text: 'Demand, size aur kaghzat ke sath listing', icon: Tag, tone: 'bg-property-soft text-property-ink' },
+  { href: '/properties/rent', title: 'Kiraye par lena hai', text: 'Ghar, portion, flat aur kamre kiraye par', icon: KeyRound, tone: 'bg-ink text-white' },
+  { href: '/properties/new?type=rent', title: 'Kiraye par dena hai', text: 'Kiraya, advance aur shartein likh kar', icon: HandCoins, tone: 'bg-canvas text-ink' },
+];
 
-export default async function Properties({ searchParams }: { searchParams: SP }) {
+export default async function Properties({ searchParams }: { searchParams: { ok?: string; err?: string } }) {
   const supabase = createClient();
-  const { data: societies } = await supabase.from('societies').select('id, name').eq('status', 'active').order('name');
-
-  let q = supabase
-    .from('property_listings')
-    .select('id, listing_type, title, city, area_text, plot_size, bedrooms, bathrooms, portion, price, society_verified, created_at, society:societies(name), listing_photos(path, sort)')
-    .eq('status', 'active')
-    .order('society_verified', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(60);
-  if (searchParams.type === 'rent' || searchParams.type === 'sale') q = q.eq('listing_type', searchParams.type);
-  if (searchParams.city) q = q.ilike('city', `%${searchParams.city.replace(/[%,]/g, '')}%`);
-  if (searchParams.society) q = q.eq('society_id', searchParams.society);
-  if (searchParams.min) q = q.gte('price', Number(searchParams.min));
-  if (searchParams.max) q = q.lte('price', Number(searchParams.max));
-  if (searchParams.beds) q = q.gte('bedrooms', Number(searchParams.beds));
-  if (searchParams.portion) q = q.eq('portion', searchParams.portion);
-  const { data: listings } = await q;
+  const base = () => supabase.from('property_listings').select(CARD_SELECT).eq('status', 'active').order('society_verified', { ascending: false }).order('created_at', { ascending: false }).limit(3);
+  const [{ data: sale }, { data: rent }, { count: sales }, { count: rents }, { count: wants }] = await Promise.all([
+    base().eq('listing_type', 'sale'),
+    base().eq('listing_type', 'rent'),
+    supabase.from('property_listings').select('id', { count: 'exact', head: true }).eq('status', 'active').eq('listing_type', 'sale'),
+    supabase.from('property_listings').select('id', { count: 'exact', head: true }).eq('status', 'active').eq('listing_type', 'rent'),
+    supabase.from('property_wants').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+  ]);
 
   return (
     <div>
-      <PageHeader title="Ghar rent / sale" subtitle="Society-verified listings pehle. Owner se seedha baat." action={<Link href="/properties/new" className="btn bg-property hover:bg-property-ink">+ Apna ghar list karein</Link>} />
+      <Flash searchParams={searchParams} />
+      <div className="mb-6">
+        <h1>Ghar khareedein, bechein ya kiraye par</h1>
+        <p className="mt-1 max-w-2xl text-ink-mute">Bechne aur kiraye ka nizam bilkul alag hai — aap kya karna chahte hain?</p>
+      </div>
 
-      <form className="card mb-6 grid gap-3 md:grid-cols-7">
-        <select name="type" defaultValue={searchParams.type ?? ''} className="input">
-          <option value="">Rent + Sale</option><option value="rent">Rent</option><option value="sale">Sale</option>
-        </select>
-        <input name="city" defaultValue={searchParams.city} placeholder="City" className="input" />
-        <select name="society" defaultValue={searchParams.society ?? ''} className="input">
-          <option value="">Saari societies</option>
-          {(societies ?? []).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
-        <input name="min" type="number" defaultValue={searchParams.min} placeholder="Min Rs" className="input" />
-        <input name="max" type="number" defaultValue={searchParams.max} placeholder="Max Rs" className="input" />
-        <select name="beds" defaultValue={searchParams.beds ?? ''} className="input">
-          <option value="">Bedrooms</option>{[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}+</option>)}
-        </select>
-        <button className="btn bg-property hover:bg-property-ink">Search</button>
-      </form>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {doors.map((d) => (
+          <Link key={d.href} href={d.href} className="group flex min-w-0 items-start gap-3 rounded-2xl border border-line bg-white p-4 no-underline transition hover:border-property/60 hover:shadow-md hover:no-underline">
+            <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${d.tone}`}><d.icon className="h-5 w-5" aria-hidden="true" /></span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-1 font-semibold text-ink">{d.title}<ArrowRight className="h-4 w-4 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden="true" /></span>
+              <span className="mt-0.5 block text-sm text-ink-mute">{d.text}</span>
+            </span>
+          </Link>
+        ))}
+      </div>
 
-      {(listings ?? []).length === 0 ? (
-        <Empty href="/properties/new" cta="Pehli listing daalein">Koi listing nahi mili.</Empty>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {((listings ?? []) as any[]).map((l) => {
-            const photo = [...(l.listing_photos ?? [])].sort((a: any, b: any) => a.sort - b.sort)[0];
-            return (
-              <Link key={l.id} href={`/properties/${l.id}`} className="card overflow-hidden p-0 no-underline hover:border-brand-500">
-                <div className="relative aspect-[4/3] bg-canvas">
-                  {photo ? <img src={storagePublicUrl(photo.path)!} alt={l.title} loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-property-soft text-property"><House className="h-12 w-12" strokeWidth={1.5} aria-hidden="true" /></div>}
-                  <span className={`badge absolute left-2 top-2 ${l.listing_type === 'rent' ? 'bg-ink text-white' : 'bg-plate text-plate-ink'}`}>{l.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
-                  {l.society_verified && <span className="badge absolute right-2 top-2 bg-paid text-white">✓ Society verified</span>}
-                </div>
-                <div className="space-y-1 p-4">
-                  <div className="text-lg font-bold text-ink">{rs(l.price)}{l.listing_type === 'rent' && <span className="text-sm font-normal text-ink-mute"> / mahina</span>}</div>
-                  <div className="font-semibold text-ink">{l.title}</div>
-                  <div className="muted">{[l.society?.name, l.area_text, l.city].filter(Boolean).join(' · ')}</div>
-                  <div className="text-sm text-ink-soft">{[l.plot_size, l.bedrooms && `${l.bedrooms} bed`, l.bathrooms && `${l.bathrooms} bath`, l.portion && l.portion !== 'full' && `${l.portion} portion`].filter(Boolean).join(' · ')}</div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm"><BadgeCheck className="h-5 w-5 shrink-0 text-paid" aria-hidden="true" /><span><b>Society verified</b> — malik ki tasdeeq society ne ki hai</span></div>
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm"><PhoneOff className="h-5 w-5 shrink-0 text-property" aria-hidden="true" /><span><b>Number chupa</b> — sirf Call / WhatsApp button</span></div>
+        <Link href="/properties/wanted" className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm no-underline hover:border-property/60 hover:no-underline">
+          <Megaphone className="h-5 w-5 shrink-0 text-property" aria-hidden="true" /><span className="text-ink"><b>{wants ?? 0} demands</b> — khareedne / kiraye wale kya dhoond rahe hain</span>
+        </Link>
+      </div>
+
+      {[
+        { id: 'sale', title: 'Bikne wale ghar', list: sale, count: sales, cta: 'Saare sale ghar' },
+        { id: 'rent', title: 'Kiraye ke ghar', list: rent, count: rents, cta: 'Saare rent ghar' },
+      ].map((s) => (
+        <section key={s.id} className="mt-10">
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <h2>{s.title} <span className="text-base font-normal text-ink-mute">({s.count ?? 0})</span></h2>
+            <Link href={`/properties/${s.id}`} className="inline-flex items-center gap-1 text-sm font-semibold">{s.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+          </div>
+          {(s.list ?? []).length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-line bg-white p-6 text-center text-sm text-ink-mute">
+              Abhi koi listing nahi. <Link href={`/properties/new?type=${s.id}`}>Pehli listing aap daalein</Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {(s.list as any[]).map((l) => <ListingCard key={l.id} l={l} />)}
+            </div>
+          )}
+        </section>
+      ))}
     </div>
   );
 }

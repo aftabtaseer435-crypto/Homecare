@@ -182,8 +182,8 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
       {/* ===== Rent / Sale ===== */}
       <ModuleBlock tone="property" title="Rent / Sale">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Action href="/properties" title="Ghar dekhein" body="Society-verified ghar rent aur sale" />
-          <Action href="/properties/new" title="Apna ghar list karein" body={`Meri listings: ${(listings ?? []).filter((l) => l.status === 'active').length} active`} sub={['Meri listings', '/my/listings']} />
+          <Action href="/properties" title="Ghar dekhein" body="Khareedein ya kiraye par lein — alag alag lists" sub={['Demands', '/properties/wanted']} />
+          <Action href="/properties/new" title="Bechein / kiraye par dein" body={`Live listings: ${(listings ?? []).filter((l) => l.status === 'active').length}`} sub={['Property dashboard', '/my/listings']} />
         </div>
       </ModuleBlock>
 

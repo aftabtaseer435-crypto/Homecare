@@ -44,10 +44,10 @@ const roles = [
     id: 'property',
     tab: 'Rent / sale',
     steps: [
-      ['Listing banayein', 'Rent ya sale, price, kamre, photos.'],
+      ['Bechna ya kiraye par dena', 'Dono ka alag form — demand, kaghzat, qabza ya kiraya, advance, shartein — aur photos.'],
       ['Verified badge', 'Agar ghar society mein aap ke naam verified hai to listing par "Society verified" badge lagta hai.'],
       ['Seedha rabta', 'Kiraydar ya kharidar aap ko call / WhatsApp karta hai — beech mein koi dealer nahi.'],
-      ['Rent ho gaya?', 'Ek click se listing band.'],
+      ['Dashboard', 'Views, calls aur WhatsApp ginti, edit, aur ek click se "Bik gaya" / "Rent ho gaya".'],
     ],
     guide: '/guides/ghar-rent-sale',
     cta: ['Ghar list karein', '/properties/new'],

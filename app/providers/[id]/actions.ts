@@ -4,13 +4,14 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { back, num, str } from '@/lib/actions';
 
-export async function logContact(input: { providerId?: string; listingId?: string; kind: 'call' | 'whatsapp' | 'view' }) {
+export async function logContact(input: { providerId?: string; listingId?: string; wantId?: string; kind: 'call' | 'whatsapp' | 'view' }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   await supabase.from('contact_events').insert({
     user_id: user?.id ?? null,
     provider_id: input.providerId ?? null,
     listing_id: input.listingId ?? null,
+    ...(input.wantId ? { want_id: input.wantId } : {}),
     kind: input.kind,
   });
 }

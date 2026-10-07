@@ -3,7 +3,7 @@ import {
   Bell, Briefcase, Brush, Bug, Bus, Car, CarTaxiFront, Cctv, ChefHat, Carrot, Croissant, CreditCard, Cylinder, Drumstick, Droplet,
   Droplets, FileText, Flame, GraduationCap, Hammer, House, Lightbulb, Megaphone, Milk, Paintbrush, Pill, Scale, Scissors, Shield,
   ShieldCheck, Shirt, ShoppingBag, ShoppingCart, Snowflake, Sparkles, SprayCan, Sprout, Star, Store, Sun, Trash2, Truck,
-  UtensilsCrossed, WashingMachine, Waves, Wrench, Zap, BrickWall, Construction, type LucideIcon,
+  UtensilsCrossed, WashingMachine, Waves, Wrench, Zap, BrickWall, Construction, KeyRound, type LucideIcon,
 } from 'lucide-react';
 
 const service: Record<string, LucideIcon> = {
@@ -26,6 +26,6 @@ export const welfareIcon = (id?: string | null): LucideIcon => (id && welfare[id
 
 const notif: Record<string, LucideIcon> = {
   order: ShoppingBag, review: Star, notice: Megaphone, welfare: Wrench, society: House,
-  provider: Briefcase, payment: CreditCard, info: Bell,
+  provider: Briefcase, payment: CreditCard, property: KeyRound, info: Bell,
 };
 export const notifIcon = (kind?: string | null): LucideIcon => (kind && notif[kind]) || Bell;
