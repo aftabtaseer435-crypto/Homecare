@@ -51,7 +51,7 @@ export default function MobileMenu({ loggedIn, name, superAdmin }: { loggedIn: b
             <div className="flex items-center justify-between border-b border-line px-5 py-4">
               <div className="min-w-0">
                 <div className="text-xs font-bold text-ink-mute">{loggedIn ? 'Logged in' : 'Khush aamdeed'}</div>
-                <div className="truncate font-bold">{loggedIn ? name || 'Mera account' : 'SocietyHub'}</div>
+                <div className="truncate font-bold">{loggedIn ? name || 'Mera account' : 'Housing Welfare'}</div>
               </div>
               <button ref={closeRef} className="inline-flex h-11 w-11 items-center justify-center rounded-xl hover:bg-canvas" aria-label="Menu band karein" onClick={() => setOpen(false)}>
                 <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>

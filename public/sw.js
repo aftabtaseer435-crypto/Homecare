@@ -1,7 +1,7 @@
 // Minimal service worker: makes the site installable and shows a friendly
 // page when the phone is offline (needed for a good Android app experience).
 // It does NOT cache app data — everything stays live from the server.
-const CACHE = 'societyhub-v1';
+const CACHE = 'housingwelfare-v2';
 const OFFLINE_URL = '/offline.html';
 
 self.addEventListener('install', (event) => {

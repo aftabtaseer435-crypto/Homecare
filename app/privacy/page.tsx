@@ -1,9 +1,10 @@
+import { appName } from '@/lib/seo';
 export const metadata = { title: 'Privacy Policy', description: 'Hum kaun sa data lete hain, kaise use karte hain, aur account delete kaise karein.', alternates: { canonical: '/privacy' } };
 
 // NOTE: review this text with your own details (company name, contact email)
 // before submitting to Google Play.
 export default function Privacy() {
-  const app = process.env.NEXT_PUBLIC_APP_NAME || 'SocietyHub';
+  const app = appName;
   const email = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@example.com';
   return (
     <article className="card mx-auto max-w-3xl space-y-4 text-sm leading-relaxed">

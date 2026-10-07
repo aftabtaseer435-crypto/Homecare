@@ -1,9 +1,10 @@
+import { appName } from '@/lib/seo';
 import type { MetadataRoute } from 'next';
 
 // Web app manifest — used by "Add to Home screen" AND by Bubblewrap to
 // generate the Android (Play Store) app. Keep name/colours/icons here.
 export default function manifest(): MetadataRoute.Manifest {
-  const name = process.env.NEXT_PUBLIC_APP_NAME || 'SocietyHub';
+  const name = appName;
   return {
     id: '/',
     name,
@@ -14,7 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     orientation: 'portrait',
     background_color: '#ffffff',
-    theme_color: '#059669',
+    theme_color: '#147A59',
     lang: 'en-PK',
     categories: ['lifestyle', 'utilities', 'business'],
     icons: [

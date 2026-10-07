@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
  * website belong together, so the app opens full-screen (no browser bar).
  *
  * Set in Vercel env:
- *   ANDROID_PACKAGE_NAME=com.societyhub.app
+ *   ANDROID_PACKAGE_NAME=com.housingwelfare.app
  *   ANDROID_SHA256_FINGERPRINTS=AB:CD:...   (comma-separated; from Play Console →
  *     Setup → App signing → "App signing key certificate" SHA-256, plus the
  *     upload key one if you test locally built APKs)

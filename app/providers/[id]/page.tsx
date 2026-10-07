@@ -92,7 +92,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
           {prov.rate_note && <div className="text-sm"><b>Rates:</b> {prov.rate_note}</div>}
           <div className="text-sm text-ink-soft">{displayPhone(prov.phone)}</div>
           <div className="pt-2">
-            <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number SocietyHub se mila. Mujhe kaam karwana hai." />
+            <ContactButtons phone={prov.phone} whatsapp={prov.whatsapp} providerId={prov.id} message="Assalam o Alaikum, aap ka number Housing Welfare se mila. Mujhe kaam karwana hai." />
           </div>
         </div>
       </div>

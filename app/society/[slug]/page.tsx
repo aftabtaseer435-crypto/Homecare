@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return { title, description, alternates: { canonical: `/society/${s.slug}` }, openGraph: { title, description, images: [bannerImage(s)] } };
 }
 
-export default async function SocietyHub({ params }: Params) {
+export default async function SocietyHubPage({ params }: Params) {
   const { supabase, user } = await getSession();
   const { data: s } = await supabase.from('societies').select('*').eq('slug', params.slug).maybeSingle();
   if (!s) notFound();

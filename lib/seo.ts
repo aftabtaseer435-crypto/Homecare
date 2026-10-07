@@ -1,4 +1,5 @@
-export const appName = process.env.NEXT_PUBLIC_APP_NAME || 'SocietyHub';
+/** Brand name — fixed in code so an old env value can't override it. */
+export const appName = 'Housing Welfare';
 
 export function siteUrl() {
   const raw = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');

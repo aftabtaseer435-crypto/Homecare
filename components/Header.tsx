@@ -1,3 +1,4 @@
+import { appName } from '@/lib/seo';
 import Link from 'next/link';
 import { getSession } from '@/lib/auth';
 import Logo from './Logo';
@@ -8,7 +9,6 @@ import MobileMenu from './MobileMenu';
 
 export default async function Header() {
   const { user, profile } = await getSession();
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'SocietyHub';
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">

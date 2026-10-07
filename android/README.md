@@ -22,8 +22,8 @@ bubblewrap init --manifest https://YOUR-DOMAIN.com/manifest.webmanifest
 
 Sawalon ke jawab (ya `android/twa-manifest.json` dekh kar wahi values):
 - Domain: `YOUR-DOMAIN.com` · Start URL: `/dashboard?source=app`
-- Application ID (package): `com.societyhub.app` — **yeh baad mein kabhi nahi badal sakta**, soch kar rakhein
-- App name: SocietyHub · Theme color `#059669`
+- Application ID (package): `com.housingwelfare.app` — **yeh baad mein kabhi nahi badal sakta**, soch kar rakhein
+- App name: Housing Welfare · Theme color `#059669`
 - Signing key: naya bana lein. **`android.keystore` file aur password sambhal kar rakhein** (Google Drive / password manager). Gum ho jaye to naya update upload karne ke liye Google support se upload key reset karwani paregi — lamba kaam.
 
 ```bash
@@ -46,7 +46,7 @@ Is se do files banti hain: `app-release-bundle.aab` (Play Store ke liye) aur `ap
 2. Local APK test karna ho to `bubblewrap fingerprint` / keystore ka SHA-256 bhi lein.
 3. Vercel env mein:
    ```
-   ANDROID_PACKAGE_NAME=com.societyhub.app
+   ANDROID_PACKAGE_NAME=com.housingwelfare.app
    ANDROID_SHA256_FINGERPRINTS=AA:BB:...,CC:DD:...
    ```
 4. Redeploy → `https://YOUR-DOMAIN.com/.well-known/assetlinks.json` khol kar check karein ke package aur fingerprint nazar aa rahe hain.
