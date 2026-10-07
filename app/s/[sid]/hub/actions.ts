@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireSocietyStaff } from '@/lib/auth';
-import { back, num, str } from '@/lib/actions';
+import { back, num, oneOf, str } from '@/lib/actions';
 import { normalizePhone } from '@/lib/phone';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { uploadFile } from '@/lib/upload';
@@ -71,7 +71,7 @@ export async function saveProject(fd: FormData) {
   const row: Record<string, any> = {
     society_id: sid,
     title: str(fd, 'title'),
-    category: str(fd, 'category') || 'other',
+    category: oneOf(str(fd, 'category'), ['lights', 'safai', 'roads', 'water', 'sewerage', 'security', 'parks', 'mosque', 'other'], 'other'),
     status,
     description: str(fd, 'description') || null,
     area: str(fd, 'area') || null,

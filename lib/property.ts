@@ -80,7 +80,6 @@ export function pkPrice(n: number | string | null | undefined) {
   return `Rs ${v.toLocaleString('en-PK')}`;
 }
 
-export const dealLabel = (d: Deal) => (d === 'sale' ? 'Sale' : 'Rent');
 
 /** Columns a listing card needs (browse pages, seller profile, dashboard). */
 export const CARD_SELECT =

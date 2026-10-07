@@ -11,7 +11,9 @@ export async function claimHouse(fd: FormData) {
   const { data: profile } = await supabase.from('profiles').select('phone').eq('id', user!.id).single();
 
   const house_id = str(fd, 'house_id');
-  const society_id = str(fd, 'society_id');
+  const { data: home } = await supabase.from('houses').select('society_id').eq('id', house_id).maybeSingle();
+  if (!home) back('/societies/join', 'err', 'Ghar nahi mila');
+  const society_id = home!.society_id as string;
   const { error } = await supabase.from('house_owners').insert({
     house_id,
     user_id: user!.id,

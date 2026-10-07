@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { back, num, str } from '@/lib/actions';
+import { back, num, oneOf, str } from '@/lib/actions';
 import { uploadFile } from '@/lib/upload';
 import { category } from '@/lib/welfare';
 
@@ -18,7 +18,7 @@ async function me() {
 export async function createIssue(fd: FormData) {
   const { supabase, user } = await me();
   const house_id = str(fd, 'house_id');
-  const cat = str(fd, 'category');
+  const cat = oneOf(str(fd, 'category'), ['street_light', 'water', 'sewerage', 'road', 'cleanliness', 'security', 'legal', 'other'], 'other');
   const path = `/welfare/report?house=${house_id}&cat=${cat}`;
   const description = str(fd, 'description');
   if (!description) back(path, 'err', 'Masla likhein');

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireSocietyStaff } from '@/lib/auth';
-import { back, num, str } from '@/lib/actions';
+import { back, num, oneOf, str } from '@/lib/actions';
 import { normalizePhone } from '@/lib/phone';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { broadcastNotice, sendReceipt } from '@/lib/notify';
@@ -13,6 +13,8 @@ import { uploadFile } from '@/lib/upload';
 const sidOf = (fd: FormData) => str(fd, 'sid');
 
 // ---------------------------------------------------------------- HOUSES
+const EXPENSE_CATS = ['street_light', 'water', 'sewerage', 'road', 'cleaning', 'security', 'salary', 'repair', 'park', 'legal', 'other'] as const;
+
 export async function bulkCreateHouses(fd: FormData) {
   const sid = sidOf(fd);
   const { supabase } = await requireSocietyStaff(sid, true);
@@ -79,7 +81,7 @@ export async function updateHouse(fd: FormData) {
     .from('houses')
     .update({
       fund_exempt: fd.get('fund_exempt') === 'on',
-      occupancy: str(fd, 'occupancy') || 'owner',
+      occupancy: oneOf(str(fd, 'occupancy'), ['owner', 'rented', 'vacant', 'construction'], 'owner'),
       plot_size: str(fd, 'plot_size') || null,
     })
     .eq('id', str(fd, 'house_id'))
@@ -117,13 +119,14 @@ async function findHouse(supabase: any, sid: string, fd: FormData) {
 export async function setOwnerStatus(fd: FormData) {
   const sid = sidOf(fd);
   const { supabase, user } = await requireSocietyStaff(sid);
-  const status = str(fd, 'status');
-  const { error } = await supabase
+  const status = oneOf(str(fd, 'status'), ['verified', 'rejected'], 'rejected');
+  const { data, error } = await supabase
     .from('house_owners')
     .update({ status, verified_by: user.id, verified_at: new Date().toISOString() })
-    .eq('id', str(fd, 'owner_id'));
-  if (error) {
-    const msg = error.code === '23505' ? 'Is ghar ka ek verified owner pehle se hai. Pehle usay remove karein.' : error.message;
+    .eq('id', str(fd, 'owner_id'))
+    .select('id');
+  if (error || !data?.length) {
+    const msg = error?.code === '23505' ? 'Is ghar ka ek verified owner pehle se hai. Pehle usay remove karein.' : error?.message ?? 'Request nahi mili';
     back(`/s/${sid}/owners`, 'err', msg);
   }
   back(`/s/${sid}/owners`, 'ok', status === 'verified' ? 'Owner approve ho gaya' : 'Request reject ho gayi');
@@ -153,8 +156,8 @@ export async function addOwner(fd: FormData) {
 export async function removeOwner(fd: FormData) {
   const sid = sidOf(fd);
   const { supabase } = await requireSocietyStaff(sid, true);
-  const { error } = await supabase.from('house_owners').delete().eq('id', str(fd, 'owner_id'));
-  if (error) back(`/s/${sid}/owners`, 'err', error.message);
+  const { data, error } = await supabase.from('house_owners').delete().eq('id', str(fd, 'owner_id')).select('id');
+  if (error || !data?.length) back(`/s/${sid}/owners`, 'err', error?.message ?? 'Owner nahi mila');
   back(`/s/${sid}/owners`, 'ok', 'Owner remove ho gaya');
 }
 
@@ -170,7 +173,7 @@ export async function createPlan(fd: FormData) {
   const { data: plan, error } = await supabase
     .from('fund_plans')
     .insert({
-      society_id: sid, name: str(fd, 'name'), amount, frequency: str(fd, 'frequency'), due_day,
+      society_id: sid, name: str(fd, 'name'), amount, frequency: oneOf(str(fd, 'frequency'), ['monthly', 'quarterly', 'yearly', 'one_time'], 'monthly'), due_day,
       start_date: str(fd, 'start_date') || todayPK(), late_fee: num(fd, 'late_fee') ?? 0,
     })
     .select('id')
@@ -184,7 +187,8 @@ export async function createPlan(fd: FormData) {
 export async function togglePlan(fd: FormData) {
   const sid = sidOf(fd);
   const { supabase } = await requireSocietyStaff(sid, true);
-  await supabase.from('fund_plans').update({ active: str(fd, 'active') === 'true' }).eq('id', str(fd, 'plan_id')).eq('society_id', sid);
+  const { data } = await supabase.from('fund_plans').update({ active: str(fd, 'active') === 'true' }).eq('id', str(fd, 'plan_id')).eq('society_id', sid).select('id');
+  if (!data?.length) back(`/s/${sid}/funds`, 'err', 'Plan update nahi hua');
   back(`/s/${sid}/funds`, 'ok', 'Plan update ho gaya');
 }
 
@@ -223,7 +227,7 @@ export async function recordPayment(fd: FormData) {
   const { data: pay, error } = await supabase
     .from('payments')
     .insert({
-      society_id: sid, fund_due_id, house_id: due!.house_id, amount, method: str(fd, 'method') || 'cash',
+      society_id: sid, fund_due_id, house_id: due!.house_id, amount, method: oneOf(str(fd, 'method'), ['cash', 'bank', 'jazzcash', 'easypaisa', 'online'], 'cash'),
       reference: str(fd, 'reference') || null, status: 'verified', entered_by: user.id, verified_by: user.id,
     })
     .select('id, receipt_no')
@@ -364,7 +368,8 @@ export async function updateAgent(fd: FormData) {
 export async function removeAgent(fd: FormData) {
   const sid = sidOf(fd);
   const { supabase } = await requireSocietyStaff(sid, true);
-  await supabase.from('welfare_agents').update({ active: false }).eq('id', str(fd, 'agent_row')).eq('society_id', sid);
+  const { data } = await supabase.from('welfare_agents').update({ active: false }).eq('id', str(fd, 'agent_row')).eq('society_id', sid).select('id');
+  if (!data?.length) back(`/s/${sid}/welfare`, 'err', 'Agent nahi mila');
   back(`/s/${sid}/welfare`, 'ok', 'Agent hata diya gaya (purana record mehfooz hai).');
 }
 
@@ -383,7 +388,7 @@ export async function addExpense(fd: FormData) {
     back(path, 'err', (e as Error).message);
   }
   const { error } = await supabase.from('fund_expenses').insert({
-    society_id: sid, amount, category: str(fd, 'category') || 'other', description: str(fd, 'description'),
+    society_id: sid, amount, category: oneOf(str(fd, 'category'), EXPENSE_CATS, 'other'), description: str(fd, 'description'),
     vendor: str(fd, 'vendor') || null, spent_on: str(fd, 'spent_on') || todayPK(),
     block: block || null, street: street || null, receipt_path, status: 'approved',
   });
@@ -409,6 +414,7 @@ export async function reviewExpense(fd: FormData) {
 export async function removeInvite(fd: FormData) {
   const sid = sidOf(fd);
   const { supabase } = await requireSocietyStaff(sid, true);
-  await supabase.from('society_member_invites').delete().eq('id', str(fd, 'invite_id')).eq('society_id', sid);
+  const { data } = await supabase.from('society_member_invites').delete().eq('id', str(fd, 'invite_id')).eq('society_id', sid).select('id');
+  if (!data?.length) back(`/s/${sid}/team`, 'err', 'Invite nahi mila');
   back(`/s/${sid}/team`, 'ok', 'Invite hata diya');
 }

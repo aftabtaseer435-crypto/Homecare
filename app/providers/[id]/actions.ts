@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { back, num, str } from '@/lib/actions';
+import { back, num, safePath, str } from '@/lib/actions';
 
 export async function logContact(input: { providerId?: string; listingId?: string; wantId?: string; kind: 'call' | 'whatsapp' | 'view' }) {
   const supabase = createClient();
@@ -21,7 +21,7 @@ export async function submitReview(fd: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   const provider_id = str(fd, 'provider_id');
   const n = str(fd, 'next');
-  const path = n.startsWith('/') && !n.startsWith('//') ? n.split('?')[0].split('#')[0] : `/providers/${provider_id}`;
+  const path = safePath(n, `/providers/${provider_id}`).split('?')[0].split('#')[0];
   if (!user) back(`/login?next=${path}`, 'err', 'Review ke liye login karein');
   const stars = num(fd, 'stars');
   if (!stars || stars < 1 || stars > 5) back(path, 'err', 'Stars chunein');

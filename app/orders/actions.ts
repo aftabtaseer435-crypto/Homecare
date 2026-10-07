@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth';
-import { back, num, str } from '@/lib/actions';
+import { back, num, safePath, str } from '@/lib/actions';
 import { pushToUser } from '@/lib/push';
 
 const short = (t: string, n = 70) => (t.length > n ? t.slice(0, n - 1) + '…' : t).replace(/\s+/g, ' ');
@@ -11,7 +11,7 @@ const within = (p: Promise<unknown>, ms = 2500) => Promise.race([p, new Promise(
 
 const safeNext = (fd: FormData, fallback: string) => {
   const n = str(fd, 'next');
-  return n.startsWith('/') && !n.startsWith('//') ? n.split('?')[0] : fallback;
+  return safePath(n, fallback).split('?')[0];
 };
 
 const done: Record<string, string> = {

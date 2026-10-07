@@ -16,15 +16,18 @@ export async function getPlans(supabase: SupabaseClient, sid: string) {
 
 /** Periods that exist for a plan, newest first. */
 export async function getPeriods(supabase: SupabaseClient, planId: string) {
-  const { data } = await supabase
-    .from('fund_dues')
-    .select('period, due_date')
-    .eq('fund_plan_id', planId)
-    .order('due_date', { ascending: false })
-    .limit(1000);
-  const seen = new Set<string>();
+  // one row per step: big societies have thousands of dues per period
   const out: { period: string; due_date: string }[] = [];
-  for (const r of data ?? []) if (!seen.has(r.period)) { seen.add(r.period); out.push(r); }
+  let before: string | null = null;
+  for (let i = 0; i < 60; i++) {
+    let q = supabase.from('fund_dues').select('period, due_date').eq('fund_plan_id', planId).order('due_date', { ascending: false }).limit(1);
+    if (before) q = q.lt('due_date', before);
+    const { data } = await q;
+    const r = data?.[0];
+    if (!r) break;
+    if (!out.some((x) => x.period === r.period)) out.push(r);
+    before = r.due_date;
+  }
   return out;
 }
 

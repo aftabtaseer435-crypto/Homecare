@@ -13,17 +13,19 @@ export async function deleteAccount(fd: FormData) {
 
   const admin = createAdminClient();
 
-  // remove the user's uploaded files from both buckets
+  // remove everything the user uploaded (every file lives under "<uid>/...") from both buckets
   for (const bucket of ['public-media', 'private-docs'] as const) {
-    for (const folder of ['provider', 'cnic', 'payments']) {
-      const { data } = await admin.storage.from(bucket).list(`${user!.id}/${folder}`, { limit: 1000 });
-      if (data?.length) await admin.storage.from(bucket).remove(data.map((f) => `${user!.id}/${folder}/${f.name}`));
-    }
-    const { data: listingDirs } = await admin.storage.from(bucket).list(`${user!.id}/listings`, { limit: 1000 });
-    for (const d of listingDirs ?? []) {
-      const { data } = await admin.storage.from(bucket).list(`${user!.id}/listings/${d.name}`, { limit: 1000 });
-      if (data?.length) await admin.storage.from(bucket).remove(data.map((f) => `${user!.id}/listings/${d.name}/${f.name}`));
-    }
+    const files: string[] = [];
+    const walk = async (dir: string, depth: number) => {
+      const { data } = await admin.storage.from(bucket).list(dir, { limit: 1000 });
+      for (const f of data ?? []) {
+        const p = `${dir}/${f.name}`;
+        if (f.id) files.push(p);
+        else if (depth < 4) await walk(p, depth + 1); // folders have no id
+      }
+    };
+    await walk(user!.id, 0);
+    for (let i = 0; i < files.length; i += 100) await admin.storage.from(bucket).remove(files.slice(i, i + 100));
   }
 
   // profile → cascades to provider, listings, reviews, saved, memberships;

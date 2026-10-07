@@ -13,7 +13,7 @@ async function recipients(admin: ReturnType<typeof createAdminClient>, houseIds:
     const chunk = houseIds.slice(i, i + 500);
     const { data } = await admin
       .from('house_owners')
-      .select('house_id, owner_name, owner_phone, whatsapp_opt_in, user_id, profile:profiles(whatsapp_opt_in)')
+      .select('house_id, owner_name, owner_phone, whatsapp_opt_in, user_id, profile:profiles!house_owners_user_id_fkey(whatsapp_opt_in)')
       .in('house_id', chunk)
       .eq('status', 'verified')
       .in('relation', ownersOnly ? ['owner'] : ['owner', 'tenant']);

@@ -2,11 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth';
-import { back, str } from '@/lib/actions';
+import { back, safePath, str } from '@/lib/actions';
 
 const safeNext = (fd: FormData) => {
   const n = str(fd, 'next');
-  return n.startsWith('/') && !n.startsWith('//') ? n.split('?')[0] : '/dashboard';
+  return safePath(n).split('?')[0];
 };
 
 /** Resident taps "Parh liya" — the notice stops showing as NAYA for them. */

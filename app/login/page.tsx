@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
+import { safePath } from '@/lib/safePath';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { normalizePhone } from '@/lib/phone';
@@ -11,7 +12,7 @@ function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const raw = params.get('next');
-  const next = raw && raw.startsWith('/') && !raw.startsWith('//') && !raw.startsWith('/\\') ? raw : '/dashboard';
+  const next = safePath(raw);
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [step, setStep] = useState<'phone' | 'code'>('phone');

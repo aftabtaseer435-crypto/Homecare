@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireSuperAdmin } from '@/lib/auth';
-import { back, num, str } from '@/lib/actions';
+import { back, num, oneOf, str } from '@/lib/actions';
 
 export async function approveRequest(fd: FormData) {
   const { supabase } = await requireSuperAdmin();
@@ -24,8 +24,11 @@ export async function rejectRequest(fd: FormData) {
 
 export async function setSocietyStatus(fd: FormData) {
   const { supabase } = await requireSuperAdmin();
-  await supabase.from('societies').update({ status: str(fd, 'status') }).eq('id', str(fd, 'society_id'));
-  back('/admin/societies', 'ok', 'Updated');
+  const status = oneOf(str(fd, 'status'), ['active', 'suspended'], 'active');
+  const { data, error } = await supabase.from('societies').update({ status }).eq('id', str(fd, 'society_id')).select('id');
+  if (error || !data?.length) back('/admin/societies', 'err', error?.message ?? 'Society nahi mili');
+  revalidatePath('/admin/societies');
+  back('/admin/societies', 'ok', status === 'active' ? 'Society active' : 'Society band kar di');
 }
 
 export async function setProviderStatus(fd: FormData) {
@@ -58,12 +61,14 @@ export async function toggleCategory(fd: FormData) {
 
 export async function closeComplaint(fd: FormData) {
   const { supabase } = await requireSuperAdmin();
-  await supabase.from('complaints').update({ status: 'closed' }).eq('id', str(fd, 'id'));
+  const { data } = await supabase.from('complaints').update({ status: 'closed' }).eq('id', str(fd, 'id')).select('id');
+  if (!data?.length) back('/admin/complaints', 'err', 'Complaint nahi mili');
   back('/admin/complaints', 'ok', 'Complaint close ho gayi');
 }
 
 export async function hideListing(fd: FormData) {
   const { supabase } = await requireSuperAdmin();
-  await supabase.from('property_listings').update({ status: 'hidden' }).eq('id', str(fd, 'listing_id'));
+  const { data } = await supabase.from('property_listings').update({ status: 'hidden' }).eq('id', str(fd, 'listing_id')).select('id');
+  if (!data?.length) back('/admin/complaints', 'err', 'Listing nahi mili');
   back('/admin/complaints', 'ok', 'Listing hide ho gayi');
 }

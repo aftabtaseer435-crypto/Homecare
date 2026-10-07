@@ -11,7 +11,11 @@ export async function GET(request: NextRequest, { params }: { params: { sid: str
 
   const all = request.nextUrl.searchParams.get('all') === '1';
   const rows = await getDefaulters(supabase, params.sid, !all);
-  const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  // quote every cell, and stop Excel from running text that starts like a formula
+  const esc = (v: unknown) => {
+    const t = String(v ?? '');
+    return `"${(typeof v === 'string' && /^[=+\-@\t\r]/.test(t) ? "'" + t : t).replace(/"/g, '""')}"`;
+  };
   const header = ['Block', 'Gali', 'Ghar', 'Owner', 'Mobile', 'Fund', 'Period', 'Due date', 'Amount', 'Paid', 'Balance', 'Status'];
   const lines = rows.map((r) =>
     [r.house.block, r.house.street, r.house.house_no, r.owner?.owner_name, r.owner?.owner_phone, r.plan?.name, r.period, r.due_date, r.amount_due, r.paid_amount, r.balance, r.status]

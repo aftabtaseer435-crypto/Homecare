@@ -129,7 +129,8 @@ export async function setAvailability(fd: FormData) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) back('/login', 'err', 'Pehle login karein');
-  await supabase.from('providers').update({ available: str(fd, 'available') === 'true' }).eq('user_id', user!.id);
+  const { data } = await supabase.from('providers').update({ available: str(fd, 'available') === 'true' }).eq('user_id', user!.id).select('id');
+  if (!data?.length) back('/provider/dashboard', 'err', 'Status update nahi hua');
   back('/provider/dashboard', 'ok', 'Status update ho gaya');
 }
 

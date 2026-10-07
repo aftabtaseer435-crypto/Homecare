@@ -34,21 +34,21 @@ export default function ProviderForm({
       <fieldset className="min-w-0 md:col-span-2 rounded-xl border border-line p-4">
         <legend className="label px-1">Kab service dete hain? * (din, raat ya dono)</legend>
         <p className="hint mb-3">Raat ki service ho to zaroor batayein.</p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg bg-canvas p-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="min-w-0 rounded-lg bg-canvas p-3">
             <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="day_on" defaultChecked={isEdit ? !!initial?.day_start : true} /> Din ki service</label>
             <div className="mt-2 flex items-center gap-2 text-sm">
-              <input type="time" name="day_start" aria-label="Din: kab se" defaultValue={initial?.day_start?.slice(0, 5) ?? '09:00'} className="input min-w-0 py-2" />
+              <input type="time" name="day_start" aria-label="Din: kab se" defaultValue={initial?.day_start?.slice(0, 5) ?? '09:00'} className="input min-w-0 flex-1 py-2" />
               <span className="text-ink-mute">se</span>
-              <input type="time" name="day_end" aria-label="Din: kab tak" defaultValue={initial?.day_end?.slice(0, 5) ?? '18:00'} className="input min-w-0 py-2" />
+              <input type="time" name="day_end" aria-label="Din: kab tak" defaultValue={initial?.day_end?.slice(0, 5) ?? '18:00'} className="input min-w-0 flex-1 py-2" />
             </div>
           </div>
-          <div className="rounded-lg bg-canvas p-3">
+          <div className="min-w-0 rounded-lg bg-canvas p-3">
             <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="night_on" defaultChecked={!!initial?.night_start} /> Raat ki service</label>
             <div className="mt-2 flex items-center gap-2 text-sm">
-              <input type="time" name="night_start" aria-label="Raat: kab se" defaultValue={initial?.night_start?.slice(0, 5) ?? '20:00'} className="input min-w-0 py-2" />
+              <input type="time" name="night_start" aria-label="Raat: kab se" defaultValue={initial?.night_start?.slice(0, 5) ?? '20:00'} className="input min-w-0 flex-1 py-2" />
               <span className="text-ink-mute">se</span>
-              <input type="time" name="night_end" aria-label="Raat: kab tak" defaultValue={initial?.night_end?.slice(0, 5) ?? '02:00'} className="input min-w-0 py-2" />
+              <input type="time" name="night_end" aria-label="Raat: kab tak" defaultValue={initial?.night_end?.slice(0, 5) ?? '02:00'} className="input min-w-0 flex-1 py-2" />
             </div>
           </div>
         </div>

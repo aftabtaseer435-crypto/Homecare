@@ -18,7 +18,9 @@ export function num(fd: FormData, key: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-/** Only same-site relative paths ("/x"), never "//evil.com" or "/\evil.com". */
-export function safePath(p: string | null | undefined, fallback = '/dashboard') {
-  return p && p.startsWith('/') && !p.startsWith('//') && !p.startsWith('/\\') ? p : fallback;
+export { safePath } from './safePath';
+
+/** The value if it is one of `allowed`, else the fallback (keeps CHECK constraints happy). */
+export function oneOf<T extends string>(v: string, allowed: readonly T[], fallback: T): T {
+  return (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
 }

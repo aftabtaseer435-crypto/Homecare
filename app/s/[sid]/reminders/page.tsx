@@ -52,11 +52,11 @@ export default async function Reminders({ params, searchParams }: { params: { si
   // last reminder sent per due
   const lastSent = new Map<string, string>();
   const dueIds = dues.map((d) => d.id);
-  for (let i = 0; i < dueIds.length; i += 300) {
+  for (let i = 0; i < dueIds.length; i += 100) {
     const { data } = await supabase
       .from('messages_log')
       .select('fund_due_id, created_at')
-      .in('fund_due_id', dueIds.slice(i, i + 300))
+      .in('fund_due_id', dueIds.slice(i, i + 100))
       .eq('kind', 'reminder')
       .order('created_at', { ascending: false });
     for (const m of data ?? []) if (!lastSent.has(m.fund_due_id)) lastSent.set(m.fund_due_id, m.created_at);

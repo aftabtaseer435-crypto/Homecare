@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { back, num, str } from '@/lib/actions';
+import { back, num, oneOf, str } from '@/lib/actions';
 import { uploadFile } from '@/lib/upload';
 
 export async function logVisit(fd: FormData) {
@@ -40,7 +40,7 @@ export async function submitExpense(fd: FormData) {
   const { error } = await supabase.from('fund_expenses').insert({
     society_id: sid,
     amount,
-    category: str(fd, 'category') || 'other',
+    category: oneOf(str(fd, 'category'), ['street_light', 'water', 'sewerage', 'road', 'cleaning', 'security', 'salary', 'repair', 'park', 'legal', 'other'], 'other'),
     description: str(fd, 'description'),
     vendor: str(fd, 'vendor') || null,
     spent_on: str(fd, 'spent_on') || undefined,

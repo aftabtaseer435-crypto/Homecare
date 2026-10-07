@@ -56,7 +56,8 @@ export default async function IssuePage({ params, searchParams }: { params: { id
   const toAgent = agent ? waSend(agent.phone, issueToAgentText({ refNo: i.ref_no, category: i.category, house: i.house, ownerName, text: i.description ?? i.title, link })) : null;
   const toResident = owner?.owner_phone ? waSend(owner.owner_phone, resolvedToResidentText({ refNo: i.ref_no, ownerName, note: i.resolution_note ?? '', link })) : null;
   const left = openStatuses.includes(i.status) ? hoursLeft(i.due_at) : null;
-  const who = (actor: string | null) => (actor === i.reporter_id ? (isReporter ? 'Aap' : ownerName) : actor && agentIds.has(actor) ? 'Welfare agent' : actor ? 'Society admin' : 'System');
+  const who = (actor: string | null, kind?: string) =>
+    actor === i.reporter_id ? (isReporter ? 'Aap' : ownerName) : actor && agentIds.has(actor) ? 'Welfare agent' : kind === 'supported' ? 'Padosi' : actor ? 'Society admin' : 'System';
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -199,7 +200,7 @@ export default async function IssuePage({ params, searchParams }: { params: { id
           {((updates ?? []) as any[]).map((u) => (
             <li key={u.id} className="relative">
               <span className={`absolute -left-[27px] top-1 h-3 w-3 rounded-full ring-4 ring-white ${u.kind === 'resolved' || u.kind === 'closed' || u.kind === 'auto_closed' ? 'bg-paid' : u.kind === 'created' || u.kind === 'reopened' ? 'bg-due' : 'bg-plate'}`} aria-hidden="true" />
-              <div className="text-sm font-bold">{kindLabel[u.kind] ?? u.kind} <span className="font-normal text-ink-mute">· {who(u.actor_id)} · {new Date(u.created_at).toLocaleString('en-GB', { timeZone: 'Asia/Karachi', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div>
+              <div className="text-sm font-bold">{kindLabel[u.kind] ?? u.kind} <span className="font-normal text-ink-mute">· {who(u.actor_id, u.kind)} · {new Date(u.created_at).toLocaleString('en-GB', { timeZone: 'Asia/Karachi', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div>
               {u.note && u.kind !== 'created' && <p className="mt-0.5 whitespace-pre-line text-sm text-ink-soft">{u.note}</p>}
               {u.photo_path && u.kind !== 'created' && signed.get(u.photo_path) && (
                 <a href={signed.get(u.photo_path)} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-bold">Tasveer dekhein</a>

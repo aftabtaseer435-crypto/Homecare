@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { back, num, str } from '@/lib/actions';
+import { back, num, oneOf, str } from '@/lib/actions';
 import { uploadFile } from '@/lib/upload';
 
 export async function submitPaymentProof(fd: FormData) {
@@ -30,7 +30,7 @@ export async function submitPaymentProof(fd: FormData) {
     fund_due_id,
     house_id,
     amount,
-    method: str(fd, 'method') || 'bank',
+    method: oneOf(str(fd, 'method'), ['bank', 'jazzcash', 'easypaisa', 'online', 'cash'], 'bank'),
     reference: str(fd, 'reference') || null,
     proof_path,
     status: 'pending',
