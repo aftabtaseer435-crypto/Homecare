@@ -250,16 +250,37 @@ export async function reviewPayment(fd: FormData) {
 // ---------------------------------------------------------------- NOTICES
 export async function createNotice(fd: FormData) {
   const sid = sidOf(fd);
+  const path = `/s/${sid}/notices`;
   const { supabase, user } = await requireSocietyStaff(sid, true);
-  const title = str(fd, 'title');
-  const { error } = await supabase.from('notices').insert({ society_id: sid, title, body: str(fd, 'body'), created_by: user.id });
-  if (error) back(`/s/${sid}/notices`, 'err', error.message);
-  if (!whatsappApiEnabled()) back(`/s/${sid}/notices`, 'ok', 'Notice post ho gaya. Ab "WhatsApp group mein share" dabayein.');
-  if (fd.get('whatsapp') === 'on') {
-    const r = await broadcastNotice(sid, title, str(fd, 'block') || null);
-    back(`/s/${sid}/notices`, 'ok', `Notice post ho gaya. WhatsApp: ${r.sent} sent, ${r.failed} failed.`);
+  const { data: canPost } = await supabase.rpc('can_post_notice', { sid });
+  if (!canPost) back(path, 'err', 'Notice sirf chairman bhej sakta hai');
+
+  // sender photo (optional, saved on the profile so every notice shows it)
+  const photo = fd.get('photo');
+  if (photo && typeof photo !== 'string' && photo.size > 0) {
+    let p: string | null = null;
+    try {
+      if (!photo.type.startsWith('image/')) throw new Error('Photo JPG / PNG / WEBP honi chahiye');
+      p = await uploadFile(supabase, 'public-media', user.id, 'avatar', photo);
+    } catch (e: any) {
+      back(path, 'err', e.message);
+    }
+    if (p) await supabase.from('profiles').update({ avatar_path: p }).eq('id', user.id);
   }
-  back(`/s/${sid}/notices`, 'ok', 'Notice post ho gaya');
+
+  const title = str(fd, 'title');
+  const event_date = str(fd, 'event_date') || todayPK();
+  if (event_date < todayPK()) back(path, 'err', 'Guzri hui tareekh ka notice nahi bheja ja sakta');
+  const { error } = await supabase.from('notices').insert({
+    society_id: sid, title, body: str(fd, 'body'), kind: str(fd, 'kind') || 'info', event_date, created_by: user.id,
+  });
+  if (error) back(path, 'err', error.message);
+  revalidatePath(path);
+  if (whatsappApiEnabled() && fd.get('whatsapp') === 'on') {
+    const r = await broadcastNotice(sid, title, str(fd, 'block') || null);
+    back(path, 'ok', `Notice post ho gaya. WhatsApp: ${r.sent} sent, ${r.failed} failed.`);
+  }
+  back(path, 'ok', 'Notice post ho gaya — har registered malik aur kirayedar ko app mein nazar aayega. Ab "WhatsApp group mein share" bhi kar dein.');
 }
 
 // ---------------------------------------------------------------- MANUAL WHATSAPP

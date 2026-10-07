@@ -59,7 +59,7 @@ export default function MobileMenu({ loggedIn, name, superAdmin }: { loggedIn: b
             </div>
 
             <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Mobile">
-              <Link href={loggedIn ? '/dashboard' : '/login'} className="mb-3 flex min-h-[48px] items-center rounded-xl bg-ink px-4 font-bold text-white no-underline hover:no-underline">
+              <Link href={loggedIn ? '/dashboard' : '/login'} className="mb-3 flex min-h-[48px] items-center rounded-xl bg-brand-600 px-4 font-semibold text-white no-underline hover:no-underline">
                 {loggedIn ? 'Mera dashboard' : 'Login / Sign up'}
               </Link>
               {modules.map((m) => {
@@ -86,6 +86,9 @@ export default function MobileMenu({ loggedIn, name, superAdmin }: { loggedIn: b
                   </div>
                 );
               })}
+              {loggedIn && (
+                <Link href="/account" className="flex min-h-[44px] items-center rounded-xl px-4 font-semibold text-ink no-underline">Mera account (naam, photo)</Link>
+              )}
               {superAdmin && (
                 <Link href="/admin" className="flex min-h-[44px] items-center rounded-xl px-4 font-bold text-ink no-underline">Super Admin</Link>
               )}

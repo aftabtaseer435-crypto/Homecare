@@ -17,7 +17,7 @@ export default async function Owners({
   const owners = await fetchAll<any>((from, to) =>
     supabase
       .from('house_owners')
-      .select('id, owner_name, owner_phone, status, user_id, created_at, house:houses!inner(id, society_id, block, street, house_no)')
+      .select('id, owner_name, owner_phone, status, relation, user_id, created_at, house:houses!inner(id, society_id, block, street, house_no)')
       .eq('house.society_id', params.sid)
       .order('created_at', { ascending: false })
       .range(from, to),
@@ -30,7 +30,7 @@ export default async function Owners({
 
   // houses with more than one claim conflict
   const claimCount = new Map<string, number>();
-  for (const o of owners) if (o.status !== 'rejected') claimCount.set(o.house.id, (claimCount.get(o.house.id) ?? 0) + 1);
+  for (const o of owners) if (o.status !== 'rejected' && o.relation === 'owner') claimCount.set(o.house.id, (claimCount.get(o.house.id) ?? 0) + 1);
 
   return (
     <div className="space-y-6">
@@ -46,7 +46,7 @@ export default async function Owners({
             <tbody>
               {pending.map((o) => (
                 <tr key={o.id}>
-                  <td>{o.owner_name}{(claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-due-soft text-due-ink">Conflict: is ghar ke aur claims bhi hain</span>}</td>
+                  <td>{o.owner_name}{o.relation === 'tenant' ? <span className="badge ml-2 bg-service-soft text-service-ink">Kirayedar</span> : <span className="badge ml-2 bg-brand-50 text-brand-800">Malik</span>}{o.relation === 'owner' && (claimCount.get(o.house.id) ?? 0) > 1 && <span className="badge ml-2 bg-due-soft text-due-ink">Conflict: is ghar ke aur claims bhi hain</span>}</td>
                   <td>{displayPhone(o.owner_phone)}</td>
                   <td>{houseLabel(o.house)}</td>
                   <td>{fmtDate(o.created_at)}</td>
@@ -88,7 +88,7 @@ export default async function Owners({
 
       <section className="card">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2>Verified owners ({verified.length})</h2>
+          <h2>Verified residents ({verified.length})</h2>
           <form className="flex gap-2">
             <input name="q" defaultValue={searchParams.q} className="input" placeholder="Naam, number, gali-ghar (1-12)" />
             <button className="btn-outline">Search</button>
@@ -99,7 +99,7 @@ export default async function Owners({
           <tbody>
             {verified.slice(0, 300).map((o) => (
               <tr key={o.id}>
-                <td>{o.owner_name}</td>
+                <td>{o.owner_name}{o.relation === 'tenant' ? <span className="badge ml-2 bg-service-soft text-service-ink">Kirayedar</span> : <span className="badge ml-2 bg-brand-50 text-brand-800">Malik</span>}</td>
                 <td>{displayPhone(o.owner_phone)}</td>
                 <td>{houseLabel(o.house)}</td>
                 <td>{o.user_id ? <span className="badge bg-paid-soft text-paid-ink">Linked</span> : <span className="badge bg-canvas text-ink-soft">Not yet</span>}</td>

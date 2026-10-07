@@ -13,7 +13,8 @@ export default async function NewListing({ searchParams }: { searchParams: { ok?
     .from('house_owners')
     .select('house:houses(id, block, street, house_no, plot_size, society:societies(name, city))')
     .eq('user_id', user.id)
-    .eq('status', 'verified');
+    .eq('status', 'verified')
+    .eq('relation', 'owner');
 
   return (
     <div className="mx-auto max-w-3xl">

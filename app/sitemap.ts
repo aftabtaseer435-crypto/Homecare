@@ -22,13 +22,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const sb = createPublicClient();
-    const [{ data: cats }, { data: providers }, { data: listings }] = await Promise.all([
+    const [{ data: cats }, { data: providers }, { data: listings }, { data: socs }] = await Promise.all([
       sb.from('service_categories').select('slug').eq('active', true),
       sb.from('providers').select('id, created_at').eq('status', 'verified').limit(5000),
       sb.from('property_listings').select('id, created_at').eq('status', 'active').limit(5000),
+      sb.from('societies').select('slug').eq('status', 'active').limit(5000),
     ]);
     return [
       ...staticPages,
+      ...(socs ?? []).map((s) => ({ url: `${base}/society/${s.slug}`, changeFrequency: 'weekly' as const, priority: 0.8 })),
       ...(cats ?? []).map((c) => ({ url: `${base}/services/${c.slug}`, changeFrequency: 'daily' as const, priority: 0.8 })),
       ...(providers ?? []).map((p) => ({ url: `${base}/providers/${p.id}`, lastModified: new Date(p.created_at), changeFrequency: 'weekly' as const, priority: 0.6 })),
       ...(listings ?? []).map((l) => ({ url: `${base}/properties/${l.id}`, lastModified: new Date(l.created_at), changeFrequency: 'weekly' as const, priority: 0.6 })),

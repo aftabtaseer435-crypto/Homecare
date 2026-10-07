@@ -36,7 +36,7 @@ export default async function SocietyLanding() {
   const supabase = createClient();
   const { data: societies } = await supabase
     .from('societies')
-    .select('id, name, city, total_houses')
+    .select('id, name, slug, city, total_houses')
     .eq('status', 'active')
     .order('created_at', { ascending: true })
     .limit(12);
@@ -77,7 +77,7 @@ export default async function SocietyLanding() {
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {(societies ?? []).map((s) => (
               <li key={s.id}>
-                <Link href={`/societies/join?society=${s.id}`} className="flex h-full items-center gap-4 rounded-2xl border border-line bg-white p-5 no-underline transition-colors hover:border-society hover:no-underline">
+                <Link href={`/society/${s.slug}`} className="flex h-full items-center gap-4 rounded-2xl border border-line bg-white p-5 no-underline transition-colors hover:border-society hover:no-underline">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-society-soft text-base font-semibold text-society-ink" aria-hidden="true">
                     {s.name.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase()}
                   </span>
@@ -85,7 +85,7 @@ export default async function SocietyLanding() {
                     <span className="block truncate font-semibold text-ink">{s.name}</span>
                     <span className="block text-sm text-ink-mute">{s.city}{s.total_houses ? ` · ${s.total_houses.toLocaleString('en-US')} ghar` : ''}</span>
                   </span>
-                  <span className="text-sm font-medium text-society-ink">Join →</span>
+                  <span className="text-sm font-medium text-society-ink">Dekhein →</span>
                 </Link>
               </li>
             ))}

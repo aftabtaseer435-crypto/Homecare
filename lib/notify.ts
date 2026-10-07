@@ -6,7 +6,7 @@ import { fmtDate, houseLabel, rs, todayPK, daysBetween } from '@/lib/format';
 type Owner = { owner_name: string; owner_phone: string; whatsapp_opt_in: boolean; user_id: string | null };
 
 /** Verified owners of a house who accept WhatsApp (respecting the profile opt-in too). */
-async function recipients(admin: ReturnType<typeof createAdminClient>, houseIds: string[]) {
+async function recipients(admin: ReturnType<typeof createAdminClient>, houseIds: string[], ownersOnly = true) {
   const map = new Map<string, Owner[]>();
   if (!houseIds.length) return map;
   for (let i = 0; i < houseIds.length; i += 500) {
@@ -15,7 +15,8 @@ async function recipients(admin: ReturnType<typeof createAdminClient>, houseIds:
       .from('house_owners')
       .select('house_id, owner_name, owner_phone, whatsapp_opt_in, user_id, profile:profiles(whatsapp_opt_in)')
       .in('house_id', chunk)
-      .eq('status', 'verified');
+      .eq('status', 'verified')
+      .in('relation', ownersOnly ? ['owner'] : ['owner', 'tenant']);
     for (const o of (data ?? []) as any[]) {
       const optIn = o.whatsapp_opt_in && (o.profile ? o.profile.whatsapp_opt_in : true);
       if (!optIn || !o.owner_phone) continue;
@@ -68,7 +69,7 @@ export async function broadcastNotice(societyId: string, title: string, block?: 
     houseIds.push(...(data ?? []).map((h: any) => h.id));
     if (!data || data.length < 1000) break;
   }
-  const rec = await recipients(admin, houseIds);
+  const rec = await recipients(admin, houseIds, false); // notices reach tenants too
   let sent = 0, failed = 0;
   const seen = new Set<string>();
   for (const [houseId, owners] of rec) {

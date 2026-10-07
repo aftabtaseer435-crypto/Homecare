@@ -1,3 +1,4 @@
+import NoticeBoard from '@/components/NoticeBoard';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireUser } from '@/lib/auth';
@@ -47,6 +48,7 @@ export default async function Hisaab({ params, searchParams }: { params: { sid: 
 
   return (
     <div className="space-y-8">
+      <NoticeBoard societyIds={[params.sid]} next={`/hisaab/${params.sid}`} />
       <div>
         <Link href="/welfare" className="text-sm font-bold">Welfare</Link>
         <h1 className="mt-2 text-3xl font-bold">Fund ka hisaab — {society?.name}</h1>

@@ -1,3 +1,4 @@
+import NoticeBoard from '@/components/NoticeBoard';
 import { notFound } from 'next/navigation';
 import { requireUser } from '@/lib/auth';
 import { Flash, PageHeader, StatusBadge } from '@/components/ui';
@@ -43,6 +44,7 @@ export default async function MyHouse({ params, searchParams }: { params: { id: 
     <div className="space-y-6">
       <PageHeader title={(house as any).society.name} subtitle={houseLabel(house as any)} />
       <Flash searchParams={searchParams} />
+      <NoticeBoard societyIds={[(house as any).society.id ?? (house as any).society_id]} next={`/my/houses/${params.id}`} />
 
       <section className="grid gap-4 md:grid-cols-2">
         <div className="card">

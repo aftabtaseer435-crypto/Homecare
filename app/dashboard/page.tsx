@@ -1,3 +1,4 @@
+import NoticeBoard from '@/components/NoticeBoard';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { dueStatusStyle, fmtDate, houseLabel, rs } from '@/lib/format';
@@ -11,7 +12,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
 
   const [{ data: myOwners }, { data: staff }, { data: provider }, { data: requests }, { data: listings }, { data: myIssues }, { data: agentRows }] =
     await Promise.all([
-      supabase.from('house_owners').select('id, status, house:houses(id, block, street, house_no, society:societies(id, name))').eq('user_id', user.id),
+      supabase.from('house_owners').select('id, status, house:houses(id, block, street, house_no, society:societies(id, name, slug))').eq('user_id', user.id),
       supabase.from('society_members').select('role, society:societies(id, name, city)').eq('user_id', user.id),
       supabase.from('providers').select('id, display_name, status').eq('user_id', user.id).maybeSingle(),
       supabase.from('society_requests').select('id, society_name, status, created_at').eq('requester_id', user.id).order('created_at', { ascending: false }),
@@ -21,7 +22,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
     ]);
   // Super admin manages every society — show them all, not just memberships
   const { data: allSocieties } = profile.is_super_admin
-    ? await supabase.from('societies').select('id, name, city').order('created_at', { ascending: false }).limit(50)
+    ? await supabase.from('societies').select('id, name, city, slug').order('created_at', { ascending: false }).limit(50)
     : { data: null };
   const staffList: { id: string; name: string; city: string; role: string }[] = allSocieties
     ? (allSocieties as any[]).map((s) => ({ ...s, role: 'super' }))
@@ -50,6 +51,8 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
         <p className="mt-1 text-ink-mute">Aaj kya karna hai?</p>
       </div>
 
+      <NoticeBoard next="/dashboard" />
+
       {/* ===== Society Fund ===== */}
       <ModuleBlock tone="society" title="Society" action={<Link href="/societies/join" className="btn-outline btn-sm">Ghar add karein</Link>}>
       {/* Society admin panels first for admins — that's their daily job */}
@@ -58,12 +61,12 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
           <h3 className="mb-3">{profile.is_super_admin ? 'Tamam societies (Super Admin)' : 'Meri societies (admin panel)'}</h3>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {staffList.map((m) => (
-              <Link key={m.id} href={`/s/${m.id}`} className="group flex items-center gap-4 rounded-2xl bg-brand-800 p-5 text-white no-underline hover:bg-brand-900 hover:no-underline">
+              <Link key={m.id} href={`/s/${m.id}`} className="group flex items-center gap-4 rounded-2xl border border-brand-200 bg-brand-50 p-5 text-ink no-underline hover:border-brand-500 hover:no-underline">
                 <div className="flex-1">
                   <div className="font-display text-lg font-semibold">{m.name}</div>
-                  <div className="text-sm text-white/85">{m.city} · {m.role === 'super' ? 'Super Admin' : m.role === 'admin' ? 'Admin' : 'Collector'}</div>
+                  <div className="text-sm text-ink-mute">{m.city} · {m.role === 'super' ? 'Super Admin' : m.role === 'admin' ? 'Admin' : 'Collector'}</div>
                 </div>
-                <span className="rounded-lg bg-white/15 px-3 py-1.5 text-sm font-semibold group-hover:bg-white/25">Panel kholein</span>
+                <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-brand-700 ring-1 ring-brand-200">Panel kholein</span>
               </Link>
             ))}
           </div>
@@ -98,7 +101,7 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <div className="font-display text-lg font-bold">{o.house.society?.name}</div>
+                        <div className="font-display text-lg font-semibold">{o.house.society?.slug ? <Link href={`/society/${o.house.society.slug}`} className="text-ink">{o.house.society.name}</Link> : o.house.society?.name}</div>
                         <div className="text-sm text-ink-mute">{houseLabel(o.house)}</div>
                       </div>
                       <span className="plate h-10 px-3 text-base">{o.house.house_no}</span>
@@ -153,9 +156,9 @@ export default async function Dashboard({ searchParams }: { searchParams: { ok?:
           </div>
         </section>
         {agentSocieties.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-ink p-4 text-white">
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-plate/50 bg-plate-soft p-4 text-plate-ink">
             <span className="font-bold">Welfare agent panel:</span>
-            {agentSocieties.map(([sid, name]) => <Link key={sid} href={`/w/${sid}`} className="btn btn-sm bg-plate text-plate-ink hover:bg-[#FFC933]">{name}</Link>)}
+            {agentSocieties.map(([sid, name]) => <Link key={sid} href={`/w/${sid}`} className="btn btn-sm">{name}</Link>)}
           </div>
         )}
         {!staffList.length && !pendingReq && (
@@ -198,10 +201,9 @@ function ModuleBlock({ tone, title, action, children }: { tone: keyof typeof ton
   const t = toneCls[tone];
   return (
     <section className="overflow-hidden rounded-3xl border border-line bg-white" aria-label={title}>
-      <div className={`h-1.5 ${t.bar}`} aria-hidden="true" />
-      <div className="space-y-5 p-4 md:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className={`badge ${t.chip} px-3 py-1 text-sm`}>{title}</h2>
+      <div className="space-y-5 p-5 md:p-7">
+        <div className="flex items-center justify-between gap-3 border-b border-line pb-4">
+          <h2 className="flex items-center gap-2.5 text-lg"><span className={`h-2.5 w-2.5 rounded-full ${t.bar}`} aria-hidden="true" />{title}</h2>
           {action}
         </div>
         {children}

@@ -37,7 +37,7 @@ export default async function IssuePage({ params, searchParams }: { params: { id
   const [{ data: updates }, { data: agents }, { data: owner }, { data: agentHere }, { data: adminHere }, { count: supporters }] = await Promise.all([
     supabase.from('welfare_issue_updates').select('id, actor_id, kind, note, photo_path, created_at').eq('issue_id', i.id).order('created_at'),
     supabase.rpc('agents_for_house', { p_house: i.house_id }),
-    supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', i.house_id).eq('status', 'verified').maybeSingle(),
+    supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', i.house_id).eq('status', 'verified').eq('relation', 'owner').maybeSingle(),
     supabase.rpc('is_agent_for_house', { hid: i.house_id }),
     supabase.rpc('is_society_admin', { sid: i.society_id }),
     supabase.from('welfare_issue_supporters').select('user_id', { count: 'exact', head: true }).eq('issue_id', i.id),

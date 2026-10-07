@@ -7,6 +7,7 @@ export type Profile = {
   phone: string | null;
   whatsapp_opt_in: boolean;
   is_super_admin: boolean;
+  avatar_path?: string | null;
 };
 
 export async function getSession() {
@@ -15,11 +16,15 @@ export async function getSession() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { supabase, user: null, profile: null as Profile | null };
-  const { data: profile } = await supabase
+  let { data: profile, error } = await supabase
     .from('profiles')
-    .select('id, full_name, phone, whatsapp_opt_in, is_super_admin')
+    .select('id, full_name, phone, whatsapp_opt_in, is_super_admin, avatar_path')
     .eq('id', user.id)
     .single();
+  // database not migrated to 0006 yet → read without the photo column
+  if (error && /avatar_path/.test(error.message)) {
+    ({ data: profile } = await supabase.from('profiles').select('id, full_name, phone, whatsapp_opt_in, is_super_admin').eq('id', user.id).single() as any);
+  }
   return { supabase, user, profile: (profile as Profile) ?? null };
 }
 

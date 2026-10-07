@@ -39,7 +39,7 @@ export default async function Payments({
       ? supabase.from('fund_dues').select('id, period, amount_due, paid_amount, due_date, status, plan:fund_plans(name)').eq('house_id', house.id).order('due_date', { ascending: false }).then((r) => r.data ?? [])
       : Promise.resolve([] as any[]),
     house
-      ? supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', house.id).eq('status', 'verified').maybeSingle().then((r) => r.data)
+      ? supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', house.id).eq('status', 'verified').eq('relation', 'owner').maybeSingle().then((r) => r.data)
       : Promise.resolve(null),
     supabase
       .from('payments')
@@ -81,7 +81,7 @@ export default async function Payments({
       const pay = p as any;
       const [{ data: soc }, { data: os }] = await Promise.all([
         supabase.from('societies').select('name').eq('id', sid).single(),
-        supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', pay.house_id).eq('status', 'verified').eq('whatsapp_opt_in', true),
+        supabase.from('house_owners').select('owner_name, owner_phone').eq('house_id', pay.house_id).eq('status', 'verified').eq('relation', 'owner').eq('whatsapp_opt_in', true),
       ]);
       receipt = {
         owners: os ?? [], houseId: pay.house_id, dueId: pay.fund_due_id, receiptNo: pay.receipt_no,

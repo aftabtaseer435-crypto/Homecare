@@ -1,3 +1,4 @@
+import NoticeBoard from '@/components/NoticeBoard';
 import Link from 'next/link';
 import { inAreas, requireAgent } from '@/lib/agent';
 import { fetchAll } from '@/lib/fetchAll';
@@ -41,6 +42,7 @@ export default async function AgentIssues({ params, searchParams }: { params: { 
   return (
     <div className="space-y-6">
       <Flash searchParams={searchParams} />
+      <NoticeBoard societyIds={[params.sid]} next={`/w/${params.sid}`} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Khule masle" value={open.length} tone={open.length ? 'red' : 'green'} />
         <Stat label="Waqt se late" value={overdue.length} tone={overdue.length ? 'red' : 'green'} />
@@ -50,7 +52,7 @@ export default async function AgentIssues({ params, searchParams }: { params: { 
 
       <nav className="flex gap-2 overflow-x-auto" aria-label="Filter">
         {tabs.map(([id, label]) => (
-          <Link key={id} href={`?tab=${id}`} aria-current={tab === id ? 'page' : undefined} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${tab === id ? 'bg-ink text-white' : 'bg-white text-ink-soft'}`}>{label}</Link>
+          <Link key={id} href={`?tab=${id}`} aria-current={tab === id ? 'page' : undefined} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${tab === id ? 'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200' : 'bg-white text-ink-mute ring-1 ring-inset ring-line hover:text-ink'}`}>{label}</Link>
         ))}
       </nav>
 

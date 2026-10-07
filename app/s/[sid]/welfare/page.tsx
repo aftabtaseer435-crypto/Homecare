@@ -132,7 +132,7 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
       <section>
         <nav className="mb-3 flex gap-2 overflow-x-auto" aria-label="Filter">
           {[['open', `Khule (${open.length})`], ['overdue', `Late (${overdue.length})`], ['unassigned', `Agent ke baghair (${unassigned.length})`], ['all', 'Sab']].map(([id, label]) => (
-            <Link key={id} href={`?tab=${id}`} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${tab === id ? 'bg-ink text-white' : 'bg-white text-ink-soft'}`}>{label}</Link>
+            <Link key={id} href={`?tab=${id}`} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${tab === id ? 'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200' : 'bg-white text-ink-mute ring-1 ring-inset ring-line hover:text-ink'}`}>{label}</Link>
           ))}
         </nav>
         <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">

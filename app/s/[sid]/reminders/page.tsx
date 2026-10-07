@@ -41,7 +41,8 @@ export default async function Reminders({ params, searchParams }: { params: { si
       .from('house_owners')
       .select('house_id, owner_name, owner_phone, whatsapp_opt_in')
       .in('house_id', houseIds.slice(i, i + 300))
-      .eq('status', 'verified');
+      .eq('status', 'verified')
+      .eq('relation', 'owner');
     for (const o of data ?? []) {
       if (!o.whatsapp_opt_in) continue;
       owners.set(o.house_id, [...(owners.get(o.house_id) ?? []), o]);
@@ -76,7 +77,7 @@ export default async function Reminders({ params, searchParams }: { params: { si
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Link href="?tab=upcoming" className={`badge px-3 py-1 no-underline ${tab === 'upcoming' ? 'bg-ink text-white' : 'bg-canvas text-ink-soft'}`}>Agle {before} din mein due</Link>
+        <Link href="?tab=upcoming" className={`badge px-3 py-1 no-underline ${tab === 'upcoming' ? 'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200' : 'bg-canvas text-ink-soft'}`}>Agle {before} din mein due</Link>
         <Link href="?tab=overdue" className={`badge px-3 py-1 no-underline ${tab === 'overdue' ? 'bg-due text-white' : 'bg-canvas text-ink-soft'}`}>Overdue</Link>
         <form className="ml-auto flex gap-2">
           <input type="hidden" name="tab" value={tab} />

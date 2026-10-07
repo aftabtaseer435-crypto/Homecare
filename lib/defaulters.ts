@@ -16,7 +16,7 @@ export async function getDefaulters(supabase: any, sid: string, onlyOverdue: boo
   const houseIds = Array.from(new Set(rows.map((r) => r.house.id)));
   const owners = new Map<string, any>();
   for (let i = 0; i < houseIds.length; i += 300) {
-    const { data } = await supabase.from('house_owners').select('house_id, owner_name, owner_phone').in('house_id', houseIds.slice(i, i + 300)).eq('status', 'verified');
+    const { data } = await supabase.from('house_owners').select('house_id, owner_name, owner_phone').in('house_id', houseIds.slice(i, i + 300)).eq('status', 'verified').eq('relation', 'owner');
     for (const o of data ?? []) owners.set(o.house_id, o);
   }
   return rows

@@ -29,7 +29,7 @@ export default async function AgentHouses({ params, searchParams }: { params: { 
 
   const [{ data: owners }, { data: issues }, { data: visits }] = ids.length
     ? await Promise.all([
-        supabase.from('house_owners').select('house_id, owner_name, owner_phone').in('house_id', ids).eq('status', 'verified'),
+        supabase.from('house_owners').select('house_id, owner_name, owner_phone').in('house_id', ids).eq('status', 'verified').eq('relation', 'owner'),
         supabase.from('welfare_issues').select('id, house_id, status').in('house_id', ids).in('status', openStatuses),
         supabase.from('welfare_visits').select('house_id, outcome, note, created_at').in('house_id', ids).order('created_at', { ascending: false }),
       ])
@@ -54,7 +54,7 @@ export default async function AgentHouses({ params, searchParams }: { params: { 
           const active = sel && g.block === sel.block && g.street === sel.street;
           return (
             <Link key={`${g.block}|${g.street}`} href={`?block=${encodeURIComponent(g.block)}&street=${encodeURIComponent(g.street)}`} aria-current={active ? 'page' : undefined}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${active ? 'bg-ink text-white' : 'bg-white text-ink-soft'}`}>
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold no-underline hover:no-underline ${active ? 'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200' : 'bg-white text-ink-mute ring-1 ring-inset ring-line hover:text-ink'}`}>
               {g.block ? `${g.block}-` : ''}Gali {g.street}
             </Link>
           );

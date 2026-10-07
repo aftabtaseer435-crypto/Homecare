@@ -20,8 +20,8 @@ export function receiptText(o: { name: string; society: string; amount: number; 
   return `Shukriya ${o.name}!\n${o.society}: ${rs(o.amount)} jama ho gaye.\n${o.fund} — ${houseLabel(o.house)}\nReceipt no: ${o.receiptNo}`;
 }
 
-export function noticeText(o: { society: string; title: string; body: string }) {
-  return `*${o.society} — Notice*\n\n${o.title}\n\n${o.body}`;
+export function noticeText(o: { society: string; title: string; body: string; date?: string | null; from?: string | null }) {
+  return `*${o.society} — Notice*\n\n*${o.title}*${o.date ? `\nTareekh: ${o.date}` : ''}\n\n${o.body}${o.from ? `\n\n— ${o.from}` : ''}`;
 }
 
 /** wa.me link; phone null → WhatsApp asks which chat/group to send to. */

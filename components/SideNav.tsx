@@ -19,7 +19,7 @@ export default function SideNav({ items, label }: { items: NavItem[]; label: str
               <Link
                 href={i.href}
                 aria-current={active ? 'page' : undefined}
-                className={`block whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold no-underline hover:no-underline ${active ? 'bg-ink text-white' : 'text-ink-soft hover:bg-white hover:text-ink'}`}
+                className={`block whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold no-underline hover:no-underline ${active ? 'bg-brand-50 font-semibold text-brand-800' : 'font-medium text-ink-mute hover:bg-white hover:text-ink'}`}
               >
                 {i.label}
               </Link>

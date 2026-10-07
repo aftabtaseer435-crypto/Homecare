@@ -80,8 +80,20 @@ export default async function JoinSociety({
                     {inStreet.map((h) => <option key={h.id} value={h.id}>Ghar {h.house_no}</option>)}
                   </select>
                 </div>
+                <fieldset>
+                  <legend className="label">Aap is ghar ke kya hain?</legend>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-line bg-white p-3 text-sm has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+                      <input type="radio" name="relation" value="owner" defaultChecked /> Makan malik
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-line bg-white p-3 text-sm has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+                      <input type="radio" name="relation" value="tenant" /> Kirayedar
+                    </label>
+                  </div>
+                  <p className="hint">Dono ko society ke notices aur welfare milta hai. Fund ke reminders sirf malik ko jate hain.</p>
+                </fieldset>
                 <div>
-                  <label className="label">Makan malik ka naam</label>
+                  <label className="label">Aap ka naam</label>
                   <input name="owner_name" className="input" defaultValue={profile.full_name ?? ''} required />
                 </div>
                 <p className="muted">Mobile number: verified ({profile.phone}). Society admin approve karega, phir aap ka status nazar aayega.</p>

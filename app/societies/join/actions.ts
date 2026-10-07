@@ -16,6 +16,7 @@ export async function claimHouse(fd: FormData) {
     user_id: user!.id,
     owner_name: str(fd, 'owner_name'),
     owner_phone: profile?.phone ?? '',
+    relation: str(fd, 'relation') === 'tenant' ? 'tenant' : 'owner',
     status: 'pending',
   });
   if (error) {

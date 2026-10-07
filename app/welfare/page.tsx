@@ -1,3 +1,4 @@
+import NoticeBoard from '@/components/NoticeBoard';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { Flash, PageHeader } from '@/components/ui';
@@ -36,6 +37,7 @@ export default async function WelfareHub({ searchParams }: { searchParams: { ok?
 
   return (
     <div className="space-y-8">
+      <NoticeBoard next="/welfare" />
       <PageHeader
         title="Welfare — apni gali ke masle"
         subtitle="Light, pani, gutter, sarak, safai, security ya legal masla — ek click mein apni gali ke welfare agent tak. Har qadam ka status yahan."
@@ -43,10 +45,10 @@ export default async function WelfareHub({ searchParams }: { searchParams: { ok?
       <Flash searchParams={searchParams} />
 
       {agentSocieties.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-ink p-4 text-white">
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-plate/50 bg-plate-soft p-4 text-plate-ink">
           <span className="font-bold">Aap welfare agent hain:</span>
           {agentSocieties.map(([sid, name]) => (
-            <Link key={sid} href={`/w/${sid}`} className="btn btn-sm bg-plate text-plate-ink hover:bg-[#FFC933]">{name} — agent panel</Link>
+            <Link key={sid} href={`/w/${sid}`} className="btn btn-sm">{name} — agent panel</Link>
           ))}
         </div>
       )}

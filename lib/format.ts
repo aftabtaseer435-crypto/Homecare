@@ -42,3 +42,40 @@ export function storagePublicUrl(path: string | null | undefined) {
   if (!path) return null;
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/public-media/${path}`;
 }
+
+const weekdays = ['Itwaar', 'Peer', 'Mangal', 'Budh', 'Jumeraat', 'Jumma', 'Hafta'];
+
+/** "Jumeraat, 09 Oct" — for a YYYY-MM-DD day */
+export function fmtDay(d: string | null | undefined) {
+  if (!d) return '';
+  const date = new Date(d.slice(0, 10) + 'T00:00:00Z');
+  return `${weekdays[date.getUTCDay()]}, ${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' })}`;
+}
+
+/** "Aaj" / "Kal" / "Parson" / weekday for a day relative to today (PK). */
+export function dayWord(d: string | null | undefined) {
+  if (!d) return '';
+  const diff = Math.round((Date.parse(d.slice(0, 10)) - Date.parse(todayPK())) / 86_400_000);
+  if (diff === 0) return 'Aaj';
+  if (diff === 1) return 'Kal';
+  if (diff === -1) return 'Kal (guzra)';
+  return fmtDay(d);
+}
+
+/** "5 min pehle", "3 ghante pehle", "2 din pehle" */
+export function ago(iso: string) {
+  const m = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60_000));
+  if (m < 1) return 'abhi';
+  if (m < 60) return `${m} min pehle`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} ghante pehle`;
+  return `${Math.round(h / 24)} din pehle`;
+}
+
+/** "Hafta, 10 Oct · 12:00 am" in Pakistan time */
+export function fmtPK(iso: string) {
+  const d = new Date(iso);
+  const day = new Date(d.getTime() + 5 * 3600_000).toISOString().slice(0, 10);
+  const t = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Karachi' }).toLowerCase();
+  return `${fmtDay(day)} · ${t}`;
+}
