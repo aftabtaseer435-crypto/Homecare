@@ -56,7 +56,7 @@ export default async function HubEditor({ params, searchParams }: { params: { si
         <div>
           <p className="eyebrow">Society page</p>
           <h1 className="mt-1">Society ka hub page</h1>
-          <p className="muted mt-1 max-w-2xl">Ye page sab ke liye khula hai: banner, chairman, welfare committee, development kaam aur rabta. Jo yahan likhein ge wahi page par nazar aayega.</p>
+          <p className="muted mt-1 max-w-2xl">Yeh page sab ke liye khula hai.</p>
         </div>
         <Link href={`/society/${s.slug}`} target="_blank" className="btn-outline">Page dekhein ↗</Link>
       </div>

@@ -50,7 +50,7 @@ export default async function PropertyDashboard({ searchParams }: { searchParams
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href={`/properties/seller/${user.id}`} className="btn-outline"><UserRound className="h-4 w-4" aria-hidden="true" /> Meri public profile</Link>
-          <Link href="/properties/new" className="btn bg-property hover:bg-property-ink"><Plus className="h-4 w-4" aria-hidden="true" /> Nayi listing</Link>
+          <Link href="/properties/new" className="btn"><Plus className="h-4 w-4" aria-hidden="true" /> Nayi listing</Link>
         </div>
       </div>
       <Flash searchParams={searchParams} />
@@ -85,7 +85,7 @@ export default async function PropertyDashboard({ searchParams }: { searchParams
         (listings.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line bg-white p-8 text-center">
             <p className="font-semibold text-ink">{tab === 'sale' ? 'Abhi koi sale listing nahi.' : 'Abhi koi rent listing nahi.'}</p>
-            <Link href={`/properties/new?type=${tab}`} className="btn mt-4 bg-property hover:bg-property-ink">
+            <Link href={`/properties/new?type=${tab}`} className="btn mt-4">
               <Plus className="h-4 w-4" aria-hidden="true" /> {tab === 'sale' ? 'Ghar bechein' : 'Ghar kiraye par dein'}
             </Link>
           </div>
@@ -134,7 +134,7 @@ export default async function PropertyDashboard({ searchParams }: { searchParams
             <p className="font-semibold text-ink">Abhi koi demand nahi.</p>
             <p className="mt-1 text-sm text-ink-mute">Ghar chahiye? Demand daalein — bechne wale / malik khud rabta karenge.</p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <Link href="/properties/wanted/new?type=buy" className="btn bg-property hover:bg-property-ink">Khareedne ki demand</Link>
+              <Link href="/properties/wanted/new?type=buy" className="btn">Khareedne ki demand</Link>
               <Link href="/properties/wanted/new?type=rent" className="btn-outline">Kiraye ki demand</Link>
             </div>
           </div>

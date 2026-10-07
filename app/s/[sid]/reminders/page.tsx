@@ -79,9 +79,9 @@ export default async function Reminders({ params, searchParams }: { params: { si
       <div className="flex flex-wrap items-center gap-2">
         <Link href="?tab=upcoming" className={`badge px-3 py-1 no-underline ${tab === 'upcoming' ? 'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200' : 'bg-canvas text-ink-soft'}`}>Agle {before} din mein due</Link>
         <Link href="?tab=overdue" className={`badge px-3 py-1 no-underline ${tab === 'overdue' ? 'bg-due text-white' : 'bg-canvas text-ink-soft'}`}>Overdue</Link>
-        <form className="ml-auto flex gap-2">
+        <form className="ml-auto flex items-end gap-2">
           <input type="hidden" name="tab" value={tab} />
-          <input name="street" defaultValue={searchParams.street} placeholder="Gali" className="input w-24" />
+          <div><label htmlFor="r-street" className="mb-1 block text-xs font-semibold text-ink-soft">Gali</label><input id="r-street" name="street" defaultValue={searchParams.street} placeholder="12" className="input w-24" /></div>
           <button className="btn-outline">Filter</button>
         </form>
       </div>

@@ -18,7 +18,7 @@ export default async function ProviderRegister({ searchParams }: { searchParams:
 
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Service provider ban kar register karein" subtitle="Electrician, plumber, masi — ya chicken, sabzi, rashan, dawai ki dukaan — free profile. CNIC verification ke baad aap list mein nazar aayenge." />
+      <PageHeader title="Service provider ban kar register karein" subtitle="Kaarigar ya dukaan — free profile." />
       <Flash searchParams={searchParams} />
       <ProviderForm action={registerProvider} categories={categories ?? []} societies={societies ?? []} defaultPhone={profile.phone} />
     </div>

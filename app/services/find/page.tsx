@@ -38,7 +38,7 @@ export default async function Services() {
     <div>
       <PageHeader
         title="Kya chahiye?"
-        subtitle="Ghar ka kaam ho ya rozmarra ka saman — apne area ke verified log aur dukanein, rating aur auqaat ke sath. Seedha call ya WhatsApp."
+        subtitle="Apne area ke verified log aur dukanein."
         action={<Link href="/my/orders" className="btn-outline">Mere orders</Link>}
       />
       <div className="space-y-8">
@@ -46,7 +46,7 @@ export default async function Services() {
           <section key={grp}>
             <h2 className="mb-1">{grp}</h2>
             {grp === DELIVERY_GROUP ? (
-              <p className="mb-3 text-sm text-ink-mute">Chicken, sabzi, rashan, dawai, bakery — din ho ya raat, qareeb ki dukaan se ghar tak. &quot;Abhi khule hue&quot; filter se raat ko bhi dhoondein.</p>
+              <p className="mb-3 text-sm text-ink-mute">Qareeb ki dukaan se ghar tak — din ho ya raat.</p>
             ) : <div className="mb-3" />}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
               {list.map((c) => (

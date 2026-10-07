@@ -22,7 +22,7 @@ const config: Config = {
         // Module colours — each part of the app has its own identity
         society: { DEFAULT: '#147A59', soft: '#EFF8F4', ink: '#0C4F3A' },
         service: { DEFAULT: '#2F5BD3', soft: '#EEF2FD', ink: '#1E3A8A' },
-        property: { DEFAULT: '#7442C8', soft: '#F4EFFC', ink: '#4C1D95' },
+        property: { DEFAULT: '#147A59', soft: '#EFF8F4', ink: '#0C4F3A' }, // same as brand — no purple
         // Status colours (white text ≥ 4.5:1)
         paid: { DEFAULT: '#15803D', soft: '#DCF3E4', ink: '#14532D' },
         due: { DEFAULT: '#C62828', soft: '#FCE4E4', ink: '#7F1D1D' },

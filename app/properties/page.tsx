@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BadgeCheck, HandCoins, KeyRound, Megaphone, PhoneOff, Search, Tag } from 'lucide-react';
+import { ArrowRight, HandCoins, KeyRound, Megaphone, Search, Tag } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import ListingCard from '@/components/property/ListingCard';
 import { Flash } from '@/components/ui';
@@ -33,8 +33,7 @@ export default async function Properties({ searchParams }: { searchParams: { ok?
     <div>
       <Flash searchParams={searchParams} />
       <div className="mb-6">
-        <h1>Ghar khareedein, bechein ya kiraye par</h1>
-        <p className="mt-1 max-w-2xl text-ink-mute">Bechne aur kiraye ka nizam bilkul alag hai — aap kya karna chahte hain?</p>
+        <h1>Aap kya karna chahte hain?</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -49,13 +48,11 @@ export default async function Properties({ searchParams }: { searchParams: { ok?
         ))}
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm"><BadgeCheck className="h-5 w-5 shrink-0 text-paid" aria-hidden="true" /><span><b>Society verified</b> — malik ki tasdeeq society ne ki hai</span></div>
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm"><PhoneOff className="h-5 w-5 shrink-0 text-property" aria-hidden="true" /><span><b>Number chupa</b> — sirf Call / WhatsApp button</span></div>
-        <Link href="/properties/wanted" className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm no-underline hover:border-property/60 hover:no-underline">
-          <Megaphone className="h-5 w-5 shrink-0 text-property" aria-hidden="true" /><span className="text-ink"><b>{wants ?? 0} demands</b> — khareedne / kiraye wale kya dhoond rahe hain</span>
-        </Link>
-      </div>
+      <Link href="/properties/wanted" className="mt-3 flex items-center gap-3 rounded-2xl border border-line bg-white p-4 text-sm no-underline hover:border-brand-500 hover:no-underline">
+        <Megaphone className="h-5 w-5 shrink-0 text-brand-600" aria-hidden="true" />
+        <span className="flex-1 text-ink"><b>Demands ({wants ?? 0})</b> — log kya dhoond rahe hain</span>
+        <ArrowRight className="h-4 w-4 text-ink-mute" aria-hidden="true" />
+      </Link>
 
       {[
         { id: 'sale', title: 'Bikne wale ghar', list: sale, count: sales, cta: 'Saare sale ghar' },

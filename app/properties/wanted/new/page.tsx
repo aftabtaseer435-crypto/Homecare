@@ -51,7 +51,7 @@ export default async function NewWant({ searchParams }: { searchParams: { type?:
           <textarea name="details" rows={4} maxLength={1000} className="input" placeholder={rent ? 'Family hai, 2 bachay, school qareeb ho, gas zaroori…' : 'Cash buyer, corner pasand, registry wala ghar…'} />
         </div>
         <p className="text-xs text-ink-mute sm:col-span-2">Aap ka number demand par nazar nahi aata — log Call / WhatsApp button se rabta karte hain.</p>
-        <div className="sm:col-span-2"><SubmitButton className="btn w-full bg-property hover:bg-property-ink sm:w-auto" pendingText="Post ho raha hai…">Demand post karein</SubmitButton></div>
+        <div className="sm:col-span-2"><SubmitButton className="btn w-full sm:w-auto" pendingText="Post ho raha hai…">Demand post karein</SubmitButton></div>
       </form>
     </div>
   );

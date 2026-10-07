@@ -5,6 +5,7 @@ import ServiceThumb from './ServiceThumb';
 import { IconBag, IconClock, IconPin, IconTool, IconVerified } from './Icons';
 import { RatingLine } from './ui';
 import { storagePublicUrl } from '@/lib/format';
+import { serviceImage } from '@/lib/serviceImages';
 import { hoursLabel, isOpenNow, opensAt } from '@/lib/hours';
 
 /** One provider / dukaan in a category list (buyer view). Number stays hidden. */
@@ -31,7 +32,7 @@ export default function ProviderCard({
           {p.photo_path ? (
             <img src={storagePublicUrl(p.photo_path)!} alt="" loading="lazy" className="h-16 w-16 rounded-2xl object-cover ring-1 ring-line" />
           ) : (
-            <ServiceThumb src={null} slug={cat.slug} className="h-16 w-16" />
+            <ServiceThumb src={serviceImage(cat.slug, 160)} slug={cat.slug} className="h-16 w-16" />
           )}
         </Link>
         <div className="min-w-0 flex-1">

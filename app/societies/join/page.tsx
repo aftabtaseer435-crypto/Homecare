@@ -115,8 +115,8 @@ export default async function JoinSociety({
     <div className="mx-auto max-w-xl">
       <PageHeader title="Apni society dhoondein" subtitle="Society choose karein, phir gali aur ghar number." />
       <Flash searchParams={searchParams} />
-      <form className="mb-4 flex gap-2">
-        <input name="q" defaultValue={q} placeholder="Society ka naam ya city" className="input" />
+      <form className="mb-4 flex items-end gap-2">
+        <div className="min-w-0 flex-1"><label htmlFor="j-q" className="mb-1 block text-xs font-semibold text-ink-soft">Society ka naam ya city</label><input id="j-q" name="q" defaultValue={q} placeholder="Al-Quraish, Multan" className="input" /></div>
         <button className="btn">Search</button>
       </form>
       <div className="space-y-2">

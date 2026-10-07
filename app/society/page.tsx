@@ -18,18 +18,6 @@ const steps: [string, string][] = [
   ['Reminder aur payment', 'Baqi gharon ko ek click WhatsApp, payment par receipt number aur WhatsApp receipt.'],
 ];
 
-const features: [string, string][] = [
-  ['Har rupay ka hisaab', 'Kitna jama hua, kahan kharch hua, raseed ke sath — har verified makan malik dekh sakta hai.'],
-  ['Gali ka welfare agent', 'Har block / gali ka zimmedar. Light ya legal masla ek click mein us tak, WhatsApp par.'],
-  ['Masle ka poora status', 'Laal → peela → hara. Agent hal kare, resident confirm kare — waqt aur rating sab record.'],
-  ['Green / red board', 'Poori society gali-war plates mein: jama, baqi, aadha, exempt.'],
-  ['WhatsApp reminders', '3 din pehle, due din aur late hone par — list khud banti hai, bhejna ek click.'],
-  ['Payments aur receipts', 'Cash, bank, JazzCash, Easypaisa. Screenshot verify, receipt number.'],
-  ['Defaulters Excel', 'Late gharon ki list, owner ka naam aur number, ek click download.'],
-  ['Team roles', 'Admin sab kuch, collector sirf payment entry.'],
-  ['Notices', 'Notice likhein aur society ke WhatsApp group mein share karein.'],
-];
-
 export const revalidate = 300;
 
 export default async function SocietyLanding() {
@@ -49,13 +37,13 @@ export default async function SocietyLanding() {
   return (
     <>
     <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
-    <div className="space-y-16 md:space-y-24">
+    <div className="space-y-12 md:space-y-16">
       <section className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
         <div>
           <p className="eyebrow">Society fund · Welfare · Hisaab</p>
           <h1 className="mt-3 text-[2.1rem] leading-[1.15] md:text-5xl md:leading-[1.1]">Aap ka fund, aap ka haq — har rupay ka hisaab.</h1>
           <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-ink-soft">
-            Har ghar ek plate: green matlab jama, red matlab baqi. Jo fund deta hai woh dekhta hai paisa kahan laga, aur gali ka welfare agent har masle ka jawabdeh hai.
+            Green matlab jama, red matlab baqi — aur har rupay ka kharch raseed ke sath.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/societies/register" className="btn bg-society px-5">Society free register karein</Link>
@@ -93,35 +81,10 @@ export default async function SocietyLanding() {
         </section>
       )}
 
-      <section aria-labelledby="features">
-        <p className="eyebrow">Features</p>
-        <h2 id="features" className="mt-1 text-2xl md:text-3xl">Is mein kya hai</h2>
-        <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(([t, d]) => (
-            <div key={t} className="bg-white p-6">
-              <h3>{t}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-ink-mute">{d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section aria-labelledby="steps" className="rounded-3xl border border-line bg-white p-6 md:p-12">
-        <p className="eyebrow">5 qadam</p>
-        <h2 id="steps" className="mt-1 text-2xl md:text-3xl">Shuru kaise karein</h2>
-        <ol className="mt-8 grid gap-x-10 gap-y-7 md:grid-cols-2">
-          {steps.map(([t, d], i) => (
-            <li key={t} className="flex gap-4">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-society-soft text-sm font-semibold text-society-ink">{i + 1}</span>
-              <div><h3>{t}</h3><p className="mt-1 text-sm leading-relaxed text-ink-mute">{d}</p></div>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <Link href="/guides/society-admin" className="btn bg-society">Poori admin guide</Link>
-          <Link href="/guides/makan-malik" className="btn-outline">Makan malik guide</Link>
-        </div>
-      </section>
+      <div className="flex flex-wrap gap-3 text-sm">
+        <Link href="/guides/society-admin" className="btn-outline btn-sm">Admin guide</Link>
+        <Link href="/guides/makan-malik" className="btn-outline btn-sm">Makan malik guide</Link>
+      </div>
     </div>
     </>
   );

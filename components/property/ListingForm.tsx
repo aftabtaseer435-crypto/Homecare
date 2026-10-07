@@ -21,13 +21,13 @@ const Checks = ({ name, options, selected }: { name: string; options: string[]; 
   <div className="flex flex-wrap gap-2 sm:col-span-2">
     {options.map((o) => (
       <label key={o} className="flex cursor-pointer items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-sm has-[:checked]:border-property has-[:checked]:bg-property-soft has-[:checked]:text-property-ink">
-        <input type="checkbox" name={name} value={o} defaultChecked={selected?.includes(o)} className="accent-[#7442C8]" /> {o}
+        <input type="checkbox" name={name} value={o} defaultChecked={selected?.includes(o)} className="accent-[#147A59]" /> {o}
       </label>
     ))}
   </div>
 );
 const Toggle = ({ name, label, checked }: { name: string; label: string; checked?: boolean }) => (
-  <label className="flex items-center gap-2 text-sm"><input type="checkbox" name={name} defaultChecked={checked} className="h-4 w-4 accent-[#7442C8]" /> {label}</label>
+  <label className="flex items-center gap-2 text-sm"><input type="checkbox" name={name} defaultChecked={checked} className="h-4 w-4 accent-[#147A59]" /> {label}</label>
 );
 
 /** Full listing form — sale and rent each ask what matters for that deal. */

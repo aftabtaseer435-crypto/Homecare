@@ -39,7 +39,7 @@ export default async function Wanted({ searchParams }: { searchParams: { type?: 
           <h1>Demands</h1>
           <p className="mt-1 text-ink-mute">{rent ? 'Yeh log kiraye par ghar dhoond rahe hain — malik seedha rabta karein.' : 'Yeh log ghar / plot khareedna chahte hain — bechne wale seedha rabta karein.'}</p>
         </div>
-        <Link href={`/properties/wanted/new?type=${type}`} className="btn bg-property hover:bg-property-ink"><Plus className="h-4 w-4" aria-hidden="true" /> Apni demand daalein</Link>
+        <Link href={`/properties/wanted/new?type=${type}`} className="btn"><Plus className="h-4 w-4" aria-hidden="true" /> Apni demand daalein</Link>
       </div>
       <Flash searchParams={searchParams} />
 
@@ -50,9 +50,9 @@ export default async function Wanted({ searchParams }: { searchParams: { type?: 
               className={`rounded-lg px-4 py-2 text-sm font-semibold no-underline hover:no-underline ${type === t.id ? 'bg-property text-white' : 'text-ink-soft hover:bg-canvas'}`}>{t.label}</Link>
           ))}
         </div>
-        <form className="flex gap-2">
+        <form className="flex items-end gap-2">
           <input type="hidden" name="type" value={type} />
-          <input name="city" defaultValue={city} placeholder="City" className="input min-w-0 sm:w-48" aria-label="City" />
+          <div className="min-w-0 flex-1 sm:flex-none"><label htmlFor="w-city" className="mb-1 block text-xs font-semibold text-ink-soft">City</label><input id="w-city" name="city" defaultValue={city} placeholder="Multan" className="input sm:w-48" /></div>
           <button className="btn-outline">Search</button>
         </form>
       </div>

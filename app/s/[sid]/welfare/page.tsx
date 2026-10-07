@@ -79,7 +79,7 @@ export default async function WelfareAdmin({ params, searchParams }: { params: {
             </select>
           </div>
           <SubmitButton>Muqarrar karein</SubmitButton>
-          <p className="hint sm:col-span-4">Account ki zaroorat nahi — agent jab is number se pehli dafa login karega, us ka panel khud khul jayega. Ek agent ko kai galiyan di ja sakti hain.</p>
+          <p className="hint sm:col-span-4">Agent isi number se login karega — account ki zaroorat nahi.</p>
         </form>
 
         {(agentRows ?? []).length === 0 ? (

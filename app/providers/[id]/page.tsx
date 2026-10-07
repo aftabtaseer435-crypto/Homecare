@@ -3,6 +3,8 @@ import LogView from '@/components/LogView';
 import { IconBag, IconVerified } from '@/components/Icons';
 import HoursBadge from '@/components/HoursBadge';
 import Link from 'next/link';
+import { serviceImage } from '@/lib/serviceImages';
+import ServiceThumb from '@/components/ServiceThumb';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Flash, RatingLine, Stars } from '@/components/ui';
@@ -89,7 +91,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
         {prov.photo_path ? (
           <img src={storagePublicUrl(prov.photo_path)!} alt={prov.display_name} className="h-32 w-32 rounded-2xl object-cover" />
         ) : (
-          <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-service-soft text-service">{(() => { const I = serviceIcon(prov.provider_categories[0]?.category?.slug); return <I className="h-14 w-14" strokeWidth={1.5} aria-hidden="true" />; })()}</div>
+          <ServiceThumb src={serviceImage(prov.provider_categories[0]?.category?.slug ?? '', 256)} slug={prov.provider_categories[0]?.category?.slug} className="h-32 w-32 rounded-2xl" />
         )}
         <div className="flex-1 space-y-2">
           <h1 className="flex items-center gap-2">{prov.display_name}{prov.status === 'verified' && <IconVerified className="h-6 w-6 text-service" />}</h1>

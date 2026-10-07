@@ -254,7 +254,7 @@ export default async function SocietyHubPage({ params }: Params) {
         <section id="welfare" className="scroll-mt-32">
           <p className="eyebrow">Welfare system</p>
           <h2 className="mt-1 text-2xl md:text-3xl">Har gali ka ek zimmedar</h2>
-          <p className="mt-2 max-w-2xl text-ink-mute">Street light band hai, gutter ubal raha hai ya koi legal masla — app mein ek click, masla seedha apni gali ke welfare agent ke WhatsApp par. Hal hone tak har qadam ka record.</p>
+          <p className="mt-2 max-w-2xl text-ink-mute">Masla ek click mein apni gali ke welfare agent tak.</p>
           <ol className="mt-8 grid gap-4 md:grid-cols-3">
             {[
               ['1', 'Masla report karein', 'Category chunein, chahein to photo lagayein. Message apni gali ke agent ko jata hai.'],

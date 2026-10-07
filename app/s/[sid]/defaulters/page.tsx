@@ -20,9 +20,9 @@ export default async function Defaulters({ params, searchParams }: { params: { s
           <p className="muted">Total baqi: {rs(total)}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <form className="flex gap-2">
+          <form className="flex items-end gap-2">
             {!onlyOverdue && <input type="hidden" name="all" value="1" />}
-            <input name="street" defaultValue={searchParams.street} placeholder="Gali" className="input w-24" />
+            <div><label htmlFor="d-street" className="mb-1 block text-xs font-semibold text-ink-soft">Gali</label><input id="d-street" name="street" defaultValue={searchParams.street} placeholder="12" className="input w-24" /></div>
             <button className="btn-outline">Filter</button>
           </form>
           <Link href={onlyOverdue ? '?all=1' : '?'} className="btn-outline">{onlyOverdue ? 'Upcoming bhi dikhayein' : 'Sirf overdue'}</Link>

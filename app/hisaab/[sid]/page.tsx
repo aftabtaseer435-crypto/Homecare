@@ -52,7 +52,7 @@ export default async function Hisaab({ params, searchParams }: { params: { sid: 
       <div>
         <Link href="/welfare" className="text-sm font-bold">Welfare</Link>
         <h1 className="mt-2 text-3xl font-bold">Fund ka hisaab — {society?.name}</h1>
-        <p className="mt-1 max-w-2xl text-ink-soft">Aap ne jo fund diya, woh kahan aur kitna laga — har kharche ki tafseel aur raseed ke sath. Yeh hisaab har verified makan malik dekh sakta hai.</p>
+        <p className="mt-1 max-w-2xl text-ink-soft">Fund kahan aur kitna laga — raseed ke sath.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -100,11 +100,12 @@ export default async function Hisaab({ params, searchParams }: { params: { sid: 
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2>Har kharche ki tafseel ({filtered.length})</h2>
           {galis.length > 0 && (
-            <form className="flex gap-2">
-              <select name="gali" defaultValue={searchParams.gali ?? ''} className="input py-2" aria-label="Gali">
+            <form className="flex items-end gap-2">
+              <div><label htmlFor="h-gali" className="mb-1 block text-xs font-semibold text-ink-soft">Gali</label>
+              <select id="h-gali" name="gali" defaultValue={searchParams.gali ?? ''} className="input py-2">
                 <option value="">Sab jagah</option>
                 {galis.map((g) => { const [b, s] = g.split('|'); return <option key={g} value={g}>{galiLabel(b, s)}</option>; })}
-              </select>
+              </select></div>
               <button className="btn-outline">Dekhein</button>
             </form>
           )}

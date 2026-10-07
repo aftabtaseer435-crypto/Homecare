@@ -90,8 +90,8 @@ export default async function Owners({
       <section className="card">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2>Verified residents ({verified.length})</h2>
-          <form className="flex gap-2">
-            <input name="q" defaultValue={searchParams.q} className="input" placeholder="Naam, number, gali-ghar (1-12)" />
+          <form className="flex items-end gap-2">
+            <div><label htmlFor="o-q" className="mb-1 block text-xs font-semibold text-ink-soft">Naam, number ya gali-ghar</label><input id="o-q" name="q" defaultValue={searchParams.q} className="input" placeholder="1-12" /></div>
             <button className="btn-outline">Search</button>
           </form>
         </div>

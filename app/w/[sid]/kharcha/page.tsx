@@ -26,7 +26,7 @@ export default async function AgentExpenses({ params, searchParams }: { params: 
       <Flash searchParams={searchParams} />
       <div>
         <h1>Kharcha</h1>
-        <p className="muted mt-1">Apne area mein fund se jo paisa laga, uski raseed ke sath yahan darj karein. Admin approve karega, phir har resident ko &quot;Fund ka hisaab&quot; mein nazar aayega.</p>
+        <p className="muted mt-1">Fund ka kharch raseed ke sath darj karein — admin approve karega.</p>
       </div>
 
       <form action={submitExpense} className="card grid gap-4 md:grid-cols-2">

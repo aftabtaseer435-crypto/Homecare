@@ -41,7 +41,7 @@ export default async function WelfareHub({ searchParams }: { searchParams: { ok?
       <NoticeBoard next="/welfare" />
       <PageHeader
         title="Welfare — apni gali ke masle"
-        subtitle="Light, pani, gutter, sarak, safai, security ya legal masla — ek click mein apni gali ke welfare agent tak. Har qadam ka status yahan."
+        subtitle="Masla ek click mein apni gali ke welfare agent tak."
       />
       <Flash searchParams={searchParams} />
 

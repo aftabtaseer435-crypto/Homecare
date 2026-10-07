@@ -51,7 +51,7 @@ export default async function Funds({ params, searchParams }: { params: { sid: s
             </tbody>
           </table>
         )}
-        <p className="muted mt-3">Naye period ke dues roz subah automatic bante hain. &quot;Dues banayein&quot; se kisi bhi tareekh ka period khud bhi bana sakte hain (purane mahine ke liye bhi).</p>
+        <p className="muted mt-3">Dues roz subah khud bante hain; purana period "Dues banayein" se banayein.</p>
       </section>
 
       <form action={createPlan} className="card grid gap-3 md:grid-cols-3">

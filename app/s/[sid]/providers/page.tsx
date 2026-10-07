@@ -41,7 +41,7 @@ export default async function SocietyProviders({ params, searchParams }: { param
       <div>
         <p className="eyebrow">Home services</p>
         <h1 className="mt-1">Society ke providers aur dukanein</h1>
-        <p className="muted mt-1">Jin logon ne profile mein aap ki society chuni hai. Naye log foran list mein aa jate hain (&quot;Naya&quot; badge ke sath) — aap pehchan kar Verify karein, ghalat ho to Band karein.</p>
+        <p className="muted mt-1">Naye providers ko pehchan kar Verify karein, ghalat ho to Band karein.</p>
       </div>
       {list.length === 0 ? (
         <Empty>Abhi kisi provider ne aap ki society nahi chuni.</Empty>

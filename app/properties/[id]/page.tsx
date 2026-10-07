@@ -306,7 +306,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
                 <div className="rounded-xl bg-canvas p-2"><Phone className="mx-auto h-4 w-4 text-ink-mute" aria-hidden="true" /><div className="font-bold">{lead.calls}</div><div className="text-[11px] text-ink-mute">Calls</div></div>
                 <div className="rounded-xl bg-canvas p-2"><IconWhatsApp className="mx-auto h-4 w-4 text-ink-mute" /><div className="font-bold">{lead.whatsapp}</div><div className="text-[11px] text-ink-mute">WhatsApp</div></div>
               </div>
-              <Link href={`/properties/${listing.id}/edit`} className="btn w-full bg-property hover:bg-property-ink"><Pencil className="h-4 w-4" aria-hidden="true" /> Edit karein</Link>
+              <Link href={`/properties/${listing.id}/edit`} className="btn w-full"><Pencil className="h-4 w-4" aria-hidden="true" /> Edit karein</Link>
               <div className="grid grid-cols-2 gap-2">
                 {[rent ? 'rented' : 'sold', listing.status === 'active' ? 'hidden' : 'active'].filter((s) => s !== listing.status).map((s) => (
                   <form key={s} action={setListingStatus}>

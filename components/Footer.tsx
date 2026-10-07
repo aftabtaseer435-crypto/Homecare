@@ -5,16 +5,13 @@ import { appName } from '@/lib/seo';
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t border-line bg-white pb-24 lg:pb-0">
-      <div className="container-app grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(4,1fr)]">
+    <footer className="mt-12 border-t border-line bg-white pb-24 lg:mt-16 lg:pb-0">
+      <div className="container-app hidden gap-10 py-12 lg:grid lg:grid-cols-[1.3fr_repeat(4,1fr)]">
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2.5">
             <LogoMark className="h-9 w-9" />
             <span className="text-lg font-bold">{appName}</span>
           </div>
-          <p className="mt-3 max-w-xs text-sm text-ink-mute">
-            Pakistan ki housing societies ke liye: fund ka hisaab, ghar ke kaam ke liye bharosemand log, aur ghar rent ya sale.
-          </p>
         </div>
         {modules.map((m) => (
           <div key={m.id}>
@@ -32,9 +29,13 @@ export default function Footer() {
         ))}
       </div>
       <div className="border-t border-line">
-        <div className="container-app flex flex-wrap justify-between gap-2 py-5 text-xs text-ink-mute">
+        <div className="container-app flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-5 text-xs text-ink-mute">
           <span>© {new Date().getFullYear()} {appName}</span>
-          <span>Made for housing societies in Pakistan</span>
+          <span className="flex gap-4 lg:hidden">
+            <Link href="/guides" className="text-ink-mute no-underline">Guides</Link>
+            <Link href="/privacy" className="text-ink-mute no-underline">Privacy</Link>
+            <Link href="/account/delete" className="text-ink-mute no-underline">Account delete</Link>
+          </span>
         </div>
       </div>
     </footer>

@@ -25,25 +25,24 @@ export default async function ServicesChooser() {
     : 0;
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       <div className="max-w-2xl">
         <p className="eyebrow">Home services</p>
         <h1 className="mt-1 text-[1.9rem] md:text-[2.4rem]">Aap kya karna chahte hain?</h1>
-        <p className="mt-2 text-ink-mute">Ek chunein — dono ke alag dashboard aur poori history hai.</p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         <Link href="/services/find" className="group flex flex-col rounded-3xl border border-line bg-white p-6 no-underline transition-shadow hover:border-service hover:shadow-lift hover:no-underline md:p-8">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-service-soft text-service" aria-hidden="true"><ShoppingBag className="h-7 w-7" strokeWidth={1.8} /></span>
           <h2 className="mt-5 text-2xl text-ink">Mujhe kuch chahiye</h2>
-          <p className="mt-2 flex-1 text-ink-soft">Saman mangwana ho ya kaam karwana: chicken, sabzi, rashan, dawai — ya electrician, plumber, masi. Order bhejein, status dekhein, kharch ka hisaab rakhein.</p>
+          <p className="mt-2 flex-1 text-ink-soft">Saman mangwayein ya kaam karwayein — chicken, sabzi, rashan, electrician, plumber, masi.</p>
           <span className="btn mt-6 self-start bg-service group-hover:bg-service-ink">Kharidna / mangwana hai →</span>
         </Link>
 
         <Link href="/provider" className="group flex flex-col rounded-3xl border border-line bg-white p-6 no-underline transition-shadow hover:border-brand-500 hover:shadow-lift hover:no-underline md:p-8">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600" aria-hidden="true"><Store className="h-7 w-7" strokeWidth={1.8} /></span>
           <h2 className="mt-5 text-2xl text-ink">Main kaam karta / bechta hoon</h2>
-          <p className="mt-2 flex-1 text-ink-soft">Electrician, plumber, masi, rickshaw — ya chicken, sabzi, kiryana, dawai ki dukaan. Free profile banayein, orders aur calls paayein, mahine ka hisaab dekhein.</p>
+          <p className="mt-2 flex-1 text-ink-soft">Kaarigar ya dukaan — free profile banayein aur orders paayein.</p>
           <span className="btn mt-6 self-start group-hover:bg-brand-700">{prov ? 'Mera provider dashboard →' : 'Provider / dukaan register karein →'}</span>
         </Link>
       </div>
@@ -57,8 +56,7 @@ export default async function ServicesChooser() {
 
       {(daily ?? []).length > 0 && (
         <section>
-          <h2 className="mb-1">Ya seedha mangwayein</h2>
-          <p className="mb-4 text-sm text-ink-mute">Rozmarra ka saman, qareeb ki dukaan se ghar tak — raat ko bhi.</p>
+          <h2 className="mb-4">Ya seedha mangwayein</h2>
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
             {(daily ?? []).map((c) => (
               <Link key={c.slug} href={`/services/${c.slug}`} className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-white p-3 text-center text-sm font-medium text-ink no-underline hover:border-service hover:no-underline">
@@ -70,19 +68,6 @@ export default async function ServicesChooser() {
         </section>
       )}
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {[
-          ['1', 'Chunein', 'Category kholein — jo abhi khule hain woh upar, auqaat aur rating ke sath.'],
-          ['2', 'Order bhejein', 'Likhein kya chahiye. Order history mein jata hai aur ek click se WhatsApp par bhi.'],
-          ['3', 'Mil gaya? Mark karein', 'Raqam darj karein, review dein. Mahine ka kharch khud jud jata hai.'],
-        ].map(([n, t, d]) => (
-          <div key={n} className="rounded-2xl border border-line bg-white p-5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-service-soft text-sm font-semibold text-service-ink">{n}</span>
-            <h3 className="mt-3">{t}</h3>
-            <p className="mt-1 text-sm text-ink-mute">{d}</p>
-          </div>
-        ))}
-      </section>
     </div>
   );
 }

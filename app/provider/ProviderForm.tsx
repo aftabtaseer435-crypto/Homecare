@@ -33,7 +33,7 @@ export default function ProviderForm({
       <div className="md:col-span-2"><label className="label">Area (kahan kahan jate hain)</label><input name="area_note" defaultValue={initial?.area_note ?? ''} className="input" placeholder="Bosan Road, Gulgasht, 10 km tak" /></div>
       <fieldset className="min-w-0 md:col-span-2 rounded-xl border border-line p-4">
         <legend className="label px-1">Kab service dete hain? * (din, raat ya dono)</legend>
-        <p className="hint mb-3">Customer ko aap ke auqaat aur &quot;Abhi khula hai&quot; nazar aayega. Raat ki service ho to zaroor batayein — raat ko saman mangwane wale isi se dhoondte hain.</p>
+        <p className="hint mb-3">Raat ki service ho to zaroor batayein.</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg bg-canvas p-3">
             <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="day_on" defaultChecked={isEdit ? !!initial?.day_start : true} /> Din ki service</label>
