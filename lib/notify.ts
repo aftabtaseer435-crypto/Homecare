@@ -101,6 +101,7 @@ export async function runDailyJob(today = todayPK()) {
 
   // Resolved masle the resident never confirmed close after 7 days
   await admin.rpc('welfare_autoclose');
+  await admin.rpc('notifications_cleanup');
 
   const { data: plans } = await admin.from('fund_plans').select('id').eq('active', true);
   for (const p of plans ?? []) {

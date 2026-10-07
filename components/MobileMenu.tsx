@@ -87,6 +87,9 @@ export default function MobileMenu({ loggedIn, name, superAdmin, agent = false, 
                 );
               })}
               {loggedIn && (
+                <Link href="/notifications" className="flex min-h-[44px] items-center rounded-xl px-4 font-semibold text-ink no-underline">Notifications</Link>
+              )}
+              {loggedIn && (
                 <Link href="/my/orders" className="flex min-h-[44px] items-center rounded-xl px-4 font-semibold text-ink no-underline">Mere orders</Link>
               )}
               {seller && (
