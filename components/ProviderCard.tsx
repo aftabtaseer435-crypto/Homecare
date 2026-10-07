@@ -31,7 +31,7 @@ export default function ProviderCard({
           {p.photo_path ? (
             <img src={storagePublicUrl(p.photo_path)!} alt="" loading="lazy" className="h-16 w-16 rounded-2xl object-cover ring-1 ring-line" />
           ) : (
-            <ServiceThumb src={null} icon={cat.icon} className="h-16 w-16" text="text-3xl" />
+            <ServiceThumb src={null} slug={cat.slug} className="h-16 w-16" />
           )}
         </Link>
         <div className="min-w-0 flex-1">

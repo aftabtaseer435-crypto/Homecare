@@ -1,7 +1,8 @@
+import { serviceIcon } from '@/lib/icons';
 import SubmitButton from '@/components/SubmitButton';
 import { displayPhone } from '@/lib/phone';
 
-type Cat = { id: string; name: string; grp: string; icon: string | null };
+type Cat = { id: string; slug?: string; name: string; grp: string; icon: string | null };
 type Soc = { id: string; name: string; city: string };
 
 export default function ProviderForm({
@@ -63,7 +64,7 @@ export default function ProviderForm({
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
                 {categories.filter((c) => c.grp === g).map((c) => (
                   <label key={c.id} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm has-[:checked]:border-service has-[:checked]:bg-service-soft">
-                    <input type="checkbox" name="categories" value={c.id} defaultChecked={selCats.has(c.id)} /> {c.icon} {c.name}
+                    <input type="checkbox" name="categories" value={c.id} defaultChecked={selCats.has(c.id)} /> {(() => { const I = serviceIcon(c.slug); return <I className="h-4 w-4 shrink-0 text-ink-mute" aria-hidden="true" />; })()} {c.name}
                   </label>
                 ))}
               </div>

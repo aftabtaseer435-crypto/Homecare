@@ -1,3 +1,4 @@
+import { ShoppingBag, Store } from 'lucide-react';
 import Link from 'next/link';
 import { getSession } from '@/lib/auth';
 import ServiceThumb from '@/components/ServiceThumb';
@@ -33,14 +34,14 @@ export default async function ServicesChooser() {
 
       <div className="grid gap-5 md:grid-cols-2">
         <Link href="/services/find" className="group flex flex-col rounded-3xl border border-line bg-white p-6 no-underline transition-shadow hover:border-service hover:shadow-lift hover:no-underline md:p-8">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-service-soft text-3xl" aria-hidden="true">🛍️</span>
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-service-soft text-service" aria-hidden="true"><ShoppingBag className="h-7 w-7" strokeWidth={1.8} /></span>
           <h2 className="mt-5 text-2xl text-ink">Mujhe kuch chahiye</h2>
           <p className="mt-2 flex-1 text-ink-soft">Saman mangwana ho ya kaam karwana: chicken, sabzi, rashan, dawai — ya electrician, plumber, masi. Order bhejein, status dekhein, kharch ka hisaab rakhein.</p>
           <span className="btn mt-6 self-start bg-service group-hover:bg-service-ink">Kharidna / mangwana hai →</span>
         </Link>
 
         <Link href="/provider" className="group flex flex-col rounded-3xl border border-line bg-white p-6 no-underline transition-shadow hover:border-brand-500 hover:shadow-lift hover:no-underline md:p-8">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-3xl" aria-hidden="true">🧰</span>
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600" aria-hidden="true"><Store className="h-7 w-7" strokeWidth={1.8} /></span>
           <h2 className="mt-5 text-2xl text-ink">Main kaam karta / bechta hoon</h2>
           <p className="mt-2 flex-1 text-ink-soft">Electrician, plumber, masi, rickshaw — ya chicken, sabzi, kiryana, dawai ki dukaan. Free profile banayein, orders aur calls paayein, mahine ka hisaab dekhein.</p>
           <span className="btn mt-6 self-start group-hover:bg-brand-700">{prov ? 'Mera provider dashboard →' : 'Provider / dukaan register karein →'}</span>
@@ -61,7 +62,7 @@ export default async function ServicesChooser() {
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
             {(daily ?? []).map((c) => (
               <Link key={c.slug} href={`/services/${c.slug}`} className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-white p-3 text-center text-sm font-medium text-ink no-underline hover:border-service hover:no-underline">
-                <ServiceThumb src={serviceImage(c.slug)} icon={c.icon} />
+                <ServiceThumb src={serviceImage(c.slug)} slug={c.slug} />
                 {c.name}
               </Link>
             ))}

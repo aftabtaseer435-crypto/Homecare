@@ -1,13 +1,13 @@
-// Look of each notification kind (icon + colour), shared by the bell and the page.
-export const notifKind: Record<string, { icon: string; cls: string; label: string }> = {
-  order: { icon: '🛍️', cls: 'bg-service-soft', label: 'Order' },
-  review: { icon: '⭐', cls: 'bg-amber-50', label: 'Review' },
-  notice: { icon: '📢', cls: 'bg-brand-50', label: 'Society notice' },
-  welfare: { icon: '🛠️', cls: 'bg-plate-soft', label: 'Welfare' },
-  society: { icon: '🏠', cls: 'bg-brand-50', label: 'Society' },
-  provider: { icon: '🧰', cls: 'bg-service-soft', label: 'Provider' },
-  payment: { icon: '💳', cls: 'bg-paid-soft', label: 'Payment' },
-  info: { icon: '🔔', cls: 'bg-canvas', label: 'Update' },
+// Look of each notification kind (colour + label); icons come from lib/icons.
+export const notifKind: Record<string, { cls: string; label: string }> = {
+  order: { cls: 'bg-service-soft text-service-ink', label: 'Order' },
+  review: { cls: 'bg-amber-50 text-amber-600', label: 'Review' },
+  notice: { cls: 'bg-brand-50 text-brand-700', label: 'Society notice' },
+  welfare: { cls: 'bg-plate-soft text-plate-ink', label: 'Welfare' },
+  society: { cls: 'bg-brand-50 text-brand-700', label: 'Society' },
+  provider: { cls: 'bg-service-soft text-service-ink', label: 'Provider' },
+  payment: { cls: 'bg-paid-soft text-paid-ink', label: 'Payment' },
+  info: { cls: 'bg-canvas text-ink-soft', label: 'Update' },
 };
 export const kindOf = (k: string) => notifKind[k] ?? notifKind.info;
 

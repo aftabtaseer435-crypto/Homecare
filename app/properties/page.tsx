@@ -1,3 +1,4 @@
+import { House } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Empty, PageHeader } from '@/components/ui';
@@ -61,7 +62,7 @@ export default async function Properties({ searchParams }: { searchParams: SP })
             return (
               <Link key={l.id} href={`/properties/${l.id}`} className="card overflow-hidden p-0 no-underline hover:border-brand-500">
                 <div className="relative aspect-[4/3] bg-canvas">
-                  {photo ? <img src={storagePublicUrl(photo.path)!} alt={l.title} loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-5xl">🏠</div>}
+                  {photo ? <img src={storagePublicUrl(photo.path)!} alt={l.title} loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-property-soft text-property"><House className="h-12 w-12" strokeWidth={1.5} aria-hidden="true" /></div>}
                   <span className={`badge absolute left-2 top-2 ${l.listing_type === 'rent' ? 'bg-ink text-white' : 'bg-plate text-plate-ink'}`}>{l.listing_type === 'rent' ? 'Rent' : 'Sale'}</span>
                   {l.society_verified && <span className="badge absolute right-2 top-2 bg-paid text-white">✓ Society verified</span>}
                 </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Avatar from './Avatar';
+import { Bell, Briefcase, LayoutDashboard, LogOut, Settings, ShieldCheck, ShoppingBag, Wrench, type LucideIcon } from 'lucide-react';
 
 type Props = { name: string; avatar: string | null; seller: boolean; agent: boolean; superAdmin: boolean };
 
@@ -24,17 +25,18 @@ export default function AccountMenu({ name, avatar, seller, agent, superAdmin }:
 
   const first = (name || 'Account').split(' ')[0];
   const item = 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink no-underline hover:bg-canvas hover:no-underline';
-  const groups: { label?: string; links: [string, string, string][] }[] = [
-    { links: [['/dashboard', 'Mera dashboard', '🏠'], ['/my/orders', 'Mere orders', '🛍️'], ['/notifications', 'Notifications', '🔔']] },
+  type L = [string, string, LucideIcon];
+  const groups: { label?: string; links: L[] }[] = [
+    { links: [['/dashboard', 'Mera dashboard', LayoutDashboard], ['/my/orders', 'Mere orders', ShoppingBag], ['/notifications', 'Notifications', Bell]] },
     {
       label: 'Kaam',
       links: [
-        ...(seller ? ([['/provider/dashboard', 'Seller dashboard', '🧰']] as [string, string, string][]) : [['/provider', 'Seller / provider banein', '🧰']] as [string, string, string][]),
-        ...(agent ? ([['/w', 'Welfare agent panel', '🛠️']] as [string, string, string][]) : []),
-        ...(superAdmin ? ([['/admin', 'Super Admin', '🛡️']] as [string, string, string][]) : []),
+        seller ? ['/provider/dashboard', 'Seller dashboard', Briefcase] : ['/provider', 'Seller / provider banein', Briefcase],
+        ...(agent ? [['/w', 'Welfare agent panel', Wrench] as L] : []),
+        ...(superAdmin ? [['/admin', 'Super Admin', ShieldCheck] as L] : []),
       ],
     },
-    { links: [['/account', 'Account settings', '⚙️']] },
+    { links: [['/account', 'Account settings', Settings]] },
   ];
 
   return (
@@ -64,16 +66,16 @@ export default function AccountMenu({ name, avatar, seller, agent, superAdmin }:
           {groups.filter((g) => g.links.length).map((g, i) => (
             <div key={i} className="mt-1 border-t border-line pt-1">
               {g.label && <div className="px-3 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">{g.label}</div>}
-              {g.links.map(([href, label, icon]) => (
+              {g.links.map(([href, label, Icon]) => (
                 <Link key={href} href={href} role="menuitem" className={item}>
-                  <span className="w-5 text-center" aria-hidden="true">{icon}</span>{label}
+                  <Icon className="h-[18px] w-[18px] text-ink-mute" strokeWidth={1.9} aria-hidden="true" />{label}
                 </Link>
               ))}
             </div>
           ))}
           <form action="/auth/signout" method="post" className="mt-1 border-t border-line pt-1">
             <button role="menuitem" className={`${item} w-full text-due-ink`}>
-              <span className="w-5 text-center" aria-hidden="true">↩</span>Logout
+              <LogOut className="h-[18px] w-[18px]" strokeWidth={1.9} aria-hidden="true" />Logout
             </button>
           </form>
         </div>

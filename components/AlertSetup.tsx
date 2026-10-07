@@ -1,4 +1,5 @@
 'use client';
+import { BellOff, BellRing, Volume2 } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
 import { chime, speakOrder, startAlarm, stopAlarm, unlockAudio } from '@/lib/alarm';
@@ -70,7 +71,7 @@ export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: s
 
   return (
     <div className={`flex flex-wrap items-center gap-3 rounded-2xl border p-4 ${state === 'on' ? 'border-paid/30 bg-paid-soft' : 'border-plate bg-plate-soft'}`}>
-      <span className="text-2xl" aria-hidden="true">{state === 'on' ? '🔔' : '🔕'}</span>
+      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white ${state === 'on' ? 'text-paid-ink' : 'text-plate-ink'}`} aria-hidden="true">{state === 'on' ? <BellRing className="h-5 w-5" /> : <BellOff className="h-5 w-5" />}</span>
       <div className="min-w-0 flex-1 text-sm">
         <div className="font-semibold text-ink">{title}: {state === 'on' ? 'ON' : 'OFF'}</div>
         <div className="text-ink-soft">
@@ -82,7 +83,7 @@ export default function AlertSetup({ vapidKey, who = 'provider' }: { vapidKey: s
         {msg && <div className="mt-1 text-due-ink">{msg}</div>}
       </div>
       {state === 'off' && <button type="button" onClick={enable} disabled={busy} className="btn btn-sm">{busy ? '...' : 'Alerts on karein'}</button>}
-      {(state === 'on' || state === 'unsupported') && <button type="button" onClick={test} className="btn-outline btn-sm">🔊 Test awaz</button>}
+      {(state === 'on' || state === 'unsupported') && <button type="button" onClick={test} className="btn-outline btn-sm"><Volume2 className="h-4 w-4" aria-hidden="true" /> Test awaz</button>}
     </div>
   );
 }

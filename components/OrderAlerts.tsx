@@ -1,4 +1,5 @@
 'use client';
+import { BellRing, Clock, MapPin, Volume2 } from 'lucide-react';
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -107,7 +108,7 @@ export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
         <div className="fixed inset-0 z-[70] flex items-end justify-center bg-ink/40 p-4 backdrop-blur-sm sm:items-center" role="alertdialog" aria-modal="true" aria-labelledby="order-alert-title">
           <div className="w-full max-w-md animate-[bubbleIn_.25s_ease-out] overflow-hidden rounded-3xl bg-white shadow-2xl ring-4 ring-plate">
             <div className="flex items-center gap-3 bg-plate px-5 py-4 text-plate-ink">
-              <span className="text-3xl motion-safe:animate-bounce" aria-hidden="true">🔔</span>
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/60" aria-hidden="true"><BellRing className="h-6 w-6 motion-safe:animate-bounce" /></span>
               <div>
                 <div id="order-alert-title" className="text-lg font-bold">Naya order aaya hai!</div>
                 <div className="text-sm">{current.ref_no}{current.category ? ` · ${current.category.name}` : ''}{queue.length > 1 ? ` · ${queue.length - 1} aur bhi` : ''}</div>
@@ -117,12 +118,12 @@ export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
               <div className="text-base font-semibold">{current.customer_name ?? 'Customer'}</div>
               <p className="whitespace-pre-line rounded-xl bg-canvas p-3 text-sm">{short(current.details, 220)}</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
-                {current.when_note && <span>🕒 {current.when_note}</span>}
-                {current.address && <span>📍 {current.address}</span>}
+                {current.when_note && <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-ink-mute" aria-hidden="true" />{current.when_note}</span>}
+                {current.address && <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-ink-mute" aria-hidden="true" />{current.address}</span>}
               </div>
               {needTap && (
                 <button type="button" onClick={() => unlockAudio().then((ok) => { if (ok) { setNeedTap(false); stopAlarm(); startAlarm(); } })} className="w-full rounded-xl bg-due-soft px-3 py-2 text-sm font-semibold text-due-ink">
-                  🔊 Awaz band hai — yahan dabayein
+                  <Volume2 className="mr-1 inline h-4 w-4" aria-hidden="true" />Awaz band hai — yahan dabayein
                 </button>
               )}
               <div className="grid grid-cols-2 gap-2 pt-1">
@@ -141,7 +142,7 @@ export default function OrderAlerts({ isProvider }: { isProvider: boolean }) {
       )}
       {toast && (
         <div className="fixed inset-x-4 top-20 z-[65] mx-auto max-w-md rounded-2xl bg-ink px-4 py-3 text-sm font-medium text-white shadow-2xl sm:inset-x-auto sm:right-6" role="status">
-          🔔 {toast.text}
+          <BellRing className="mr-1.5 inline h-4 w-4 text-plate" aria-hidden="true" />{toast.text}
           <Link href={toast.href} className="ml-2 text-plate underline">Dekhein</Link>
         </div>
       )}

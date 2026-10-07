@@ -1,3 +1,4 @@
+import { Phone } from 'lucide-react';
 import Link from 'next/link';
 import { requireSocietyStaff } from '@/lib/auth';
 import { Empty, Flash, Stars } from '@/components/ui';
@@ -64,7 +65,7 @@ export default async function SocietyProviders({ params, searchParams }: { param
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-2 border-t border-line pt-3">
-                <a href={`tel:+${p.phone}`} className="btn-outline btn-sm">📞 Call</a>
+                <a href={`tel:+${p.phone}`} className="btn-outline btn-sm"><Phone className="h-3.5 w-3.5" aria-hidden="true" /> Call</a>
                 {p.status !== 'verified' && btn(p, 'verified', '✓ Verify karein', 'btn btn-sm')}
                 {p.status !== 'suspended' && btn(p, 'suspended', 'Band karein', 'btn-ghost btn-sm text-due-ink', 'Ye provider list se hat jayega. Band karein?')}
               </div>

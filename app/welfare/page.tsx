@@ -1,3 +1,4 @@
+import { Lightbulb, Scale } from 'lucide-react';
 import NoticeBoard from '@/components/NoticeBoard';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
@@ -84,8 +85,8 @@ export default async function WelfareHub({ searchParams }: { searchParams: { ok?
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Link href={`/welfare/report?house=${h.id}&cat=street_light`} className="btn">💡 Light ka masla</Link>
-                  <Link href={`/welfare/report?house=${h.id}&cat=legal`} className="btn-outline">⚖️ Legal masla</Link>
+                  <Link href={`/welfare/report?house=${h.id}&cat=street_light`} className="btn"><Lightbulb className="h-4 w-4" aria-hidden="true" /> Light ka masla</Link>
+                  <Link href={`/welfare/report?house=${h.id}&cat=legal`} className="btn-outline"><Scale className="h-4 w-4" aria-hidden="true" /> Legal masla</Link>
                   <Link href={`/welfare/report?house=${h.id}`} className="btn-outline">Koi aur masla</Link>
                 </div>
                 <Link href={`/hisaab/${h.society?.id}`} className="inline-block text-sm font-bold">Fund ka hisaab dekhein — paisa kahan laga</Link>

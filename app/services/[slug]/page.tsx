@@ -83,7 +83,7 @@ export default async function CategoryProviders({
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
       <div className="mb-6 flex flex-wrap items-center gap-4">
-        <ServiceThumb src={serviceImage(cat.slug, 160)} icon={cat.icon} className="h-16 w-16" text="text-3xl" />
+        <ServiceThumb src={serviceImage(cat.slug, 160)} slug={cat.slug} className="h-16 w-16" />
         <div className="min-w-0 flex-1">
           <h1>{cat.name}</h1>
           {cat.name_ur && <p className="text-ink-mute"><span dir="rtl">{cat.name_ur}</span></p>}

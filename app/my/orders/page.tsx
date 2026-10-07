@@ -1,3 +1,5 @@
+import { Phone, Star } from 'lucide-react';
+import { IconWhatsApp } from '@/components/Icons';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { Empty, Flash, Stat } from '@/components/ui';
@@ -59,7 +61,7 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
 
       {needReviewOnce.length > 0 && (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4">
-          <span className="text-2xl" aria-hidden="true">⭐</span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-amber-500 ring-1 ring-amber-200" aria-hidden="true"><Star className="h-5 w-5" fill="currentColor" /></span>
           <div className="min-w-0 flex-1 text-sm">
             <div className="font-semibold text-ink">{needReviewOnce.length} order ka review baqi hai</div>
             <div className="text-ink-soft">Aap ka review doosre ghar walon ko sahi dukaan chunne mein madad karta hai.</div>
@@ -91,7 +93,7 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
           <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">
             {((contacts ?? []) as any[]).map((c) => (
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
-                <span><b>{c.kind === 'call' ? '📞 Call' : 'WhatsApp'}</b> — {c.provider?.display_name ?? 'Provider'} · <span className="text-ink-mute">{ago(c.created_at)}</span></span>
+                <span className="inline-flex items-center gap-1.5">{c.kind === 'call' ? <Phone className="h-4 w-4 text-brand-600" aria-hidden="true" /> : <IconWhatsApp className="h-4 w-4 text-wa" />}<b>{c.kind === 'call' ? 'Call' : 'WhatsApp'}</b> — {c.provider?.display_name ?? 'Provider'} · <span className="text-ink-mute">{ago(c.created_at)}</span></span>
                 {c.provider && <Link href={`/providers/${c.provider.id}/order`} className="btn-outline btn-sm">Order bhejein</Link>}
               </li>
             ))}
@@ -104,7 +106,7 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
           {shown.map((o) => (
             <li key={o.id} className="card">
               <div className="flex flex-wrap items-start gap-4">
-                <ServiceThumb src={o.category ? serviceImage(o.category.slug) : null} icon={o.category?.icon ?? '🛍️'} />
+                <ServiceThumb src={o.category ? serviceImage(o.category.slug) : null} slug={o.category?.slug} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link href={`/my/orders/${o.id}`} className="font-semibold text-ink">{o.provider?.display_name ?? o.provider_name ?? 'Provider'}</Link>
@@ -119,8 +121,8 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
                   <div className="flex gap-2">
                     {o.provider && <Link href={`/providers/${o.provider.id}/order${o.category ? `?cat=${o.category.slug}` : ''}`} className="btn-outline btn-sm">Dobara order</Link>}
                     {o.status === 'done' && o.provider && (reviewedSet.has(o.provider.id)
-                      ? <span className="inline-flex items-center px-2 text-xs text-ink-mute">★ Review diya</span>
-                      : <Link href={`/my/orders/${o.id}#review`} className="btn btn-sm">★ Review dein</Link>)}
+                      ? <span className="inline-flex items-center gap-1 px-2 text-xs text-ink-mute"><Star className="h-3.5 w-3.5 text-amber-500" fill="currentColor" aria-hidden="true" /> Review diya</span>
+                      : <Link href={`/my/orders/${o.id}#review`} className="btn btn-sm"><Star className="h-3.5 w-3.5" aria-hidden="true" /> Review dein</Link>)}
                   </div>
                 ) : (
                   <Link href={`/my/orders/${o.id}`} className="btn-outline btn-sm">Dekhein</Link>

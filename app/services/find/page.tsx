@@ -51,7 +51,7 @@ export default async function Services() {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
               {list.map((c) => (
                 <Link key={c.id} href={`/services/${c.slug}`} className="group flex flex-col items-start gap-3 rounded-2xl border border-line bg-white p-4 no-underline hover:border-brand-500 hover:no-underline">
-                  <ServiceThumb src={serviceImage(c.slug)} icon={c.icon} />
+                  <ServiceThumb src={serviceImage(c.slug)} slug={c.slug} />
                   <span><span className="block font-semibold text-ink">{c.name}</span>
                   {c.name_ur && <span className="block text-sm text-ink-mute"><span dir="rtl">{c.name_ur}</span></span>}</span>
                   {(people.get(c.id) ?? []).length > 0 ? (

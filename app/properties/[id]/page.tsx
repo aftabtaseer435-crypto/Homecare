@@ -1,3 +1,4 @@
+import { House } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
@@ -97,7 +98,7 @@ export default async function ListingPage({ params, searchParams }: { params: { 
           </div>
         </div>
       ) : (
-        <div className="flex h-48 items-center justify-center rounded-xl bg-canvas text-6xl">🏠</div>
+        <div className="flex h-48 items-center justify-center rounded-xl bg-property-soft text-property"><House className="h-14 w-14" strokeWidth={1.5} aria-hidden="true" /></div>
       )}
       {photos.length > 4 && (
         <div className="flex gap-2 overflow-x-auto">

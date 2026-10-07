@@ -12,7 +12,7 @@ export default async function ProviderRegister({ searchParams }: { searchParams:
   if (existing) redirect('/provider/dashboard');
 
   const [{ data: categories }, { data: societies }] = await Promise.all([
-    supabase.from('service_categories').select('id, name, grp, icon').eq('active', true).order('sort'),
+    supabase.from('service_categories').select('id, slug, name, grp, icon').eq('active', true).order('sort'),
     supabase.from('societies').select('id, name, city').eq('status', 'active').order('name'),
   ]);
 

@@ -3,6 +3,7 @@ import { requireUser } from '@/lib/auth';
 import { Empty } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
 import { cleanTitle, kindOf } from '@/lib/notifKinds';
+import { notifIcon } from '@/lib/icons';
 import { ago } from '@/lib/format';
 import { markAllRead, openNotification } from './actions';
 
@@ -38,13 +39,14 @@ export default async function Notifications({ searchParams }: { searchParams: { 
         <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">
           {list.map((n) => {
             const k = kindOf(n.kind);
+            const I = notifIcon(n.kind);
             return (
               <li key={n.id}>
                 <form action={openNotification}>
                   <input type="hidden" name="id" value={n.id} />
                   <input type="hidden" name="url" value={n.url ?? '/notifications'} />
                   <button className={`flex w-full gap-3 px-4 py-3.5 text-left hover:bg-canvas ${n.read_at ? '' : 'bg-brand-50/50'}`}>
-                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${k.cls}`} aria-hidden="true">{k.icon}</span>
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${k.cls}`} aria-hidden="true"><I className="h-5 w-5" strokeWidth={2} /></span>
                     <span className="min-w-0 flex-1">
                       <span className={`block text-sm ${n.read_at ? 'text-ink-soft' : 'font-semibold text-ink'}`}>{cleanTitle(n.title)}</span>
                       {n.body && <span className="mt-0.5 block text-sm text-ink-mute">{n.body}</span>}

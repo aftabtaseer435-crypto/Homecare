@@ -1,3 +1,4 @@
+import { serviceIcon } from '@/lib/icons';
 import LogView from '@/components/LogView';
 import { IconBag, IconVerified } from '@/components/Icons';
 import HoursBadge from '@/components/HoursBadge';
@@ -88,7 +89,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
         {prov.photo_path ? (
           <img src={storagePublicUrl(prov.photo_path)!} alt={prov.display_name} className="h-32 w-32 rounded-2xl object-cover" />
         ) : (
-          <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-brand-50 text-5xl">{prov.provider_categories[0]?.category?.icon ?? '🛠️'}</div>
+          <div className="flex h-32 w-32 items-center justify-center rounded-2xl bg-service-soft text-service">{(() => { const I = serviceIcon(prov.provider_categories[0]?.category?.slug); return <I className="h-14 w-14" strokeWidth={1.5} aria-hidden="true" />; })()}</div>
         )}
         <div className="flex-1 space-y-2">
           <h1 className="flex items-center gap-2">{prov.display_name}{prov.status === 'verified' && <IconVerified className="h-6 w-6 text-service" />}</h1>
@@ -99,7 +100,7 @@ export default async function ProviderProfile({ params, searchParams }: { params
           </div>
           <div className="flex flex-wrap gap-2">
             {prov.provider_categories.map((c: any) => (
-              <Link key={c.category.slug} href={`/services/${c.category.slug}`} className="badge bg-canvas text-ink-soft no-underline">{c.category.icon} {c.category.name}</Link>
+              <Link key={c.category.slug} href={`/services/${c.category.slug}`} className="badge bg-canvas text-ink-soft no-underline">{(() => { const I = serviceIcon(c.category.slug); return <I className="h-3.5 w-3.5" aria-hidden="true" />; })()} {c.category.name}</Link>
             ))}
           </div>
           <div className="muted">

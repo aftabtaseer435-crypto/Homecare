@@ -1,3 +1,4 @@
+import { Briefcase, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { Flash, PageHeader } from '@/components/ui';
@@ -40,11 +41,11 @@ export default async function Account({ searchParams }: { searchParams: { ok?: s
       </form>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <Link href="/my/orders" className="card no-underline hover:border-service hover:no-underline">
-          <div className="font-semibold text-ink">🛍️ Mere orders</div>
+          <div className="flex items-center gap-2 font-semibold text-ink"><ShoppingBag className="h-5 w-5 text-service" aria-hidden="true" /> Mere orders</div>
           <div className="mt-1 text-sm text-ink-mute">Jo kharida / karwaya — history aur kharch</div>
         </Link>
         <Link href={prov ? '/provider/dashboard' : '/provider/register'} className="card no-underline hover:border-brand-500 hover:no-underline">
-          <div className="font-semibold text-ink">🧰 {prov ? 'Seller dashboard' : 'Seller / provider banein'}</div>
+          <div className="flex items-center gap-2 font-semibold text-ink"><Briefcase className="h-5 w-5 text-brand-600" aria-hidden="true" /> {prov ? 'Seller dashboard' : 'Seller / provider banein'}</div>
           <div className="mt-1 text-sm text-ink-mute">{prov ? `${prov.display_name} — orders, hisaab, profile edit` : 'Apni dukaan ya kaam list karein, free'}</div>
         </Link>
       </div>

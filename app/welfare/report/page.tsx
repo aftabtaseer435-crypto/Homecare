@@ -1,3 +1,4 @@
+import { welfareIcon } from '@/lib/icons';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireUser } from '@/lib/auth';
@@ -54,15 +55,18 @@ export default async function ReportIssue({ searchParams }: { searchParams: { ho
       <div className="mx-auto max-w-2xl">
         <PageHeader title="Kya masla hai?" subtitle={`${house.society?.name} · ${houseLabel(house)}`} back={['Welfare', '/welfare']} />
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {categories.map((c) => (
+          {categories.map((c) => {
+            const I = welfareIcon(c.id);
+            return (
             <li key={c.id}>
               <Link href={`/welfare/report?house=${house.id}&cat=${c.id}`} className="flex h-full flex-col items-center gap-2 rounded-2xl border border-line bg-white p-4 text-center no-underline hover:border-brand-600 hover:no-underline">
-                <span className="text-3xl" aria-hidden="true">{c.icon}</span>
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700" aria-hidden="true"><I className="h-6 w-6" strokeWidth={1.8} /></span>
                 <span className="font-bold text-ink">{c.label}</span>
                 <span className="text-xs text-ink-mute">{c.scope === 'private' ? 'Sirf agent dekhega' : `Hal: ${c.sla}`}</span>
               </Link>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     );
@@ -76,7 +80,7 @@ export default async function ReportIssue({ searchParams }: { searchParams: { ho
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title={`${cat.icon} ${cat.label}`} subtitle={`${house.society?.name} · ${houseLabel(house)}${onBehalf ? ' (agent ki taraf se darj)' : ''}`} back={['Masla badlein', `/welfare/report?house=${house.id}`]} />
+      <PageHeader title={cat.label} subtitle={`${house.society?.name} · ${houseLabel(house)}${onBehalf ? ' (agent ki taraf se darj)' : ''}`} back={['Masla badlein', `/welfare/report?house=${house.id}`]} />
       <Flash searchParams={searchParams} />
 
       {sameKind.length > 0 && (

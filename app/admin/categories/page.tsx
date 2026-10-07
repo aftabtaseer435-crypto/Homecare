@@ -1,3 +1,4 @@
+import { serviceIcon } from '@/lib/icons';
 import { requireSuperAdmin } from '@/lib/auth';
 import { Flash } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
@@ -25,7 +26,7 @@ export default async function AdminCategories({ searchParams }: { searchParams: 
           <tbody>
             {(cats ?? []).map((c) => (
               <tr key={c.id} className={c.active ? '' : 'opacity-50'}>
-                <td>{c.icon}</td><td>{c.name} <span className="text-ink-mute" dir="rtl">{c.name_ur}</span></td><td>{c.slug}</td><td>{c.grp}</td><td>{c.sort}</td>
+                <td>{(() => { const I = serviceIcon(c.slug); return <I className="h-5 w-5 text-ink-mute" aria-hidden="true" />; })()}</td><td>{c.name} <span className="text-ink-mute" dir="rtl">{c.name_ur}</span></td><td>{c.slug}</td><td>{c.grp}</td><td>{c.sort}</td>
                 <td>
                   <form action={toggleCategory}>
                     <input type="hidden" name="id" value={c.id} />

@@ -1,8 +1,10 @@
 import { category, issueStatus } from '@/lib/welfare';
+import { welfareIcon } from '@/lib/icons';
+import { Check } from 'lucide-react';
 
 export function IssueStatusBadge({ status }: { status: string }) {
   const s = issueStatus(status);
-  return <span className={`badge ${s.soft}`}>{s.short === 'Done' ? '✓ ' : ''}{s.label}</span>;
+  return <span className={`badge ${s.soft}`}>{s.short === 'Done' && <Check className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />}{s.label}</span>;
 }
 
 /** Five-step tracker: Report → Seen → Working → Resolved → Confirmed */
@@ -28,9 +30,10 @@ export function IssueSteps({ status }: { status: string }) {
 
 export function CategoryChip({ id }: { id: string }) {
   const c = category(id);
+  const I = welfareIcon(id);
   return (
     <span className="inline-flex items-center gap-1.5 text-sm font-bold text-ink">
-      <span aria-hidden="true">{c.icon}</span>
+      <I className="h-4 w-4 text-ink-mute" strokeWidth={2} aria-hidden="true" />
       {c.label}
       {c.scope === 'private' && <span className="badge bg-canvas text-ink-soft">Private</span>}
     </span>

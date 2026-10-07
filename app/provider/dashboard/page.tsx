@@ -1,3 +1,5 @@
+import { Clock, MapPin, Pencil, Phone } from 'lucide-react';
+import { IconWhatsApp } from '@/components/Icons';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireUser } from '@/lib/auth';
@@ -40,7 +42,7 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
       .limit(200),
     supabase.rpc('provider_monthly_stats', { pid: prov.id, months: 6 }),
     supabase.from('reviews').select('id, stars, comment, created_at').eq('provider_id', prov.id).order('created_at', { ascending: false }).limit(10),
-    tab === 'profile' ? supabase.from('service_categories').select('id, name, grp, icon').eq('active', true).order('sort').then((r) => r.data ?? []) : Promise.resolve([]),
+    tab === 'profile' ? supabase.from('service_categories').select('id, slug, name, grp, icon').eq('active', true).order('sort').then((r) => r.data ?? []) : Promise.resolve([]),
     tab === 'profile' ? supabase.from('societies').select('id, name, city').eq('status', 'active').order('name').then((r) => r.data ?? []) : Promise.resolve([]),
   ]);
   const list = (orders ?? []) as any[];
@@ -67,15 +69,15 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
         </div>
         {o.customer_phone && (
           <div className="flex gap-2">
-            <a href={`tel:+${o.customer_phone}`} className="btn-outline btn-sm">📞 {displayPhone(o.customer_phone)}</a>
-            <a href={`https://wa.me/${o.customer_phone}?text=${encodeURIComponent(`Assalam o Alaikum ${o.customer_name ?? ''}, aap ka order ${o.ref_no} mil gaya.`)}`} target="_blank" rel="noopener" className="btn-wa btn-sm">WhatsApp</a>
+            <a href={`tel:+${o.customer_phone}`} className="btn-outline btn-sm"><Phone className="h-3.5 w-3.5" aria-hidden="true" /> {displayPhone(o.customer_phone)}</a>
+            <a href={`https://wa.me/${o.customer_phone}?text=${encodeURIComponent(`Assalam o Alaikum ${o.customer_name ?? ''}, aap ka order ${o.ref_no} mil gaya.`)}`} target="_blank" rel="noopener" className="btn-wa btn-sm"><IconWhatsApp className="h-3.5 w-3.5" /> WhatsApp</a>
           </div>
         )}
       </div>
       <p className="mt-3 whitespace-pre-line rounded-xl bg-canvas p-3 text-sm">{o.details}</p>
       <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-soft">
-        {o.when_note && <span>🕒 {o.when_note}</span>}
-        {o.address && <span>📍 {o.address}</span>}
+        {o.when_note && <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-ink-mute" aria-hidden="true" />{o.when_note}</span>}
+        {o.address && <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-ink-mute" aria-hidden="true" />{o.address}</span>}
       </div>
       <div className="mt-4 border-t border-line pt-4"><OrderActions o={o} side="provider" next="/provider/dashboard" /></div>
     </li>
@@ -186,7 +188,7 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
       {tab === 'profile' && (
         <div className="space-y-6">
           <div className="flex items-start gap-3 rounded-2xl border border-service/20 bg-service-soft p-4 text-sm text-service-ink">
-            <span className="text-xl" aria-hidden="true">✏️</span>
+            <Pencil className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
             <div>
               <div className="font-semibold">Har cheez edit kar sakte hain — naam, number, photo, kaam, societies, auqaat, rates.</div>
               <div className="mt-0.5">Save karte hi profile admin / chairman ke paas review ke liye jayegi. Tab tak list mein &quot;Naya&quot; badge lagega, orders aate rahenge. Sirf &quot;Abhi busy hoon&quot; button se review nahi hota.</div>

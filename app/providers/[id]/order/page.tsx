@@ -50,7 +50,7 @@ export default async function OrderPage({ params, searchParams }: { params: { id
             <div>
               <label className="label" htmlFor="category_id">Kis cheez ka</label>
               <select id="category_id" name="category_id" className="input" defaultValue={selected?.id}>
-                {cats.map((c: any) => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+                {cats.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
           ) : selected ? <input type="hidden" name="category_id" value={selected.id} /> : null}

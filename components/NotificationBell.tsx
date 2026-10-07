@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cleanTitle, kindOf } from '@/lib/notifKinds';
+import { notifIcon } from '@/lib/icons';
 
 type Item = { id: string; kind: string; title: string; body: string | null; url: string | null; read_at: string | null; created_at: string };
 
@@ -106,10 +107,11 @@ export default function NotificationBell() {
                 <ul className="divide-y divide-line">
                   {items.map((n) => {
                     const k = kindOf(n.kind);
+                    const I = notifIcon(n.kind);
                     return (
                       <li key={n.id}>
                         <button type="button" onClick={() => go(n)} className={`flex w-full gap-3 px-4 py-3 text-left hover:bg-canvas ${n.read_at ? '' : 'bg-brand-50/50'}`}>
-                          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${k.cls}`} aria-hidden="true">{k.icon}</span>
+                          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${k.cls}`} aria-hidden="true"><I className="h-[18px] w-[18px]" strokeWidth={2} /></span>
                           <span className="min-w-0 flex-1">
                             <span className={`block text-sm leading-snug ${n.read_at ? 'text-ink-soft' : 'font-semibold text-ink'}`}>{cleanTitle(n.title)}</span>
                             {n.body && <span className="mt-0.5 block truncate text-xs text-ink-mute">{n.body}</span>}
