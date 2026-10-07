@@ -5,6 +5,7 @@ import { Empty, Flash, Stat, Stars } from '@/components/ui';
 import SubmitButton from '@/components/SubmitButton';
 import OrderActions from '@/components/OrderActions';
 import HoursBadge from '@/components/HoursBadge';
+import AlertSetup from '@/components/AlertSetup';
 import ProviderForm from '../ProviderForm';
 import { setAvailability, updateProvider } from '../actions';
 import { ago, fmtDate, rs } from '@/lib/format';
@@ -98,6 +99,7 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
         </div>
       </div>
       <Flash searchParams={searchParams} />
+      <AlertSetup vapidKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <Stat label="Is mahine calls" value={m.calls} />

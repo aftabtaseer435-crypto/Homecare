@@ -11,7 +11,7 @@
   "navigationDividerColor": "#ffffff",
   "navigationDividerColorDark": "#000000",
   "backgroundColor": "#ffffff",
-  "enableNotifications": false,
+  "enableNotifications": true,
   "startUrl": "/dashboard?source=app",
   "iconUrl": "https://YOUR-DOMAIN.com/icons/icon-512.png",
   "maskableIconUrl": "https://YOUR-DOMAIN.com/icons/maskable-512.png",

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireUser } from '@/lib/auth';
 import { Empty, Flash, Stat } from '@/components/ui';
 import OrderActions from '@/components/OrderActions';
+import AlertSetup from '@/components/AlertSetup';
 import ServiceThumb from '@/components/ServiceThumb';
 import { fmtDate, rs } from '@/lib/format';
 import { ago } from '@/lib/format';
@@ -47,6 +48,7 @@ export default async function MyOrders({ searchParams }: { searchParams: { tab?:
         <Link href="/services/find" className="btn bg-service hover:bg-service-ink">+ Naya order</Link>
       </div>
       <Flash searchParams={searchParams} />
+      {active.length > 0 && <AlertSetup vapidKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} who="customer" />}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Is mahine orders" value={thisMonth.length} />

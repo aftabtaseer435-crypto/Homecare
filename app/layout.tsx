@@ -8,6 +8,7 @@ import ModuleNav from '@/components/ModuleNav';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import RegisterSW from '@/components/RegisterSW';
+import AlertsMount from '@/components/AlertsMount';
 import { siteUrl, appName } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main" className="container-app pb-12 pt-8 md:pb-16 md:pt-10">{children}</main>
         <Footer />
         <BottomNav />
+        <AlertsMount />
       </body>
     </html>
   );
